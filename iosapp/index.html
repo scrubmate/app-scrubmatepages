@@ -821,6 +821,118 @@ input{
 }
 </style>
 
+
+<!-- Firebase Phone OTP -->
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+
+
+<style id="scrubmate-real-otp-fixes">
+/* Extra top breathing room above the back button */
+.otp-sheet{
+  padding-top:calc(env(safe-area-inset-top, 0px) + 58px) !important;
+}
+
+/* The boxes themselves are tappable. Tapping them focuses the real OTP input. */
+.otp-boxes{
+  pointer-events:auto !important;
+  cursor:text;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* Keep the real input focusable by mobile browsers while visually hidden. */
+.otp-input{
+  opacity:.01 !important;
+  color:transparent !important;
+  caret-color:transparent !important;
+  font-size:16px !important;
+  z-index:20 !important;
+  pointer-events:auto !important;
+}
+
+/* Incorrect OTP */
+.otp-box.error{
+  border-color:#e53935 !important;
+  box-shadow:0 0 0 3px rgba(229,57,53,.10) !important;
+  color:#d32f2f !important;
+}
+
+.otp-error-message{
+  min-height:20px;
+  margin:12px auto 0;
+  width:calc(100% - 36px);
+  color:#e53935;
+  font-size:13px;
+  line-height:1.35;
+  font-weight:700;
+  text-align:center;
+}
+
+/* Verify button spinner replaces text in the same place */
+.verify-button{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:0 !important;
+}
+
+.verify-button.loading{
+  pointer-events:none !important;
+  opacity:1 !important;
+}
+
+.verify-button.loading .verify-button-text{
+  display:none !important;
+}
+
+.verify-button-spinner{
+  display:none;
+  width:20px;
+  height:20px;
+  border:2.5px solid rgba(255,255,255,.45);
+  border-top-color:#fff;
+  border-radius:50%;
+  animation:scrubOtpSpin .7s linear infinite;
+}
+
+.verify-button.loading .verify-button-spinner{
+  display:block;
+}
+
+@keyframes scrubOtpSpin{
+  to{ transform:rotate(360deg); }
+}
+
+/* Invisible reCAPTCHA must not alter layout */
+#recaptcha-container{
+  position:fixed;
+  width:1px;
+  height:1px;
+  left:-10000px;
+  bottom:-10000px;
+  overflow:hidden;
+}
+
+/* Small shake on wrong OTP */
+.otp-boxes.otp-shake{
+  animation:scrubOtpShake .32s ease;
+}
+
+@keyframes scrubOtpShake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-7px)}
+  50%{transform:translateX(7px)}
+  75%{transform:translateX(-4px)}
+}
+
+@media(max-width:600px){
+  .otp-sheet{
+    padding-top:calc(env(safe-area-inset-top, 0px) + 54px) !important;
+  }
+}
+</style>
+
 </head>
 
 <body>
@@ -4164,11 +4276,18 @@ input{
       Resend SMS in <span id="otpSeconds">43</span>s
     </div>
 
+    <div class="otp-error-message" id="otpErrorMessage"></div>
+
     <button
       type="button"
       class="verify-button"
       id="verifyButton"
-    >Verify OTP</button>
+    >
+      <span class="verify-button-text">Verify now</span>
+      <span class="verify-button-spinner" aria-hidden="true"></span>
+    </button>
+
+    <div id="recaptcha-container"></div>
 
     <button
       type="button"
@@ -5185,6 +5304,239 @@ mobileInput.addEventListener("input", function(){
 });
 
 
+
+/* =========================================================
+   REAL FIREBASE PHONE OTP
+   Config is loaded from the SAME backend URL used earlier.
+========================================================= */
+
+let scrubFirebaseAuth = null;
+let scrubConfirmationResult = null;
+let scrubRecaptchaVerifier = null;
+let scrubOtpSending = false;
+let scrubOtpVerifying = false;
+let scrubFirebaseInitPromise = null;
+
+const SCRUB_FIREBASE_CONFIG_URL =
+  "https://cezooooo-backend.onrender.com/firebase-config";
+
+async function initializeScrubFirebaseOtp(){
+  if(scrubFirebaseAuth) return true;
+
+  if(
+    typeof window.firebase === "undefined" ||
+    !firebase.auth ||
+    !firebase.initializeApp
+  ){
+    throw new Error("Firebase SDK is not loaded.");
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(function(){
+    controller.abort();
+  },15000);
+
+  try{
+    const response = await fetch(
+      SCRUB_FIREBASE_CONFIG_URL,
+      {
+        method:"GET",
+        cache:"no-store",
+        signal:controller.signal
+      }
+    );
+
+    if(!response.ok){
+      throw new Error(
+        "Firebase config request failed (" +
+        response.status +
+        ")"
+      );
+    }
+
+    const firebaseConfig = await response.json();
+
+    if(
+      !firebaseConfig ||
+      !firebaseConfig.apiKey ||
+      !firebaseConfig.authDomain ||
+      !firebaseConfig.projectId
+    ){
+      throw new Error("Invalid Firebase config.");
+    }
+
+    if(!firebase.apps.length){
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    scrubFirebaseAuth = firebase.auth();
+    console.log("✅ Scrub Mate Firebase OTP ready");
+    return true;
+
+  }finally{
+    clearTimeout(timeoutId);
+  }
+}
+
+function ensureScrubFirebaseOtpReady(){
+  if(scrubFirebaseAuth){
+    return Promise.resolve(true);
+  }
+
+  if(!scrubFirebaseInitPromise){
+    scrubFirebaseInitPromise =
+      initializeScrubFirebaseOtp()
+        .catch(function(error){
+          scrubFirebaseInitPromise = null;
+          throw error;
+        });
+  }
+
+  return scrubFirebaseInitPromise;
+}
+
+/* Start loading Firebase config early */
+ensureScrubFirebaseOtpReady().catch(function(error){
+  console.warn(
+    "Firebase will retry when Continue is tapped:",
+    error
+  );
+});
+
+function resetScrubRecaptcha(){
+  if(scrubRecaptchaVerifier){
+    try{
+      scrubRecaptchaVerifier.clear();
+    }catch(error){
+      console.warn("reCAPTCHA clear warning:",error);
+    }
+  }
+
+  scrubRecaptchaVerifier = null;
+
+  const container =
+    document.getElementById("recaptcha-container");
+
+  if(container){
+    container.innerHTML = "";
+  }
+}
+
+function getScrubOtpErrorMessage(error){
+  const code = String(error?.code || "");
+
+  if(code.includes("invalid-phone-number")){
+    return "Please enter a valid mobile number.";
+  }
+
+  if(code.includes("too-many-requests")){
+    return "Too many OTP requests. Please try again later.";
+  }
+
+  if(code.includes("quota-exceeded")){
+    return "OTP limit reached. Please try again later.";
+  }
+
+  if(code.includes("unauthorized-domain")){
+    return "This domain is not authorized in Firebase.";
+  }
+
+  if(
+    code.includes("captcha-check-failed") ||
+    code.includes("missing-app-credential") ||
+    code.includes("invalid-app-credential")
+  ){
+    return "Security verification failed. Please try again.";
+  }
+
+  if(code.includes("invalid-verification-code")){
+    return "Incorrect OTP. Please try again.";
+  }
+
+  if(code.includes("code-expired")){
+    return "OTP expired. Please resend OTP.";
+  }
+
+  if(error?.name === "AbortError"){
+    return "OTP service took too long. Please retry.";
+  }
+
+  return "Something went wrong. Please try again.";
+}
+
+function focusScrubOtpKeyboard(){
+  if(!otpInput) return;
+
+  otpInput.removeAttribute("readonly");
+
+  try{
+    otpInput.focus({preventScroll:true});
+  }catch(error){
+    otpInput.focus();
+  }
+
+  /* Helps Android WebView / Chrome when the first focus is ignored */
+  setTimeout(function(){
+    try{
+      otpInput.focus({preventScroll:true});
+      otpInput.click();
+    }catch(error){
+      otpInput.focus();
+    }
+  },80);
+}
+
+function clearScrubOtpError(){
+  const error =
+    document.getElementById("otpErrorMessage");
+
+  if(error) error.textContent = "";
+
+  otpBoxes.forEach(function(box){
+    box.classList.remove("error");
+  });
+
+  document
+    .getElementById("otpBoxes")
+    ?.classList.remove("otp-shake");
+}
+
+function showScrubOtpError(message){
+  const error =
+    document.getElementById("otpErrorMessage");
+
+  if(error) error.textContent = message || "";
+
+  otpBoxes.forEach(function(box){
+    box.classList.add("error");
+  });
+
+  const boxes =
+    document.getElementById("otpBoxes");
+
+  boxes?.classList.remove("otp-shake");
+  void boxes?.offsetWidth;
+  boxes?.classList.add("otp-shake");
+}
+
+function clearScrubOtpAndRefocus(){
+  otpInput.value = "";
+  updateOtpUI();
+  focusScrubOtpKeyboard();
+}
+
+function setVerifyLoading(isLoading){
+  scrubOtpVerifying = isLoading;
+
+  verifyButton.classList.toggle(
+    "loading",
+    isLoading
+  );
+
+  verifyButton.disabled = isLoading;
+}
+
+
 /* =========================
    OTP VERIFICATION
 ========================= */
@@ -5258,9 +5610,11 @@ function startOtpResendTimer(){
 }
 
 
-/* Open OTP */
+/* Open OTP + SEND REAL FIREBASE OTP */
 
-continueButton.addEventListener("click",function(){
+continueButton.addEventListener("click", async function(){
+
+  if(scrubOtpSending) return;
 
   const mobile = mobileInput.value.trim();
 
@@ -5268,135 +5622,307 @@ continueButton.addEventListener("click",function(){
     return;
   }
 
+  errorText.textContent = "";
+  clearScrubOtpError();
+
   displayMobile.textContent = "+91 " + mobile;
-
   otpInput.value = "";
-
   updateOtpUI();
 
+  /*
+    Open from the original user tap and focus immediately.
+    This is important for Android/iOS because a keyboard opened only
+    after an awaited network request can be blocked by the browser.
+  */
   otpOverlay.classList.add("show");
+  focusScrubOtpKeyboard();
 
-  startOtpResendTimer();
+  scrubOtpSending = true;
+  continueButton.disabled = true;
 
-  setTimeout(function(){
-    otpInput.focus();
-  },150);
+  const originalContinueText =
+    continueButton.textContent;
 
+  continueButton.textContent = "Sending OTP...";
+
+  try{
+
+    await ensureScrubFirebaseOtpReady();
+
+    resetScrubRecaptcha();
+
+    scrubRecaptchaVerifier =
+      new firebase.auth.RecaptchaVerifier(
+        "recaptcha-container",
+        {
+          size:"invisible",
+          callback:function(){
+            console.log("✅ reCAPTCHA verified");
+          },
+          "expired-callback":function(){
+            console.warn("reCAPTCHA expired");
+          }
+        }
+      );
+
+    scrubConfirmationResult =
+      await scrubFirebaseAuth.signInWithPhoneNumber(
+        "+91" + mobile,
+        scrubRecaptchaVerifier
+      );
+
+    console.log(
+      "✅ Real OTP sent to +91" + mobile
+    );
+
+    startOtpResendTimer();
+
+    /*
+      Try once more after OTP has actually been sent.
+      The first focus above keeps the keyboard open on mobile.
+    */
+    focusScrubOtpKeyboard();
+
+  }catch(error){
+
+    console.error("❌ OTP send error:",error);
+
+    scrubConfirmationResult = null;
+    resetScrubRecaptcha();
+
+    otpOverlay.classList.remove("show");
+
+    errorText.textContent =
+      getScrubOtpErrorMessage(error);
+
+  }finally{
+
+    scrubOtpSending = false;
+
+    const isValid =
+      /^[6-9]\d{9}$/.test(
+        mobileInput.value.trim()
+      );
+
+    continueButton.disabled = !isValid;
+    continueButton.classList.toggle(
+      "enabled",
+      isValid
+    );
+
+    continueButton.textContent =
+      originalContinueText || "Continue";
+  }
 });
 
 
 /* OTP input */
 
 otpInput.addEventListener("input",function(){
-
+  clearScrubOtpError();
   updateOtpUI();
-
 });
 
 
-/* Clicking anywhere around boxes focuses real input */
+/* Tap ANY OTP box -> keyboard must open */
 
-document.getElementById("otpBoxes").addEventListener(
-  "click",
-  function(){
-    otpInput.focus();
-  }
-);
+document
+  .getElementById("otpBoxes")
+  .addEventListener("pointerdown",function(event){
+    event.preventDefault();
+    focusScrubOtpKeyboard();
+  });
+
+document
+  .getElementById("otpBoxes")
+  .addEventListener("click",function(){
+    focusScrubOtpKeyboard();
+  });
 
 
 /* Back */
 
-otpBackButton.addEventListener("click",function(){
+otpBackButton.addEventListener("click",function(event){
+  event.preventDefault();
+
+  setVerifyLoading(false);
+  scrubConfirmationResult = null;
+  resetScrubRecaptcha();
+  clearScrubOtpError();
 
   closeOtpPopup();
-
 });
 
 
-/* Resend */
+/* Resend REAL OTP */
 
-otpResend.addEventListener("click",function(){
+otpResend.addEventListener("click", async function(){
 
-  if(!otpResend.classList.contains("active")){
+  if(
+    !otpResend.classList.contains("active") ||
+    scrubOtpSending
+  ){
     return;
   }
-
-  otpInput.value = "";
-
-  updateOtpUI();
-
-  startOtpResendTimer();
-
-  otpInput.focus();
-
-});
-
-
-/* Verify */
-
-verifyButton.addEventListener("click",function(){
 
   const mobile = mobileInput.value.trim();
-  const otp = otpInput.value.trim();
 
-  otpInput.style.borderColor = "";
-  otpInput.style.boxShadow = "";
+  if(!/^[6-9]\d{9}$/.test(mobile)){
+    return;
+  }
+
+  scrubOtpSending = true;
+  clearScrubOtpError();
+
+  otpResend.classList.remove("active");
+  otpResend.textContent = "Sending OTP...";
+
+  clearScrubOtpAndRefocus();
+
+  try{
+
+    await ensureScrubFirebaseOtpReady();
+
+    resetScrubRecaptcha();
+
+    scrubRecaptchaVerifier =
+      new firebase.auth.RecaptchaVerifier(
+        "recaptcha-container",
+        {
+          size:"invisible"
+        }
+      );
+
+    scrubConfirmationResult =
+      await scrubFirebaseAuth.signInWithPhoneNumber(
+        "+91" + mobile,
+        scrubRecaptchaVerifier
+      );
+
+    startOtpResendTimer();
+    focusScrubOtpKeyboard();
+
+  }catch(error){
+
+    console.error("❌ OTP resend error:",error);
+
+    scrubConfirmationResult = null;
+    resetScrubRecaptcha();
+
+    otpResend.textContent = "Resend SMS";
+    otpResend.classList.add("active");
+
+    showScrubOtpError(
+      getScrubOtpErrorMessage(error)
+    );
+
+  }finally{
+    scrubOtpSending = false;
+  }
+});
+
+
+/* Verify REAL Firebase OTP */
+
+verifyButton.addEventListener("click", async function(){
+
+  if(scrubOtpVerifying) return;
+
+  const mobile = mobileInput.value.trim();
+  const otp = otpInput.value
+    .replace(/\D/g,"")
+    .slice(0,6);
+
+  clearScrubOtpError();
 
   if(otp.length !== 6){
-    otpInput.focus();
+    focusScrubOtpKeyboard();
     return;
   }
 
-  /* Existing test OTP */
-  if(otp !== "123456"){
-    otpBoxes.forEach(function(box){
-      box.style.borderColor = "#e53935";
-    });
-
-    otpInput.focus();
-
-    setTimeout(function(){
-      otpBoxes.forEach(function(box){
-        box.style.borderColor = "";
-      });
-    },1200);
-
+  if(!scrubConfirmationResult){
+    showScrubOtpError(
+      "Please resend OTP and try again."
+    );
+    clearScrubOtpAndRefocus();
     return;
   }
 
-  const scrubMateUser = {
-    firstName:"",
-    lastName:"",
-    email:"",
-    mobile:mobile,
-    phoneNumber:"+91" + mobile,
-    otp:otp,
-    login:false,
-    verified:true,
-    profileCompleted:false,
-    loginTime:new Date().toISOString()
-  };
+  /*
+    Verify text is hidden and spinner appears in the SAME button.
+  */
+  setVerifyLoading(true);
 
-  localStorage.setItem(
-    "scrubMateUser",
-    JSON.stringify(scrubMateUser)
-  );
+  try{
 
-  localStorage.setItem(
-    "scrubMateMobile",
-    mobile
-  );
+    const result =
+      await scrubConfirmationResult.confirm(otp);
 
-  localStorage.setItem(
-    "scrubMateOtp",
-    otp
-  );
+    const scrubMateUser = {
+      uid:result.user.uid,
+      firstName:"",
+      lastName:"",
+      email:"",
+      mobile:mobile,
+      phoneNumber:
+        result.user.phoneNumber ||
+        "+91" + mobile,
+      login:false,
+      verified:true,
+      profileCompleted:false,
+      loginTime:new Date().toISOString()
+    };
 
-  closeOtpPopup();
+    /*
+      Do NOT save the OTP itself.
+      Firebase verification is the proof.
+    */
+    localStorage.setItem(
+      "scrubMateUser",
+      JSON.stringify(scrubMateUser)
+    );
 
-  openScrubDetailsPage();
+    localStorage.setItem(
+      "scrubMateMobile",
+      mobile
+    );
 
+    localStorage.removeItem("scrubMateOtp");
+
+    scrubConfirmationResult = null;
+    resetScrubRecaptcha();
+
+    otpInput.blur();
+    closeOtpPopup();
+    openScrubDetailsPage();
+
+  }catch(error){
+
+    console.error(
+      "❌ Real OTP verification error:",
+      error
+    );
+
+    setVerifyLoading(false);
+
+    /*
+      Incorrect OTP:
+      - red boxes
+      - clear all 6 digits
+      - keyboard stays/opens again
+    */
+    showScrubOtpError(
+      getScrubOtpErrorMessage(error)
+    );
+
+    clearScrubOtpAndRefocus();
+    return;
+  }
+
+  setVerifyLoading(false);
 });
+
+
 
 
 scrubConfirmDetailsButton.addEventListener(
@@ -5593,6 +6119,12 @@ startAutomaticLoginLocation();
 /* Close OTP popup */
 
 function closeOtpPopup(){
+  if(typeof setVerifyLoading === "function"){
+    setVerifyLoading(false);
+  }
+  if(typeof clearScrubOtpError === "function"){
+    clearScrubOtpError();
+  }
 
   otpOverlay.classList.remove("show");
 
