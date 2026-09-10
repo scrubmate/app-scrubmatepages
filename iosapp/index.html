@@ -7050,15 +7050,18 @@ window.addEventListener("pageshow", function(){
     cursor:not-allowed !important;
     pointer-events:none !important;
   }
+
   .scurbServiceAddBtn.scrub-stock-busy .scurbSinglePlus{
     display:none !important;
   }
+
   .scurbServiceAddBtn.scrub-stock-busy::after{
     content:"Busy";
     font-size:11px;
     line-height:1;
     font-weight:800;
   }
+
   .scrub-stock-popup-hidden{
     display:none !important;
     visibility:hidden !important;
@@ -7066,155 +7069,270 @@ window.addEventListener("pageshow", function(){
   }
 </style>
 
-<style id="scrubmate-live-stock-style">
-/* Live service availability */
-.scurbServiceAddBtn.scrub-stock-busy{
-  cursor:not-allowed !important;
-  opacity:.95 !important;
-}
-
-.scurbServiceAddBtn.scrub-stock-busy .scurbSinglePlus,
-.scurbServiceAddBtn.scrub-stock-busy .scurbPlus,
-.scurbServiceAddBtn.scrub-stock-busy .plus{
-  display:none !important;
-}
-
-.scurbServiceAddBtn.scrub-stock-busy::after{
-  content:"Busy";
-  font-size:11px;
-  font-weight:700;
-  line-height:1;
-}
-</style>
-
 <script id="scrubmate-live-stock-js">
 (function(){
   "use strict";
 
-  /*
-    IMPORTANT:
-    - service_prices.stock is treated as YES/NO.
-    - true / yes  = available -> +
-    - false / no  = busy      -> Busy
-    - Old numeric values are also understood for safety.
-    - Popup BOOK button is NOT hidden or modified.
-    - Realtime updates happen immediately.
-  */
   const STOCK_TABLE = "service_prices";
-  let serviceStock = Object.create(null);
-  let realtimeChannel = null;
-  let booted = false;
+  let scrubServiceStock = Object.create(null);
+  let scrubStockRealtimeChannel = null;
+  let scrubStockObserver = null;
 
-  function normalize(value){
-    return String(value == null ? "" : value).trim().toLowerCase();
+  function normalizeServiceName(value){
+    return String(value || "").trim().toLowerCase();
   }
 
-  function isAvailable(value){
-    if(value === true) return true;
-    if(value === false) return false;
-
-    const text = normalize(value);
-    if(text === "true" || text === "yes" || text === "available") return true;
-    if(text === "false" || text === "no" || text === "busy" || text === "") return false;
-
-    /* Safety for an old integer column: 0 = busy, >0 = available. */
-    const number = Number(value);
-    return Number.isFinite(number) ? number > 0 : false;
+  function stockIsAvailable(value){
+    const n = Number(value);
+    return Number.isFinite(n) && n > 0;
   }
 
-  function findCard(serviceName){
-    const wanted = normalize(serviceName);
+  function getHomeCard(serviceName){
+    const wanted = normalizeServiceName(serviceName);
     if(!wanted) return null;
 
-    const cards = document.querySelectorAll(".scurbServiceCard[data-service]");
-    for(let i=0;i<cards.length;i++){
-      if(normalize(cards[i].getAttribute("data-service")) === wanted){
-        return cards[i];
+    const cards = document.querySelectorAll(
+      ".scurbServiceCard[data-service]"
+    );
+
+    for(const card of cards){
+      if(normalizeServiceName(card.getAttribute("data-service")) === wanted){
+        return card;
       }
     }
     return null;
   }
 
-  function setButtonText(button, available){
-    if(!button) return;
-
-    const plus = button.querySelector(".scurbSinglePlus, .scurbPlus, .plus");
-
-    if(available){
-      button.classList.remove("scrub-stock-busy");
-      button.disabled = false;
-      button.removeAttribute("title");
-      button.setAttribute("aria-disabled", "false");
-      if(plus) plus.textContent = "+";
-      return;
-    }
-
-    button.classList.add("scrub-stock-busy");
-    button.disabled = true;
-    button.setAttribute("title", "Service currently busy");
-    button.setAttribute("aria-label", "Service currently busy");
-    button.setAttribute("aria-disabled", "true");
-  }
-
-  function updateHomeCard(serviceName, stock){
-    const card = findCard(serviceName);
+  function updateHomeStockUI(serviceName, stock){
+    const card = getHomeCard(serviceName);
     if(!card) return;
 
-    const button = card.querySelector(".scurbServiceAddBtn");
-    if(!button) return;
+    const addButton = card.querySelector(".scurbServiceAddBtn");
+    if(!addButton) return;
 
-    const available = isAvailable(stock);
-    button.setAttribute("data-stock", available ? "true" : "false");
-    setButtonText(button, available);
+    const available = stockIsAvailable(stock);
+    addButton.classList.toggle("scrub-stock-busy", !available);
+    addButton.setAttribute("data-stock", String(Number(stock) || 0));
+
+    if(available){
+      addButton.disabled = false;
+      addButton.setAttribute("aria-label", "Add " + serviceName);
+    }else{
+      addButton.disabled = true;
+      addButton.setAttribute("aria-label", serviceName + " is busy");
+      addButton.setAttribute("title", "Service currently busy");
+    }
   }
 
-  function updateAllCards(){
-    Object.keys(serviceStock).forEach(function(key){
-      updateHomeCard(key, serviceStock[key]);
+  function isPopupElement(element){
+    if(!element || element.nodeType !== 1) return false;
+
+    const text = (
+      (element.id || "") + " " +
+      (element.className && typeof element.className === "string" ? element.className : "")
+    ).toLowerCase();
+
+    return (
+      text.includes("popup") ||
+      text.includes("sheet") ||
+      text.includes("modal")
+    );
+  }
+
+  function buttonLooksLikeAdd(button){
+    if(!button || button.tagName !== "BUTTON") return false;
+
+    const text = String(button.innerText || button.textContent || "")
+      .replace(/\s+/g," ")
+      .trim()
+      .toLowerCase();
+
+    const aria = String(
+      button.getAttribute("aria-label") || ""
+    ).toLowerCase();
+
+    const idClass = (
+      String(button.id || "") + " " +
+      (typeof button.className === "string" ? button.className : "")
+    ).toLowerCase();
+
+    /* Do NOT hide close/back buttons. */
+    if(/close|cancel|back|previous|minus|remove/.test(idClass + " " + aria + " " + text)){
+      return false;
+    }
+
+    return (
+      /\badd\b/.test(text) ||
+      /\+/.test(text) ||
+      /\badd\b/.test(aria) ||
+      /\badd\b/.test(idClass) ||
+      /\bplus\b/.test(idClass)
+    );
+  }
+
+  function getVisiblePopups(){
+    const all = document.querySelectorAll(
+      '[id*="Popup"], [id*="popup"], [class*="Popup"], [class*="popup"], [class*="Sheet"], [class*="sheet"], [class*="Modal"], [class*="modal"]'
+    );
+
+    return Array.from(all).filter(function(el){
+      const style = window.getComputedStyle(el);
+      const rect = el.getBoundingClientRect();
+      return (
+        style.display !== "none" &&
+        style.visibility !== "hidden" &&
+        Number(style.opacity || 1) > 0 &&
+        rect.width > 0 &&
+        rect.height > 0
+      );
     });
   }
 
-  async function loadStock(){
-    try{
-      if(typeof supabaseClient === "undefined"){
-        console.warn("Supabase client not ready for stock.");
-        return;
-      }
+  function findServiceNameInPopup(popup){
+    if(!popup) return "";
 
-      const {data, error} = await supabaseClient
+    /* Prefer an explicit service marker if popup code has one. */
+    const explicit = popup.querySelector(
+      '[data-service], [data-service-name], [data-servicename]'
+    );
+
+    if(explicit){
+      const value =
+        explicit.getAttribute("data-service") ||
+        explicit.getAttribute("data-service-name") ||
+        explicit.getAttribute("data-servicename");
+      if(value) return String(value).trim();
+    }
+
+    /* Match popup id to the same service mapping used by the page. */
+    const id = String(popup.id || "").toLowerCase();
+    const map = {
+      "fridgecleaning":"Fridge Cleaning",
+      "windowcleaning":"Window Cleaning",
+      "utilitiescleaning":"Utilities Cleaning",
+      "accleaning":"AC Cleaning",
+      "bathroomcleaning":"Bathroom Cleaning",
+      "kitchenhelp":"Kitchen Help",
+      "dustingwiping":"Dusting and Wiping",
+      "packingunpacking":"Packing and Unpacking",
+      "ironing":"Ironing",
+      "fancleaning":"Fan Cleaning",
+      "bedroomcleaning":"Bedroom Cleaning",
+      "shopcleaning":"Shop Cleaning",
+      "bikecleaning":"Bike Cleaning",
+      "laundryservice":"Laundry Service",
+      "sweepingmopping":"Sweeping and Mopping",
+      "stagecleaning":"Stage Cleaning"
+    };
+
+    for(const key in map){
+      if(id.includes(key)) return map[key];
+    }
+
+    /* Finally inspect nearby heading text. */
+    const heading = popup.querySelector("h1,h2,h3,h4,h5,[role='heading']");
+    const headingText = String(
+      heading ? heading.textContent : ""
+    ).replace(/\s+/g," ").trim().toLowerCase();
+
+    for(const serviceName in scrubServiceStock){
+      if(headingText === serviceName || headingText.includes(serviceName)){
+        return serviceName;
+      }
+    }
+
+    return "";
+  }
+
+  function updatePopupStockUI(serviceName, stock){
+    const available = stockIsAvailable(stock);
+    const popups = getVisiblePopups();
+    const wanted = normalizeServiceName(serviceName);
+
+    if(!wanted) return;
+
+    popups.forEach(function(popup){
+      const popupService = normalizeServiceName(
+        findServiceNameInPopup(popup)
+      );
+
+      if(popupService !== wanted) return;
+
+      popup.querySelectorAll("button").forEach(function(button){
+        if(!buttonLooksLikeAdd(button)) return;
+
+        if(available){
+          button.classList.remove("scrub-stock-popup-hidden");
+          button.disabled = false;
+        }else{
+          button.classList.add("scrub-stock-popup-hidden");
+          button.disabled = true;
+        }
+      });
+    });
+  }
+
+  function updateAllStockUI(){
+    Object.keys(scrubServiceStock).forEach(function(serviceName){
+      const stock = scrubServiceStock[serviceName];
+      updateHomeStockUI(serviceName, stock);
+      updatePopupStockUI(serviceName, stock);
+    });
+  }
+
+  async function loadServiceStock(){
+    try{
+      const result = await supabaseClient
         .from(STOCK_TABLE)
         .select("service_name, stock");
 
-      if(error){
-        console.error("Service stock load failed:", error);
+      if(result.error){
+        console.error("❌ Service stock load failed:", result.error);
         return;
       }
 
-      serviceStock = Object.create(null);
+      const rows = Array.isArray(result.data) ? result.data : [];
+      scrubServiceStock = Object.create(null);
 
-      (Array.isArray(data) ? data : []).forEach(function(row){
-        const name = String(row && row.service_name || "").trim();
+      rows.forEach(function(row){
+        const name = String(row?.service_name || "").trim();
         if(!name) return;
-        serviceStock[normalize(name)] = row.stock;
+        scrubServiceStock[normalizeServiceName(name)] =
+          Math.max(0, Number(row?.stock) || 0);
       });
 
-      updateAllCards();
-      console.log("✅ Live service stock loaded", serviceStock);
+      updateAllStockUI();
+      console.log("✅ Service stock loaded from Supabase", scrubServiceStock);
     }catch(error){
-      console.error("Service stock error:", error);
+      console.error("❌ Service stock error:", error);
     }
   }
 
-  function startRealtime(){
-    try{
-      if(typeof supabaseClient === "undefined") return;
+  function updateSingleServiceStockLive(row){
+    if(!row) return;
 
-      if(realtimeChannel){
-        try{ supabaseClient.removeChannel(realtimeChannel); }catch(e){}
+    const serviceName = String(row.service_name || "").trim();
+    if(!serviceName) return;
+
+    const stock = Math.max(0, Number(row.stock) || 0);
+    const key = normalizeServiceName(serviceName);
+
+    scrubServiceStock[key] = stock;
+
+    updateHomeStockUI(serviceName, stock);
+    updatePopupStockUI(serviceName, stock);
+
+    console.log("🔄 Live service stock update:", serviceName, stock);
+  }
+
+  function startServiceStockRealtime(){
+    try{
+      if(scrubStockRealtimeChannel){
+        supabaseClient.removeChannel(scrubStockRealtimeChannel);
       }
 
-      realtimeChannel = supabaseClient
-        .channel("service-stock-live-v2")
+      scrubStockRealtimeChannel = supabaseClient
+        .channel("service-stock-live")
         .on(
           "postgres_changes",
           {
@@ -7224,85 +7342,62 @@ window.addEventListener("pageshow", function(){
           },
           function(payload){
             const row = payload.new || payload.old;
-            if(!row) return;
-
-            const name = String(row.service_name || "").trim();
-            if(!name) return;
-
-            serviceStock[normalize(name)] = row.stock;
-            updateHomeCard(name, row.stock);
-
-            console.log("🔄 LIVE STOCK:", name, row.stock);
+            updateSingleServiceStockLive(row);
           }
         )
         .subscribe(function(status){
-          console.log("📡 Stock realtime:", status);
+          console.log("📡 Service stock realtime:", status);
         });
     }catch(error){
-      console.error("Stock realtime error:", error);
+      console.error("❌ Service stock realtime error:", error);
     }
   }
 
-  /*
-    If service cards are inserted dynamically, refresh only when nodes are added.
-    We intentionally DO NOT watch class/style attributes to avoid loops/crashes.
-  */
-  function startDynamicCardWatcher(){
-    if(typeof MutationObserver === "undefined" || !document.body) return;
+  function startServiceStockObserver(){
+    if(scrubStockObserver) scrubStockObserver.disconnect();
 
-    const observer = new MutationObserver(function(mutations){
-      for(let i=0;i<mutations.length;i++){
-        if(mutations[i].type === "childList" && mutations[i].addedNodes.length){
-          updateAllCards();
-          break;
-        }
-      }
+    scrubStockObserver = new MutationObserver(function(){
+      updateAllStockUI();
     });
 
-    observer.observe(document.body, {
+    scrubStockObserver.observe(document.body,{
       childList:true,
-      subtree:true
+      subtree:true,
+      attributes:true,
+      attributeFilter:["class","style","hidden"]
     });
   }
 
-  /*
-    Busy guard for the HOME + button only.
-    Popup BOOK buttons are intentionally untouched.
-  */
-  function installHomeGuard(){
+  function installStockGuard(){
+    /* Prevent a stale/fast tap from opening a service after stock becomes 0. */
     document.addEventListener("click", function(event){
-      const target = event.target;
-      const button = target && target.closest ?
-        target.closest(".scurbServiceAddBtn") : null;
-
+      const button = event.target.closest?.(".scurbServiceAddBtn");
       if(!button) return;
 
-      if(button.getAttribute("data-stock") === "false"){
+      const stock = Number(button.getAttribute("data-stock"));
+      if(Number.isFinite(stock) && stock <= 0){
         event.preventDefault();
         event.stopImmediatePropagation();
       }
     }, true);
   }
 
-  function boot(){
-    if(booted) return;
-    booted = true;
-
+  function bootServiceStock(){
     if(typeof supabaseClient === "undefined"){
-      console.error("❌ Supabase client not available for stock.");
+      console.error("❌ Supabase client not available for service stock.");
       return;
     }
 
-    loadStock();
-    startRealtime();
-    startDynamicCardWatcher();
-    installHomeGuard();
+    loadServiceStock();
+    startServiceStockRealtime();
+    startServiceStockObserver();
+    installStockGuard();
   }
 
   if(document.readyState === "loading"){
-    document.addEventListener("DOMContentLoaded", boot, {once:true});
+    document.addEventListener("DOMContentLoaded", bootServiceStock, {once:true});
   }else{
-    boot();
+    bootServiceStock();
   }
 })();
 </script>
