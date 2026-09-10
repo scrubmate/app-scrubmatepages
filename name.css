@@ -1,0 +1,224 @@
+/* =========================================
+   USER DETAILS PAGE
+========================================= */
+
+.scrubDetailsPage{
+  position:fixed;
+  inset:0;
+  z-index:99998;
+
+  width:min(100%, var(--page-width));
+  height:100%;
+  margin-inline:auto;
+
+  display:flex;
+  flex-direction:column;
+
+  background:#ffffff;
+  overflow:hidden;
+
+  opacity:0;
+  visibility:hidden;
+  transform:translateX(100%);
+
+  transition:
+    transform .3s ease,
+    opacity .2s ease,
+    visibility .2s ease;
+}
+
+.scrubDetailsPage.show{
+  opacity:1;
+  visibility:visible;
+  transform:translateX(0);
+}
+
+
+/* =========================================
+   MAIN CONTENT
+========================================= */
+
+.scrubDetailsContent{
+  flex:1;
+  min-height:0;
+
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 78px)
+    clamp(22px, 6vw, 42px)
+    28px;
+
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+
+/* =========================================
+   TITLE
+========================================= */
+
+.scrubDetailsTitle{
+  max-width:520px;
+  margin:0 0 34px;
+
+  color:#090909;
+
+  font-family:"DM Sans",sans-serif;
+  font-size:clamp(29px, 6.5vw, 44px);
+  font-weight:800;
+  line-height:1.18;
+  letter-spacing:-1px;
+}
+
+.scrubDetailsTitle span{
+  color:#14b9bb;
+}
+
+
+/* =========================================
+   FIELDS AREA
+========================================= */
+
+.scrubDetailsFields{
+  width:100%;
+
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+
+/* =========================================
+   INPUT BOX
+========================================= */
+
+.scrubDetailsField{
+  width:100%;
+  height:58px;
+  margin:0;
+
+  display:flex;
+  align-items:center;
+
+  border:1.4px solid #b1b1b1;
+  border-radius:14px;
+
+  background:#ffffff;
+
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease,
+    background .2s ease;
+}
+
+.scrubDetailsField:focus-within{
+  border-color:#14b9bb;
+  background:#ffffff;
+
+  box-shadow:
+    0 0 0 3px rgba(20,185,187,.10);
+}
+
+.scrubDetailsField input{
+  width:100%;
+  height:100%;
+
+  padding:0 17px;
+
+  border:none;
+  outline:none;
+
+  color:#191919;
+  background:transparent;
+
+  font-size:15px;
+  font-weight:700;
+}
+
+.scrubDetailsField input::placeholder{
+  color:#969696;
+  opacity:1;
+
+  font-size:15px;
+  font-weight:600;
+}
+
+
+/* =========================================
+   ERROR TEXT
+========================================= */
+
+.scrubDetailsError{
+  min-height:0;
+  margin:-9px 4px 0;
+
+  color:#e53935;
+
+  font-size:12px;
+  font-weight:700;
+  line-height:1.3;
+}
+
+.scrubDetailsError:empty{
+  display:none;
+}
+
+
+/* =========================================
+   BOTTOM AREA
+========================================= */
+
+.scrubDetailsBottom{
+  flex:none;
+
+  padding:
+    16px
+    clamp(22px, 6vw, 42px)
+    calc(env(safe-area-inset-bottom, 0px) + 18px);
+
+  border-top:1px solid #eeeeee;
+
+  background:#ffffff;
+
+  box-shadow:
+    0 -5px 18px rgba(0,0,0,.025);
+}
+
+
+/* =========================================
+   CONFIRM BUTTON
+========================================= */
+
+.scrubConfirmDetailsButton{
+  width:100%;
+  min-height:58px;
+
+  border:none;
+  border-radius:16px;
+
+  color:#ffffff;
+  background:#b9b9b9;
+
+  font-size:18px;
+  font-weight:800;
+
+  cursor:not-allowed;
+
+  transition:
+    background .2s ease,
+    transform .2s ease,
+    box-shadow .2s ease;
+}
+
+.scrubConfirmDetailsButton.enabled{
+  cursor:pointer;
+
+  background:#14b9bb;
+
+  box-shadow:
+    0 10px 24px rgba(20,185,187,.23);
+}
+
+.scrubConfirmDetailsButton.enabled:active{
+  transform:scale(.985);
+  background:#079fa2;
+}

@@ -1,0 +1,1142 @@
+/* =========================================
+   SCURB MATE MAIN HOME PAGE
+========================================= */
+
+.scurb-home-page{
+  position:fixed;
+  inset:0;
+  z-index:7000;
+
+ 
+  height:100%;
+  margin:auto;
+
+  display:none;
+  flex-direction:column;
+
+  background:#ffffff;
+  overflow:hidden;
+}
+
+.scurb-home-page.show{
+  display:flex;
+}
+
+
+/* =========================================
+   TOP LOCATION HEADER
+========================================= */
+
+.scurb-home-header{
+  position:relative;
+  z-index:10;
+  flex:none;
+
+  min-height:calc(138px + env(safe-area-inset-top, 0px));
+
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 30px)
+    12px
+    22px;
+
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+
+  background:var(--primary);
+  color:#ffffff;
+}
+
+.scurb-header-location{
+  flex:1;
+  min-width:0;
+
+  padding:0;
+  border:none;
+  background:transparent;
+  color:#ffffff;
+
+  text-align:left;
+  cursor:pointer;
+}
+
+.scurb-location-title-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  min-width:0;
+}
+
+.scurb-location-title-row strong{
+  min-width:0;
+
+  color:#ffffff;
+  font-size:20px;
+  font-weight:800;
+  line-height:1.2;
+
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.scurb-location-title-row i{
+  flex:none;
+
+  color:#ffffff;
+  font-size:17px;
+}
+
+.scurb-header-location p{
+  max-width:100%;
+  margin-top:1px;
+
+  color:rgba(255,255,255,.95);
+  font-size:16px;
+  font-weight:600;
+  line-height:1.3;
+
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+
+/* PROFILE BUTTON */
+
+.scurb-profile-button{
+  flex:none;
+
+  width:50px;
+  height:50px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0;
+  border:none;
+  border-radius:50%;
+
+  background:#ffffff;
+  color:#171717;
+
+  cursor:pointer;
+}
+
+.scurb-profile-button i{
+  font-size:25px;
+  line-height:1;
+}
+
+
+/* =========================================
+   EMPTY MIDDLE CONTENT
+========================================= */
+
+.scurb-home-content{
+  flex:1;
+  min-height:0;
+
+  background:#ffffff;
+
+  overflow-y:auto;
+  overflow-x:hidden;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+
+/* =========================================
+   BOTTOM NAVIGATION
+========================================= */
+
+.scurb-bottom-navigation{
+  position:relative;
+  z-index:10;
+  flex:none;
+
+  min-height:calc(74px + env(safe-area-inset-bottom, 0px));
+
+  padding:
+    8px
+    16px
+    calc(env(safe-area-inset-bottom, 0px) + 8px);
+
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+
+  border-top:1px solid #eeeeee;
+  background:#ffffff;
+
+  border-radius:22px 22px 0 0;
+
+  box-shadow:0 -4px 14px rgba(0,0,0,.05);
+}
+
+.scurb-nav-button{
+  height:52px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+
+  padding:0 14px;
+
+  border:none;
+  border-radius:18px;
+
+  background:transparent;
+  color:#666666;
+
+  font-size:15px;
+  font-weight:700;
+
+  cursor:pointer;
+}
+
+.scurb-nav-button i{
+  font-size:19px;
+  line-height:1;
+}
+
+.scurb-nav-button.active{
+  background:rgba(20,185,187,.12);
+  color:var(--primary);
+}
+
+.scurb-nav-button:active{
+  transform:scale(.98);
+}
+
+@media (max-width:420px){
+
+  .scurb-nav-button{
+    height:48px;
+    font-size:14px;
+    gap:6px;
+  }
+
+  .scurb-nav-button i{
+    font-size:18px;
+  }
+}
+
+/* =========================================
+   HOME BANNER SLIDER
+========================================= */
+
+.scurbBannerSection{
+  width:100%;
+  padding:0;
+  margin:0;
+}
+
+
+/*=========================================
+OUR SERVICES
+=========================================*/
+
+.scurbServicesSection{
+    padding:8px 16px 20px;
+    text-align:center;
+}
+
+.scurbServicesTitle{
+    margin-top:8px;
+    margin-bottom:0;
+
+    font-size:27px;
+    font-weight:700;
+    font-family:'Baloo 2', sans-serif;
+    color:#b15ce0;
+    letter-spacing:0;
+    line-height:1.2;
+    white-space:nowrap;
+}
+
+/* =========================================
+   SERVICES GRID
+========================================= */
+.scurbServicesGrid{
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+
+  column-gap:6px;   /* was 10px */
+  row-gap:25px;
+
+  padding:0 8px 5px;   /* was 12px */
+}
+.scurbServiceCard{
+  min-width:0;
+  background:#fff;
+  border:1px solid #f0f0f0;
+  border-radius:16px;
+  overflow:hidden;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+
+
+
+.scurbServiceImageBox{
+  position:relative;
+  width:100%;
+  height:125px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#eefcf6;
+}
+
+.scurbServiceImageBox img{
+  width:85%;
+  height:85%;
+  object-fit:contain;
+  display:block;
+  pointer-events:none;
+  user-select:none;
+  -webkit-user-drag:none;
+}
+
+
+
+
+
+
+.scurbServiceAddBtn{
+  position:absolute;
+  right:2px;
+  bottom:-4px;
+
+  width:38px;
+  height:38px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0;
+  border:1px solid #dff5e8;
+  border-radius:12px;
+
+  background:#ffffff;
+  color:#14b9bb;
+
+  box-shadow:0 4px 12px rgba(0,0,0,.14);
+
+  cursor:pointer;
+  overflow:hidden;
+  z-index:2;
+
+  font-family:inherit;
+  font-size:27px;
+  font-weight:400;
+  line-height:1;
+
+  transition:width .28s ease;
+
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* Initial small + */
+
+.scurbServiceAddBtn .scurbSinglePlus{
+  width:100%;
+  height:100%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color:#14b9bb;
+  font-family:Arial, Helvetica, sans-serif;
+  font-size:24px;
+  font-weight:400;
+  line-height:24px;
+
+  transform:none;
+}
+
+/* Expanded − quantity + */
+
+.scurbServiceAddBtn.scurbQtyMode{
+  width:88px;
+  padding:0 9px;
+  justify-content:space-between;
+}
+
+/* Use spans, not buttons inside button */
+
+.scurbServiceMinus,
+.scurbServicePlus{
+  width:20px;
+  height:30px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  flex:none;
+
+  color:#14b9bb;
+  font-family:inherit;
+  font-size:21px;
+  font-weight:600;
+  line-height:1;
+
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+
+.scurbServiceQty{
+  min-width:16px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color:#222222;
+  font-family:inherit;
+  font-size:13px;
+  font-weight:700;
+  line-height:1;
+}
+
+/* Optional quantity appearance */
+
+.scurbServiceAddBtn.scurbQtyMode .scurbServiceMinus,
+.scurbServiceAddBtn.scurbQtyMode .scurbServicePlus,
+.scurbServiceAddBtn.scurbQtyMode .scurbServiceQty{
+  animation:scurbQtyAppear .25s ease;
+}
+
+@keyframes scurbQtyAppear{
+  from{
+    opacity:0;
+    transform:scale(.7);
+  }
+
+  to{
+    opacity:1;
+    transform:scale(1);
+  }
+}
+
+
+.scurbServiceInfo{
+  min-height:10px;
+  padding:12px 8px 20px;
+}
+.scurbServiceInfo h3{
+  margin:0;
+  min-height:1px;
+
+  font-family:'Copse', serif;
+  font-size:12px;
+  font-weight:400;
+  line-height:1.35;
+  color:#000;
+
+  white-space:normal;
+  word-break:keep-all;
+  overflow-wrap:normal;
+}
+.scurbServicePriceRow{
+  display:flex;
+  align-items:center;
+  flex-wrap:nowrap;
+  gap:5px;
+
+  margin-top:6px;
+  white-space:nowrap;
+}
+
+.scurbServicePrice{
+  color:#111111;
+  font-size:14px;
+  font-weight:700;
+  line-height:1;
+}
+
+.scurbServiceOldPrice{
+  color:#999999;
+  font-size:11px;
+  font-weight:500;
+  line-height:1;
+
+  text-decoration-line:line-through;
+  text-decoration-thickness:1px;
+}
+
+.scurbTrustSection{
+  width:100%;
+  padding:18px 12px 28px;
+  text-align:left;
+  background:#ffffff;
+}
+
+.scurbTrustSection h2{
+  margin:0;
+  color:#222222;
+  font-size:20px;
+  font-weight:700;
+  line-height:1.2;
+}
+
+.scurbTrustSection p{
+  margin:6px 0 0;
+  color:#777777;
+  font-size:13px;
+  font-weight:500;
+  line-height:1.3;
+  white-space:nowrap;
+}
+
+.scurbFeaturesSection{
+  width:100%;
+  padding:8px 12px 26px;
+  background:#fff;
+}
+
+.scurbFeaturesScroll{
+  display:flex;
+  gap:14px;
+  overflow-x:auto;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+
+.scurbFeaturesScroll::-webkit-scrollbar{
+  display:none;
+}
+
+.scurbFeatureItem{
+  flex:0 0 145px;
+}
+
+.scurbFeatureItem img{
+  width:145px;
+  height:150px;
+  border-radius:18px;
+  object-fit:cover;
+  display:block;
+}
+.scurbFeatureItem p{
+  margin:10px 0 0;
+  font-size:14px;
+  line-height:1.45;
+  color:#555;
+  text-align:left;
+}
+.verifiedBadge{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+}
+
+.verifiedBadge img{
+    width:64px;
+    height:64px;
+    object-fit:contain;
+}
+
+.scrubMateText{
+    margin-top:6px;
+    margin-bottom:100px; /* increase this value for more gap */
+    font-family:"Merienda",cursive;
+    font-size:15px;
+    font-weight:700;
+    color:#14b9bb;
+    line-height:1;
+    letter-spacing:.2px;
+}
+/* =========================
+   AUTO FETCH LOCATION PAGE
+========================= */
+
+.auto-location-page{
+  position:fixed;
+  inset:0;
+  z-index:9998;
+
+  width:100%;
+  height:100%;
+
+  display:none;
+  align-items:center;
+  justify-content:center;
+
+  padding:
+    env(safe-area-inset-top, 0px)
+    28px
+    env(safe-area-inset-bottom, 0px);
+
+  background:#ffffff;
+}
+
+.auto-location-page.show{
+  display:flex;
+}
+
+.auto-location-content{
+  width:100%;
+  max-width:520px;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+
+  text-align:center;
+
+  transform:translateY(-3vh);
+}
+
+.auto-location-image-wrap{
+  width:clamp(180px, 48vw, 280px);
+  aspect-ratio:1;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  overflow:hidden;
+  border-radius:50%;
+}
+
+.auto-location-image-wrap{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin-bottom:34px;
+}
+.auto-location-image-wrap{
+  position:relative;
+  overflow:hidden;
+}
+
+
+
+.autoMapCircle{
+    position:relative;
+    width:240px;
+    height:240px;
+    border-radius:50%;
+    overflow:hidden;
+    background:#eefcf6;
+}
+
+.autoMapPattern{
+    position:absolute;
+    inset:0;
+
+    background:
+      linear-gradient(90deg, transparent 46%, #d8f4e6 46%, #d8f4e6 54%, transparent 54%),
+      linear-gradient(transparent 46%, #d8f4e6 46%, #d8f4e6 54%, transparent 54%);
+
+    background-size:42px 42px;
+
+    transform:rotate(-18deg) scale(1.25);
+}
+
+.autoMapPattern::before{
+    content:"";
+    position:absolute;
+
+    left:-20%;
+    top:56%;
+
+    width:150%;
+    height:18px;
+
+    background:#fff;
+    border-radius:999px;
+
+    transform:rotate(-30deg);
+}
+
+.autoPin{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+}
+
+.autoPin i{
+    font-size:76px;
+    color:#14b9bb;
+}
+
+.auto-location-loading{
+  margin-top:36px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+
+  color:#b5b5b5;
+}
+
+.auto-location-loading p{
+  margin:0;
+  font-size:clamp(18px, 4vw, 26px);
+  font-weight:600;
+}
+
+
+
+.auto-location-result{
+  width:100%;
+  margin-top:28px;
+  display:none;
+}
+
+.auto-location-result.show{
+  display:block;
+}
+
+.auto-location-result h2{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+
+  margin:0;
+
+  color:#222222;
+  font-size:clamp(23px, 5vw, 32px);
+  font-weight:800;
+}
+
+.auto-location-result h2 i{
+  color:#14b9bb;
+  font-size:.85em;
+}
+
+.auto-location-line{
+  width:80%;
+  height:1px;
+
+  margin:22px auto;
+
+  background:#dddddd;
+}
+
+.auto-location-result p{
+  max-width:460px;
+  margin:0 auto;
+
+  color:#858585;
+  font-size:clamp(16px, 3.7vw, 22px);
+  font-weight:500;
+  line-height:1.5;
+}
+.scurb-home-page.home-slide-up{
+  display:flex;
+  animation:scurbHomeSlideUp .45s cubic-bezier(.22,.8,.25,1) both;
+}
+
+@keyframes scurbHomeSlideUp{
+
+  from{
+    opacity:1;
+    transform:translateY(100%);
+  }
+
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+}
+.service-card{
+  position:relative;
+  overflow:hidden;
+}
+
+.service-img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  opacity:0;
+  transition:opacity .35s ease;
+}
+
+.service-img.loaded{
+  opacity:1;
+}
+
+.shimmer-img{
+  background:#f1f1f1;
+  position:relative;
+}
+
+.shimmer-img::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    90deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,.75) 50%,
+    rgba(255,255,255,0) 100%
+  );
+  transform:translateX(-100%);
+  animation:serviceShimmer 1.2s infinite;
+}
+
+.service-img.loaded.shimmer-img::before{
+  display:none;
+}
+
+@keyframes serviceShimmer{
+  100%{
+    transform:translateX(100%);
+  }
+}
+
+.scurbBannerItem{
+    position:relative;
+    overflow:hidden;
+    background:#eef8f8;
+}
+
+.scurbBannerItem::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(
+        90deg,
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,.75) 50%,
+        rgba(255,255,255,0) 100%
+    );
+    transform:translateX(-100%);
+    animation:bannerShimmer 1.2s linear infinite;
+    z-index:2;
+    pointer-events:none;
+}
+
+.scurbBannerItem.loaded::before{
+    display:none;
+}
+
+
+.scurbBannerItem{
+    position:relative;
+    overflow:hidden;
+    background:#eef8f8;
+}
+
+.scurbBannerItem::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:2;
+    pointer-events:none;
+
+    background:linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255,255,255,.75) 50%,
+        transparent 100%
+    );
+
+    transform:translateX(-100%);
+    animation:bannerShimmer 1.2s linear infinite;
+}
+
+.scurbBannerItem.loaded::before{
+    display:none;
+}
+
+.scurbBannerImg{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
+
+    opacity:0;
+    transition:opacity .25s ease;
+}
+
+.scurbBannerItem.loaded .scurbBannerImg{
+    opacity:1;
+}
+
+@keyframes bannerShimmer{
+    from{
+        transform:translateX(-100%);
+    }
+    to{
+        transform:translateX(100%);
+    }
+}
+
+
+
+.scurbServiceImageBox::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:2;
+    pointer-events:none;
+
+    background:linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255,255,255,.8) 50%,
+        transparent 100%
+    );
+
+    transform:translateX(-100%);
+    animation:serviceImageShimmer 1.2s linear infinite;
+}
+
+.scurbServiceImageBox.loaded::before{
+    display:none;
+    animation:none;
+}
+
+.scurbServiceImg{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
+    opacity:0;
+    transition:opacity .25s ease;
+}
+
+.scurbServiceImageBox.loaded .scurbServiceImg{
+    opacity:1;
+}
+
+@keyframes serviceImageShimmer{
+    from{
+        transform:translateX(-100%);
+    }
+
+    to{
+        transform:translateX(100%);
+    }
+}
+
+/* =========================================
+   FEATURE IMAGE SHIMMER — IMAGE ONLY
+========================================= */
+
+.scurbFeatureItem{
+  position:relative;
+  flex:0 0 145px;
+}
+
+.scurbFeatureItem::before{
+  content:"";
+  position:absolute;
+
+  top:0;
+  left:0;
+
+  width:145px;
+  height:150px;
+
+  border-radius:18px;
+  overflow:hidden;
+
+  background:
+    linear-gradient(
+      90deg,
+      #ffe6ef 0%,
+      #ffd4e5 25%,
+      #ffffff 50%,
+      #ffd4e5 75%,
+      #ffe6ef 100%
+    );
+
+  background-size:200% 100%;
+  animation:featureShimmer 1.2s linear infinite;
+
+  z-index:1;
+  pointer-events:none;
+}
+
+.scurbFeatureItem.loaded::before{
+  display:none;
+}
+
+.scurbFeatureImg{
+  position:relative;
+  z-index:2;
+
+  display:block;
+  width:145px;
+  height:150px;
+
+  border-radius:18px;
+  object-fit:cover;
+
+  opacity:0;
+  transition:opacity .25s ease;
+}
+
+.scurbFeatureItem.loaded .scurbFeatureImg{
+  opacity:1;
+}
+
+.scurbFeatureItem p{
+  position:relative;
+  z-index:3;
+}
+
+@keyframes featureShimmer{
+  from{
+    background-position:-200% 0;
+  }
+
+  to{
+    background-position:200% 0;
+  }
+}
+
+
+/* =========================================
+   VERIFIED BADGE SHIMMER — BADGE ONLY
+========================================= */
+
+.verifiedBadge{
+  position:relative;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+}
+
+.verifiedBadge::before{
+  content:"";
+  position:absolute;
+
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+
+  width:64px;
+  height:64px;
+
+  border-radius:50%;
+  overflow:hidden;
+
+  background:
+    linear-gradient(
+      90deg,
+      #ffe6ef 0%,
+      #ffd4e5 25%,
+      #ffffff 50%,
+      #ffd4e5 75%,
+      #ffe6ef 100%
+    );
+
+  background-size:200% 100%;
+  animation:verifiedBadgeShimmer 1.2s linear infinite;
+
+  z-index:1;
+  pointer-events:none;
+}
+
+.verifiedBadge.loaded::before{
+  display:none;
+}
+
+.verifiedBadgeImg{
+  position:relative;
+  z-index:2;
+
+  display:block;
+  width:64px;
+  height:64px;
+  object-fit:contain;
+
+  opacity:0;
+  transition:opacity .25s ease;
+}
+
+.verifiedBadge.loaded .verifiedBadgeImg{
+  opacity:1;
+}
+
+.scrubMateText{
+  position:relative;
+  z-index:2;
+}
+
+@keyframes verifiedBadgeShimmer{
+  from{
+    background-position:-200% 0;
+  }
+
+  to{
+    background-position:200% 0;
+  }
+}
+
+
+/* =========================================
+   SMALL NAME BELOW QUANTITY
+========================================= */
+
+.scurbServiceQuantityLabel{
+  position:absolute;
+
+  right:5px;
+  bottom:-19px;
+
+  width:82px;
+
+  display:none;
+
+  color:#0c0c0c;
+  
+
+  font-family:inherit;
+  font-size:10px;
+  font-weight:600;
+  line-height:1.15;
+  text-align:center;
+
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+
+  pointer-events:none;
+  user-select:none;
+  -webkit-user-select:none;
+
+  z-index:10;
+}
+
+.scurbServiceQuantityLabel.show{
+  display:block;
+  animation:scurbQuantityLabelAppear .2s ease;
+}
+
+@keyframes scurbQuantityLabelAppear{
+  from{
+    opacity:0;
+    transform:translateY(-3px);
+  }
+
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
