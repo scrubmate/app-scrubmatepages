@@ -668,9 +668,9 @@ async function getAndSaveCurrentLocation() {
     },
 
     {
-      enableHighAccuracy: false,
-      timeout: 8000,
-      maximumAge: 60000
+      enableHighAccuracy: true,
+      timeout: 20000,
+      maximumAge: 0
     }
   );
 }
@@ -1686,9 +1686,9 @@ function openDeviceLocationOnMap(
 
 
     {
-      enableHighAccuracy: false,
-      timeout: 8000,
-      maximumAge: 60000
+      enableHighAccuracy:true,
+      timeout:20000,
+      maximumAge:0
     }
 
   );
