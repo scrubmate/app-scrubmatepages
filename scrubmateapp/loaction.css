@@ -1,0 +1,1121 @@
+/* =========================
+   LOCATION PAGE
+========================= */
+
+.location-page{
+  position:fixed;
+  inset:0;
+  z-index:5000;
+
+  width:min(100%, var(--page-width));
+  height:100%;
+  margin:auto;
+
+  display:none;
+  flex-direction:column;
+
+  background:#ffffff;
+  overflow:hidden;
+}
+
+/* Later JavaScript will add this class */
+
+.location-page.show{
+  display:flex;
+}
+.scrub-location-spinner{
+  width:24px;
+  height:24px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  color:currentColor;
+}
+
+.scrub-location-spinner svg{
+  width:24px;
+  height:24px;
+  display:block;
+  animation:scrubLocationSpin .75s linear infinite;
+}
+
+@keyframes scrubLocationSpin{
+  from{
+    transform:rotate(0deg);
+  }
+
+  to{
+    transform:rotate(360deg);
+  }
+}
+.location-header{
+  position:relative;
+  z-index:2;
+  flex:none;
+
+  padding:
+    calc(env(safe-area-inset-top,0px) + clamp(55px,8vh,85px))
+    clamp(24px,6vw,45px)
+    clamp(18px,3vh,30px);
+
+  background:#ffffff;
+}
+
+.location-title{
+  color:#070707;
+  font-family:"DM Sans",sans-serif;
+  font-size:clamp(34px,6vw,48px);
+  font-weight:800;
+  line-height:1.08;
+  letter-spacing:-1.5px;
+}
+
+.location-subtitle{
+  max-width:630px;
+  margin-top:18px;
+
+  color:#a4a4a4;
+  font-family:"DM Sans",sans-serif;
+  font-size:clamp(17px,3.5vw,27px);
+  font-weight:500;
+  line-height:1.35;
+}
+
+/* IMAGE AREA */
+
+.location-image-wrap{
+  position:relative;
+  flex:1;
+  min-height:0;
+  width:100%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  overflow:hidden;
+  background:#ffffff;
+}
+
+.location-image{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  object-position:center;
+  user-select:none;
+  pointer-events:none;
+  -webkit-user-drag:none;
+}
+
+/* White fade above buttons */
+
+.location-image-wrap::before,
+.location-image-wrap::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  z-index:2;
+  height:100px;
+  pointer-events:none;
+}
+
+/* Top white fade */
+
+.location-image-wrap::before{
+  top:0;
+
+  background:linear-gradient(
+    to bottom,
+    rgba(255,255,255,1) 0%,
+    rgba(255,255,255,0) 100%
+  );
+}
+
+/* Bottom white fade */
+
+.location-image-wrap::after{
+  bottom:0;
+
+  background:linear-gradient(
+    to bottom,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,1) 100%
+  );
+}
+
+/* BOTTOM BUTTON AREA */
+
+.location-actions{
+  position:relative;
+  z-index:2;
+  flex:none;
+
+  padding:
+    10px
+    clamp(24px,6vw,45px)
+    calc(env(safe-area-inset-bottom,0px) + 28px);
+
+  background:#ffffff;
+}
+
+.current-location-button{
+  width:100%;
+  min-height:64px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+
+  border:none;
+  border-radius:18px;
+
+  background:var(--primary);
+  color:#ffffff;
+
+  font-family:"DM Sans",sans-serif;
+  font-size:clamp(18px,3.7vw,25px);
+  font-weight:800;
+
+  cursor:pointer;
+}
+
+.current-location-button:active{
+  transform:scale(.985);
+  background:var(--primary-dark);
+}
+
+.location-target-icon{
+  position:relative;
+  width:24px;
+  height:24px;
+  flex:none;
+
+  border:4px solid #ffffff;
+  border-radius:50%;
+}
+
+.location-target-icon::before,
+.location-target-icon::after{
+  content:"";
+  position:absolute;
+  background:#ffffff;
+}
+
+.location-target-icon::before{
+  width:4px;
+  height:32px;
+  left:6px;
+  top:-8px;
+}
+
+.location-target-icon::after{
+  width:32px;
+  height:4px;
+  left:-8px;
+  top:6px;
+}
+
+.location-target-icon span{
+  position:absolute;
+  z-index:2;
+
+  width:6px;
+  height:6px;
+
+  left:5px;
+  top:5px;
+
+  border-radius:50%;
+  background:var(--primary);
+}
+
+.manual-location-button{
+  width:100%;
+  margin-top:24px;
+
+  border:none;
+  background:transparent;
+  color:var(--primary);
+
+  font-family:"DM Sans",sans-serif;
+  font-size:clamp(18px,3.7vw,24px);
+  font-weight:800;
+
+  cursor:pointer;
+}
+
+/* =========================================
+   MANUAL LOCATION SEARCH + CONFIRM MAP
+========================================= */
+
+.manual-search-page,
+.confirm-location-page{
+  position:fixed;
+  inset:0;
+  z-index:2000;
+
+  width:min(100%, 760px);
+  height:100%;
+  margin:auto;
+
+  display:none;
+  flex-direction:column;
+
+  background:#f5f7fc;
+  overflow:hidden;
+}
+
+.manual-search-page.show,
+.confirm-location-page.show{
+  display:flex;
+}
+
+
+/* =========================================
+   HEADERS
+========================================= */
+
+.manual-search-header,
+.confirm-location-header{
+  flex:none;
+
+  min-height:calc(94px + env(safe-area-inset-top, 0px));
+
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 50px) /* was 24px */
+    18px
+    16px;
+
+  display:flex;
+  align-items:center;
+  gap:12px;
+
+  background:#ffffff;
+}
+
+.manual-search-header h1,
+.confirm-location-header h1{
+  margin:0;
+
+  color:#242424;
+  font-size:24px;
+  font-weight:800;
+  line-height:1.2;
+}
+
+.location-back-button{
+  width:42px;
+  height:42px;
+  flex:none;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0;
+  border:none;
+  background:transparent;
+  color:#111111;
+
+  cursor:pointer;
+}
+
+.location-back-button svg{
+  width:28px;
+  height:28px;
+
+  display:block;
+
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2.2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+
+/* =========================================
+   MANUAL SEARCH PAGE
+========================================= */
+
+.manual-search-content{
+  flex:1;
+  min-height:0;
+
+  padding:20px 18px;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+.location-search-box{
+  width:100%;
+  height:64px;
+
+  display:flex;
+  align-items:center;
+  gap:13px;
+
+  padding:0 18px;
+
+  border:1px solid #d1d1d1;
+  border-radius:18px;
+
+  background:#ffffff;
+
+  box-shadow:
+    0 8px 22px rgba(30,40,70,.08);
+}
+
+.location-search-box svg{
+  width:25px;
+  height:25px;
+  flex:none;
+
+  display:block;
+
+  fill:none;
+  stroke:#09a955;
+  stroke-width:2.2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.location-search-box input{
+  width:100%;
+  height:100%;
+  min-width:0;
+
+  border:none;
+  outline:none;
+  background:transparent;
+
+  color:#222222;
+  font-size:17px;
+  font-weight:600;
+}
+
+.location-search-box input::placeholder{
+  color:#a5a5a5;
+  opacity:1;
+}
+
+
+/* =========================================
+   CURRENT LOCATION ROW
+========================================= */
+
+.manual-current-location-row{
+  width:100%;
+  height:72px;          /* was 88px */
+  margin-top:18px;
+  padding:0 18px;
+
+  display:flex;
+  align-items:center;
+  gap:12px;
+
+  border:none;
+  border-radius:18px;
+
+  background:#fff;
+  color:#08af61;
+
+  font-size:16px;       /* was 18px */
+  font-weight:700;      /* was 800 */
+
+  text-align:left;
+  cursor:pointer;
+
+  box-shadow:0 4px 12px rgba(0,0,0,.05);
+}
+
+.manual-current-location-row > span{
+  flex:1;
+  min-width:0;
+}
+
+
+/* Correct target icon */
+
+.manual-target-svg{
+  width:24px;
+  height:24px;
+  flex:none;
+
+  display:block;
+
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.manual-target-svg circle[fill="currentColor"]{
+  fill:currentColor;
+  stroke:none;
+}
+
+
+/* Correct arrow icon */
+
+.manual-arrow-svg{
+  width:20px;
+  height:20px;
+  flex:none;
+
+  display:block;
+
+  fill:none;
+  stroke:#111111;
+  stroke-width:2.3;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+
+/* =========================================
+   SAVED ADDRESS TITLE
+========================================= */
+
+.saved-address-title{
+  margin:26px 4px 14px;
+
+  color:#a0a0a0;
+  font-size:16px;
+  font-weight:800;
+  letter-spacing:.2px;
+}
+
+
+/* =========================================
+   SEARCH RESULTS
+========================================= */
+
+.location-search-results{
+  width:100%;
+}
+
+.location-result-item{
+  width:100%;
+  padding:16px 8px;
+
+  display:flex;
+  align-items:flex-start;
+  gap:13px;
+
+  border:none;
+  border-bottom:1px solid #e3e3e3;
+
+  background:transparent;
+  text-align:left;
+
+  cursor:pointer;
+}
+
+.location-result-item svg{
+  width:24px;
+  height:24px;
+  flex:none;
+
+  margin-top:2px;
+
+  display:block;
+
+  fill:none;
+  stroke:#09ad5d;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.location-result-text{
+  min-width:0;
+}
+
+.location-result-text strong{
+  display:block;
+
+  color:#222222;
+  font-size:16px;
+  font-weight:800;
+  line-height:1.3;
+}
+
+.location-result-text span{
+  display:block;
+  margin-top:4px;
+
+  color:#777777;
+  font-size:13px;
+  line-height:1.45;
+
+  overflow-wrap:anywhere;
+}
+
+.location-search-message{
+  padding:26px 8px;
+
+  color:#888888;
+  font-size:14px;
+  text-align:center;
+}
+
+
+/* =========================================
+   CONFIRM LOCATION PAGE
+========================================= */
+
+.confirm-location-page{
+  background:#ffffff;
+}
+
+.confirm-location-header{
+  min-height:calc(92px + env(safe-area-inset-top, 0px));
+  padding-bottom:12px;
+}
+.confirm-search-holder{
+  position:relative;
+  z-index:1001;
+
+  flex:none;
+  padding:8px 18px 0;
+
+  background:#ffffff;
+}
+
+/* White fade from search section into map */
+.confirm-search-holder::after{
+  content:"";
+  position:absolute;
+
+  left:0;
+  right:0;
+  top:100%;
+
+  height:55px;
+
+  background:linear-gradient(
+    to bottom,
+    rgba(255,255,255,1) 0%,
+    rgba(255,255,255,.75) 30%,
+    rgba(255,255,255,.30) 65%,
+    rgba(255,255,255,0) 100%
+  );
+
+  pointer-events:none;
+  z-index:1002;
+}
+
+.confirm-search-box{
+  width:100%;
+  height:64px;
+
+  display:flex;
+  align-items:center;
+  gap:13px;
+
+  padding:0 18px;
+
+  border:1px solid #d0d0d0;
+  border-radius:18px;
+
+  background:#ffffff;
+  color:#a2a2a2;
+
+  box-shadow:
+    0 7px 20px rgba(30,40,60,.08);
+
+  font-size:17px;
+  font-weight:600;
+  text-align:left;
+
+  cursor:pointer;
+}
+
+.confirm-search-box svg{
+  width:25px;
+  height:25px;
+  flex:none;
+
+  display:block;
+
+  fill:none;
+  stroke:#079f51;
+  stroke-width:2.2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+
+/* =========================================
+   MAP
+========================================= */
+
+.location-map-wrapper{
+  position:relative;
+  flex:1;
+  min-height:0;
+
+  margin-top:0;
+
+  background:#e5e9ee;
+  overflow:hidden;
+}
+#manualLocationMap{
+  position:absolute;
+  inset:0;
+  z-index:1;
+
+  width:100%;
+  height:100%;
+}
+
+
+/* =========================================
+   FIXED CENTER PIN
+========================================= */
+
+.fixed-map-pin{
+  position:absolute;
+  z-index:800;
+
+  left:50%;
+  top:50%;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+
+  transform:translate(-50%, -52%);
+  pointer-events:none;
+}
+
+.map-pin-message{
+  position:relative;
+
+  min-width:240px;
+  max-width:calc(100vw - 50px);
+
+  padding:12px 18px;
+
+  border-radius:18px;
+
+  background:#202020;
+  color:#ffffff;
+
+  text-align:center;
+
+  box-shadow:
+    0 10px 28px rgba(0,0,0,.22);
+}
+
+.map-pin-message::after{
+  content:"";
+
+  position:absolute;
+  left:50%;
+  bottom:-8px;
+
+  width:16px;
+  height:16px;
+
+  background:#202020;
+
+  transform:
+    translateX(-50%)
+    rotate(45deg);
+}
+
+.map-pin-message span{
+  position:relative;
+  z-index:1;
+
+  display:block;
+
+  font-size:15px;
+  font-weight:500;
+  line-height:1.25;
+}
+
+.map-pin-message strong{
+  position:relative;
+  z-index:1;
+
+  display:block;
+  margin-top:3px;
+
+  font-size:17px;
+  font-weight:800;
+  line-height:1.25;
+}
+
+
+/* Correct map pin */
+
+.map-pin-icon{
+  position:relative;
+
+  width:40px;
+  height:40px;
+  margin-top:18px;
+
+  border-radius:50% 50% 50% 0;
+
+  background:#08b561;
+
+  transform:rotate(-45deg);
+
+  box-shadow:
+    0 4px 9px rgba(0,0,0,.22);
+}
+
+.map-pin-icon::after{
+  content:"";
+
+  position:absolute;
+  left:50%;
+  top:50%;
+
+  width:11px;
+  height:11px;
+
+  border-radius:50%;
+  background:#dce8ec;
+
+  transform:translate(-50%, -50%);
+}
+
+.map-pin-icon span{
+  display:none;
+}
+
+
+/* =========================================
+   GO TO CURRENT LOCATION BUTTON
+========================================= */
+
+.go-current-location-button{
+  position:absolute;
+  z-index:900;
+
+  left:50%;
+  bottom:18px;
+
+  height:48px;
+  padding:0 16px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+
+  border:1px solid #9faabd;
+  border-radius:14px;
+
+  background:#ffffff;
+  color:#09ad5d;
+
+  font-size:16px;
+  font-weight:700;
+  white-space:nowrap;
+
+  transform:translateX(-50%);
+
+  cursor:pointer;
+
+  box-shadow:
+    0 5px 15px rgba(0,0,0,.08);
+}
+
+.go-current-location-button svg{
+  width:25px;
+  height:25px;
+  flex:none;
+
+  display:block;
+
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.go-current-location-button svg circle[fill="currentColor"]{
+  fill:currentColor;
+  stroke:none;
+}
+
+
+/* =========================================
+   BOTTOM ADDRESS PANEL
+========================================= */
+
+.confirm-location-bottom{
+  flex:none;
+
+  padding:
+    18px
+    18px
+    calc(env(safe-area-inset-bottom, 0px) + 20px);
+
+  background:#ffffff;
+
+  box-shadow:
+    0 -9px 24px rgba(0,0,0,.07);
+}
+
+.selected-location-details{
+  display:flex;
+  align-items:center;
+  gap:14px;
+
+  padding:14px 16px;
+
+  background:#f7f8fa;
+  border:1px solid #ececec;
+  border-radius:18px;
+}
+
+
+
+
+.selected-location-icon{
+    flex:none;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.selected-location-icon i{
+    font-size:28px;
+    line-height:1;
+}
+
+.selected-location-icon::before,
+.selected-location-icon::after,
+.selected-location-icon span{
+    display:none !important;
+    content:none;
+}
+
+.selected-location-icon{
+    flex:none;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.selected-location-icon i{
+    font-size:28px;
+    line-height:1;
+}
+
+.selected-location-icon::before,
+.selected-location-icon::after,
+.selected-location-icon span{
+    display:none !important;
+    content:none;
+}
+
+
+.selected-location-text{
+  flex:1;
+  min-width:0;
+}
+
+.selected-location-text strong{
+  display:block;
+
+  color:#222;
+  font-size:17px;
+  font-weight:800;
+
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.selected-location-text p{
+  margin-top:4px;
+
+  color:#7b7b7b;
+  font-size:13px;
+  line-height:1.45;
+
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+
+/* =========================================
+   CONFIRM BUTTON
+========================================= */
+
+.confirm-location-button{
+  width:100%;
+  height:60px;
+  margin-top:18px;
+
+  border:none;
+  border-radius:17px;
+
+  background:#08b561;
+  color:#ffffff;
+
+  font-size:20px;
+  font-weight:800;
+
+  cursor:pointer;
+}
+
+.confirm-location-button:active{
+  transform:scale(.985);
+}
+
+.confirm-location-button:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+
+
+/* =========================================
+   LEAFLET FIXES
+========================================= */
+
+.leaflet-container{
+  width:100%;
+  height:100%;
+
+  font-family:inherit;
+  background:#e5e9ee;
+}
+
+.leaflet-pane,
+.leaflet-top,
+.leaflet-bottom{
+  z-index:auto;
+}
+
+.leaflet-control-container{
+  position:relative;
+  z-index:500;
+}
+
+.leaflet-control-attribution{
+  font-size:9px;
+}
+
+
+/* =========================================
+   SMALL MOBILE FIX
+========================================= */
+
+@media (max-width:420px){
+
+  .manual-search-header h1,
+  .confirm-location-header h1{
+    font-size:22px;
+  }
+
+  .location-search-box,
+  .confirm-search-box{
+    height:60px;
+  }
+
+  .manual-current-location-row{
+    min-height:82px;
+  }
+
+  .map-pin-message{
+    min-width:220px;
+    padding:11px 15px;
+  }
+
+  .go-current-location-button{
+    height:46px;
+    font-size:15px;
+  }
+
+  .confirm-location-button{
+    height:58px;
+  }
+
+}
+
+/* =========================================
+   FIXED HOME BANNER
+========================================= */
+
+.scurbBannerSection{
+  width:100%;
+  padding:0;
+  margin:0;
+}
+
+.scurbHeroBanner{
+  position:relative;
+
+  width:100%;
+  height:130px;
+
+  margin:0;
+  padding:0;
+
+  background:#14b9bb;
+
+  border:none;
+  border-radius:0;
+
+  overflow:hidden;
+}
+.scurbHeroLeft{
+    position:absolute;
+
+    left:22px;      /* move right */
+    bottom:22px;    /* move up */
+
+    max-width:60%;
+    max-height:60%;
+
+    width:auto;
+    height:auto;
+
+    object-fit:contain;
+    object-position:left bottom;
+
+    display:block;
+
+    pointer-events:none;
+    user-select:none;
+    -webkit-user-drag:none;
+}
+
+.scurbHeroRight{
+    position:absolute;
+    right:0;
+    bottom:0;
+
+    max-width:70%;
+    max-height:100%;
+
+    width:auto;
+    height:auto;
+
+    object-fit:contain;
+    object-position:right bottom;
+
+    display:block;
+
+    pointer-events:none;
+    user-select:none;
+    -webkit-user-drag:none;
+}
