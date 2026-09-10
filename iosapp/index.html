@@ -5378,6 +5378,45 @@ let scrubOtpSending = false;
 let scrubOtpVerifying = false;
 let scrubFirebaseInitPromise = null;
 
+/*
+  Keep the current Firebase OTP verification session alive when the
+  user closes the OTP screen and comes back with the SAME mobile number.
+
+  IMPORTANT:
+  - Continue with same mobile => reuse old confirmationResult (NO new SMS).
+  - Resend SMS => creates a NEW confirmationResult/new OTP.
+  - Different mobile => sends a new OTP.
+  - Logout/success => clears the active OTP session.
+*/
+let scrubOtpSessionMobile = "";
+let scrubOtpSessionCreatedAt = 0;
+const SCRUB_OTP_SESSION_MAX_AGE = 5 * 60 * 1000;
+
+function hasReusableScrubOtpSession(mobile){
+  const cleanMobile = String(mobile || "").replace(/\D/g,"").slice(-10);
+
+  if(!scrubConfirmationResult) return false;
+  if(!cleanMobile || scrubOtpSessionMobile !== cleanMobile) return false;
+
+  if(
+    scrubOtpSessionCreatedAt &&
+    Date.now() - scrubOtpSessionCreatedAt > SCRUB_OTP_SESSION_MAX_AGE
+  ){
+    scrubConfirmationResult = null;
+    scrubOtpSessionMobile = "";
+    scrubOtpSessionCreatedAt = 0;
+    return false;
+  }
+
+  return true;
+}
+
+function clearScrubOtpVerificationSession(){
+  scrubConfirmationResult = null;
+  scrubOtpSessionMobile = "";
+  scrubOtpSessionCreatedAt = 0;
+}
+
 const SCRUB_FIREBASE_CONFIG_URL =
   "https://cezooooo-backend.onrender.com/firebase-config";
 
@@ -5707,20 +5746,53 @@ continueButton.addEventListener("click", async function(){
   clearScrubOtpError();
 
   displayMobile.textContent = "+91 " + mobile;
+
+  /*
+    SAME MOBILE + ACTIVE OTP SESSION:
+    Do NOT send another SMS. Simply reopen the OTP screen.
+    The OTP from the previous SMS remains valid.
+  */
+  if(hasReusableScrubOtpSession(mobile)){
+
+    otpInput.value = "";
+    updateOtpUI();
+
+    otpOverlay.classList.add("show");
+
+    setVerifyLoading(false);
+
+    requestAnimationFrame(function(){
+      focusScrubOtpKeyboard();
+    });
+
+    return;
+  }
+
+  /*
+    If the mobile number changed, the old verification session must
+    not be used for the new number.
+  */
+  if(
+    scrubOtpSessionMobile &&
+    scrubOtpSessionMobile !== mobile
+  ){
+    clearScrubOtpVerificationSession();
+    resetScrubRecaptcha();
+  }
+
   otpInput.value = "";
   updateOtpUI();
 
   /*
-    Open from the original user tap and focus immediately.
-    This is important for Android/iOS because a keyboard opened only
-    after an awaited network request can be blocked by the browser.
+    First OTP request only:
+    open OTP screen immediately from the user's tap so the mobile
+    keyboard can open before the network request finishes.
   */
   otpOverlay.classList.add("show");
   focusScrubOtpKeyboard();
 
   scrubOtpSending = true;
   continueButton.disabled = true;
-
   continueButton.classList.add("loading");
 
   try{
@@ -5743,29 +5815,26 @@ continueButton.addEventListener("click", async function(){
         }
       );
 
-    scrubConfirmationResult =
+    const newConfirmationResult =
       await scrubFirebaseAuth.signInWithPhoneNumber(
         "+91" + mobile,
         scrubRecaptchaVerifier
       );
 
-    console.log(
-      "✅ Real OTP sent to +91" + mobile
-    );
+    scrubConfirmationResult = newConfirmationResult;
+    scrubOtpSessionMobile = mobile;
+    scrubOtpSessionCreatedAt = Date.now();
+
+    console.log("✅ Real OTP sent to +91" + mobile);
 
     startOtpResendTimer();
-
-    /*
-      Try once more after OTP has actually been sent.
-      The first focus above keeps the keyboard open on mobile.
-    */
     focusScrubOtpKeyboard();
 
   }catch(error){
 
     console.error("❌ OTP send error:",error);
 
-    scrubConfirmationResult = null;
+    clearScrubOtpVerificationSession();
     resetScrubRecaptcha();
 
     otpOverlay.classList.remove("show");
@@ -5783,6 +5852,7 @@ continueButton.addEventListener("click", async function(){
       );
 
     continueButton.disabled = !isValid;
+
     continueButton.classList.toggle(
       "enabled",
       isValid
@@ -5791,7 +5861,6 @@ continueButton.addEventListener("click", async function(){
     continueButton.classList.remove("loading");
   }
 });
-
 
 /* OTP input */
 
@@ -5845,10 +5914,15 @@ otpBackButton.addEventListener("click",function(event){
 
   clearTimeout(scrubAutoVerifyTimer);
   setVerifyLoading(false);
-  scrubConfirmationResult = null;
-  resetScrubRecaptcha();
   clearScrubOtpError();
 
+  /*
+    Do NOT clear scrubConfirmationResult here.
+    User can press Continue again with the same mobile number and
+    verify using the OTP that was already sent.
+  */
+  otpInput.value = "";
+  updateOtpUI();
   closeOtpPopup();
 });
 
@@ -5880,9 +5954,11 @@ otpOverlay.addEventListener("touchend",function(event){
   ){
     clearTimeout(scrubAutoVerifyTimer);
     setVerifyLoading(false);
-    scrubConfirmationResult = null;
-    resetScrubRecaptcha();
     clearScrubOtpError();
+
+    /* Preserve the already-sent OTP session on swipe back too. */
+    otpInput.value = "";
+    updateOtpUI();
     closeOtpPopup();
   }
 },{passive:true});
@@ -5933,11 +6009,19 @@ otpResend.addEventListener("click", async function(){
         }
       );
 
-    scrubConfirmationResult =
+    const resentConfirmationResult =
       await scrubFirebaseAuth.signInWithPhoneNumber(
         "+91" + mobile,
         scrubRecaptchaVerifier
       );
+
+    /*
+      Only NOW replace the old session.
+      From this point the newly sent OTP is the active OTP.
+    */
+    scrubConfirmationResult = resentConfirmationResult;
+    scrubOtpSessionMobile = mobile;
+    scrubOtpSessionCreatedAt = Date.now();
 
     otpResend.classList.remove("sending");
     startOtpResendTimer();
@@ -5947,7 +6031,10 @@ otpResend.addEventListener("click", async function(){
 
     console.error("❌ OTP resend error:",error);
 
-    scrubConfirmationResult = null;
+    /*
+      Resend failed before Firebase returned a new confirmationResult.
+      Keep the existing OTP verification session alive.
+    */
     resetScrubRecaptcha();
 
     otpResend.classList.remove("sending");
@@ -6032,7 +6119,7 @@ verifyButton.addEventListener("click", async function(){
 
     localStorage.removeItem("scrubMateOtp");
 
-    scrubConfirmationResult = null;
+    clearScrubOtpVerificationSession();
     resetScrubRecaptcha();
 
     otpInput.blur();
@@ -6666,7 +6753,7 @@ async function scrubMateLogoutCompletely(){
     });
 
     /* Give Firebase/reCAPTCHA a truly clean verifier next login. */
-    scrubConfirmationResult = null;
+    clearScrubOtpVerificationSession();
     resetScrubRecaptcha();
 
     setTimeout(function(){
@@ -6696,14 +6783,24 @@ if(scrubLogoutButtonElement){
    never reuse an old confirmationResult or old reCAPTCHA verifier. */
 window.addEventListener("pageshow", function(){
   const loggedIn = localStorage.getItem("scrubMateLoggedIn") === "true";
-  if(!loggedIn){
-    scrubConfirmationResult = null;
+
+  /*
+    Do not destroy a pending OTP confirmationResult merely because the
+    OTP overlay was closed. Only reset reCAPTCHA when there is no
+    reusable pending OTP session.
+  */
+  if(
+    !loggedIn &&
+    !scrubConfirmationResult
+  ){
+    clearScrubOtpVerificationSession();
+
     if(typeof resetScrubRecaptcha === "function"){
       resetScrubRecaptcha();
     }
   }
 });
-
 </script>
+
 </body>
 </html>
