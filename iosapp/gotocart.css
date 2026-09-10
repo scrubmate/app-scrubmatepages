@@ -1413,328 +1413,455 @@
 }
 
 
-/* =========================================================
-   SCRUB MATE — CEZOO-STYLE STATUS BASED ORDER UI
-   Each booking status gets a visibly different screen.
-   Finished statuses have NO MAP.
-========================================================= */
+/* ============================================================
+   SCRUBMATE ORDER TRACKING — CEZOO TYPE UI
+   IMPORTANT:
+   - NO stacked box/card look
+   - Map connected directly to white tracking sheet
+   - Status-based UI
+   - Completed / Cancelled = NO MAP
+============================================================ */
 
 .scurbOrderTrackingPage{
-  --scurb-status-accent:#14b9bb;
-  --scurb-status-soft:#eafafa;
-  --scurb-status-text:#173638;
-  --scurb-status-page:#f5f7f7;
+  background:#fff !important;
+  font-family:Arial,Helvetica,sans-serif !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderMapSection{
+  height:410px !important;
+  margin:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:#e7ebe6 !important;
+  box-shadow:none !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderMap{
+  border-radius:0 !important;
 }
 
 .scurbOrderTrackingPage .scurbOrderTrackingContent{
-  background:
-    linear-gradient(
-      180deg,
-      var(--scurb-status-soft) 0,
-      var(--scurb-status-page) 180px,
-      #f5f6f7 420px
-    );
+  position:relative;
+  z-index:500;
+  width:100%;
+  margin:-20px 0 0 !important;
+  padding:0 18px calc(28px + env(safe-area-inset-bottom,0px)) !important;
+  border-radius:24px 24px 0 0 !important;
+  background:#fff !important;
+  overflow-y:auto;
+  overflow-x:hidden;
+  box-shadow:none !important;
 }
+
+/* Remove every old stacked card box */
+.scurbOrderTrackingPage .scurbOrderMainStatusCard,
+.scurbOrderTrackingPage .scurbOrderCleanerCard,
+.scurbOrderTrackingPage .scurbOrderCard{
+  width:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+
+/* ============================================================
+   TOP STATUS AREA — CEZOO ARRIVAL STYLE
+============================================================ */
 
 .scurbOrderTrackingPage .scurbOrderMainStatusCard{
-  position:relative;
-  overflow:hidden;
-  border-color:rgba(0,0,0,.055);
-  background:#fff;
-  transition:
-    background .22s ease,
-    border-color .22s ease;
-}
-
-.scurbOrderTrackingPage .scurbOrderMainStatusCard::after{
-  content:"";
-  position:absolute;
-  width:120px;
-  height:120px;
-  right:-62px;
-  top:-65px;
-  border-radius:50%;
-  background:var(--scurb-status-soft);
-  opacity:.95;
-  pointer-events:none;
+  min-height:156px;
+  padding:22px 2px 18px !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:14px !important;
+  border-bottom:1px solid #f0edf2 !important;
 }
 
 .scurbOrderTrackingPage .scurbOrderMainStatusIcon{
-  position:relative;
-  z-index:2;
-  background:var(--scurb-status-soft);
-  color:var(--scurb-status-accent);
+  width:74px !important;
+  height:74px !important;
+  min-width:74px !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:#f5f2f7 !important;
+  color:#7c3aed !important;
+  box-shadow:none !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderMainStatusIcon i{
+  font-size:27px !important;
 }
 
 .scurbOrderTrackingPage .scurbOrderMainStatusText{
-  position:relative;
-  z-index:2;
+  flex:1;
+  min-width:0;
 }
 
 .scurbOrderTrackingPage .scurbOrderMainStatusText h1{
-  color:var(--scurb-status-text);
+  margin:0 !important;
+  color:#302c32 !important;
+  font-size:22px !important;
+  line-height:1.18 !important;
+  font-weight:800 !important;
+  letter-spacing:-.4px;
 }
 
-.scurbOrderTrackingPage .scurbOrderStatusBadge{
-  background:var(--scurb-status-soft);
-  color:var(--scurb-status-accent);
+.scurbOrderTrackingPage .scurbOrderMainStatusText p{
+  margin:8px 0 0 !important;
+  color:#8c8690 !important;
+  font-size:12px !important;
+  line-height:1.5 !important;
+  font-weight:500 !important;
 }
 
-.scurbOrderTrackingPage .scurbOrderCleanerAvatar,
-.scurbOrderTrackingPage .scurbOrderDetailsIcon{
-  background:var(--scurb-status-soft);
-  color:var(--scurb-status-accent);
+/* ============================================================
+   PARTNER ROW — NOT A CARD
+============================================================ */
+
+.scurbOrderTrackingPage .scurbOrderCleanerCard{
+  min-height:78px;
+  padding:13px 0 !important;
+  border-bottom:1px solid #f0edf2 !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderCleanerTop{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.scurbOrderTrackingPage .scurbOrderCleanerAvatar{
+  width:42px !important;
+  height:42px !important;
+  min-width:42px !important;
+  border-radius:50% !important;
+  background:#f4f2f6 !important;
+  color:#7c3aed !important;
+  box-shadow:none !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderCleanerAvatar i{
+  font-size:17px !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderCleanerInformation{
+  flex:1;
+  min-width:0;
+}
+
+.scurbOrderTrackingPage .scurbOrderCleanerInformation > span{
+  color:#9a959d !important;
+  font-size:9px !important;
+  font-weight:600 !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderCleanerInformation strong{
+  margin-top:2px !important;
+  color:#302c32 !important;
+  font-size:13px !important;
+  line-height:1.3 !important;
+  font-weight:750 !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderCleanerInformation p{
+  margin:3px 0 0 !important;
+  color:#7c3aed !important;
+  font-size:10px !important;
+  font-weight:700 !important;
 }
 
 .scurbOrderTrackingPage .scurbOrderCleanerCall{
-  background:var(--scurb-status-accent);
+  width:36px !important;
+  height:36px !important;
+  min-width:36px !important;
+  border:1px solid #e6dcf4 !important;
+  border-radius:50% !important;
+  background:#fff !important;
+  color:#7c3aed !important;
+  box-shadow:none !important;
 }
 
+.scurbOrderTrackingPage .scurbOrderCleanerCall i{
+  font-size:12px !important;
+}
+
+/* Ready message becomes plain inline row */
 .scurbOrderTrackingPage .scurbOrderReadyMessage{
-  background:var(--scurb-status-soft);
+  margin:0 !important;
+  padding:11px 0 0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#777179 !important;
+  font-size:11px !important;
+  line-height:1.45 !important;
+  box-shadow:none !important;
 }
 
 .scurbOrderTrackingPage .scurbOrderReadyMessage i{
-  color:var(--scurb-status-accent);
+  color:#7c3aed !important;
 }
 
+/* ============================================================
+   ALL DETAILS SECTIONS — PLAIN SECTIONS, NOT BOXES
+============================================================ */
 
-/* -------------------------
-   PLACED
--------------------------- */
+.scurbOrderTrackingPage .scurbOrderCard{
+  padding:20px 0 0 !important;
+}
 
-.scurbOrderTrackingPage.scurbStatusPlaced{
-  --scurb-status-accent:#64748b;
-  --scurb-status-soft:#f1f5f9;
-  --scurb-status-text:#263342;
-  --scurb-status-page:#f7f9fb;
+.scurbOrderTrackingPage .scurbOrderCard + .scurbOrderCard{
+  margin-top:18px !important;
+  padding-top:20px !important;
+  border-top:1px solid #f0edf2 !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderSectionHeading{
+  margin:0 0 8px !important;
+  padding:0 !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderSectionHeading h2{
+  color:#302c32 !important;
+  font-size:13px !important;
+  font-weight:800 !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderStatusBadge{
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#7c3aed !important;
+  font-size:10px !important;
+  font-weight:800 !important;
+  box-shadow:none !important;
+}
+
+/* details rows */
+.scurbOrderTrackingPage .scurbOrderDetailsRow{
+  display:grid !important;
+  grid-template-columns:94px minmax(0,1fr) !important;
+  gap:10px !important;
+  margin-top:13px !important;
+  align-items:start !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderDetailsIcon{
+  display:none !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderDetailsRow > div:last-child{
+  display:contents !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderDetailsRow span{
+  color:#9a959d !important;
+  font-size:11px !important;
+  line-height:1.4 !important;
+  font-weight:500 !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderDetailsRow strong{
+  min-width:0;
+  color:#403b43 !important;
+  text-align:right !important;
+  font-size:12px !important;
+  line-height:1.42 !important;
+  font-weight:650 !important;
+  word-break:break-word;
+}
+
+/* ============================================================
+   SERVICES — PLAIN CEZOO ITEM LIST
+============================================================ */
+
+.scurbOrderTrackingPage .scurbOrderServicesList{
+  margin-top:4px !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderServiceRow{
+  min-height:58px;
+  padding:12px 0 !important;
+  border-bottom:1px solid #f4f1f4 !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderServiceRow:last-child{
+  border-bottom:0 !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderServiceInformation strong{
+  color:#353036 !important;
+  font-size:12px !important;
+  font-weight:700 !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderServiceInformation span{
+  margin-top:4px !important;
+  color:#99939b !important;
+  font-size:10px !important;
+  font-weight:500 !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderServiceQuantity{
+  color:#7c3aed !important;
+  font-size:11px !important;
+  font-weight:800 !important;
+}
+
+/* ============================================================
+   BILL — CEZOO PLAIN INFO LINES
+============================================================ */
+
+.scurbOrderTrackingPage .scurbOrderBillRow{
+  margin-top:13px !important;
+  color:#8e8891 !important;
+  font-size:11px !important;
+  font-weight:500 !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderBillRow strong{
+  color:#403b43 !important;
+  font-size:12px !important;
+  font-weight:650 !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderBillDivider{
+  margin-top:15px !important;
+  background:#f0edf2 !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderFinalRow{
+  font-size:12px !important;
+  font-weight:700 !important;
+}
+
+.scurbOrderTrackingPage .scurbOrderFinalRow strong{
+  font-size:14px !important;
+}
+
+/* ============================================================
+   STATUS COLORS ONLY — LAYOUT STAYS SAME CEZOO TYPE
+============================================================ */
+
+.scurbOrderTrackingPage.scurbStatusPlaced
+.scurbOrderMainStatusIcon{
+  background:#f1f5f9 !important;
+  color:#64748b !important;
 }
 
 .scurbOrderTrackingPage.scurbStatusPlaced
-.scurbOrderMainStatusCard{
-  min-height:128px;
-}
-
-.scurbOrderTrackingPage.scurbStatusPlaced
-.scurbOrderMapSection{
-  filter:saturate(.88);
-}
-
-
-/* -------------------------
-   PARTNER ASSIGNED
--------------------------- */
-
-.scurbOrderTrackingPage.scurbStatusAssigned{
-  --scurb-status-accent:#0f9e8f;
-  --scurb-status-soft:#e7f8f5;
-  --scurb-status-text:#15443f;
-  --scurb-status-page:#f1fbf9;
+.scurbOrderStatusBadge{
+  color:#64748b !important;
 }
 
 .scurbOrderTrackingPage.scurbStatusAssigned
-.scurbOrderCleanerCard{
-  border-color:rgba(15,158,143,.16);
+.scurbOrderMainStatusIcon{
+  background:#ecfdf5 !important;
+  color:#0f9e8f !important;
 }
 
-
-/* -------------------------
-   ON THE WAY
--------------------------- */
-
-.scurbOrderTrackingPage.scurbStatusOnWay{
-  --scurb-status-accent:#2563eb;
-  --scurb-status-soft:#eaf1ff;
-  --scurb-status-text:#163b88;
-  --scurb-status-page:#f3f7ff;
+.scurbOrderTrackingPage.scurbStatusAssigned
+.scurbOrderStatusBadge{
+  color:#0f9e8f !important;
 }
 
 .scurbOrderTrackingPage.scurbStatusOnWay
-.scurbOrderMapSection{
-  height:clamp(320px,46vh,440px);
+.scurbOrderMainStatusIcon{
+  background:#eef4ff !important;
+  color:#2563eb !important;
 }
 
 .scurbOrderTrackingPage.scurbStatusOnWay
-.scurbOrderMainStatusCard{
-  border-color:rgba(37,99,235,.13);
-}
-
-
-/* -------------------------
-   ARRIVED
--------------------------- */
-
-.scurbOrderTrackingPage.scurbStatusArrived{
-  --scurb-status-accent:#7c3aed;
-  --scurb-status-soft:#f2ebff;
-  --scurb-status-text:#4b2585;
-  --scurb-status-page:#faf7ff;
+.scurbOrderStatusBadge{
+  color:#2563eb !important;
 }
 
 .scurbOrderTrackingPage.scurbStatusArrived
-.scurbOrderMapSection{
-  height:clamp(285px,40vh,390px);
-}
-
-
-/* -------------------------
-   IN PROGRESS
--------------------------- */
-
-.scurbOrderTrackingPage.scurbStatusProgress{
-  --scurb-status-accent:#0891b2;
-  --scurb-status-soft:#e6f8fc;
-  --scurb-status-text:#155266;
-  --scurb-status-page:#f1fbfd;
+.scurbOrderMainStatusIcon{
+  background:#f3efff !important;
+  color:#7c3aed !important;
 }
 
 .scurbOrderTrackingPage.scurbStatusProgress
-.scurbOrderMainStatusCard{
-  border-color:rgba(8,145,178,.15);
+.scurbOrderMainStatusIcon{
+  background:#eaf9fc !important;
+  color:#0891b2 !important;
 }
 
-
-/* -------------------------
-   COMPLETED — NO MAP
--------------------------- */
-
-.scurbOrderTrackingPage.scurbStatusCompleted{
-  --scurb-status-accent:#16a34a;
-  --scurb-status-soft:#eaf8ef;
-  --scurb-status-text:#185c31;
-  --scurb-status-page:#f4fbf6;
-}
+/* ============================================================
+   FINISHED UI — SAME CEZOO PATTERN, NO MAP
+============================================================ */
 
 .scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderMapSection,
+.scurbOrderTrackingPage.scurbStatusCancelled
 .scurbOrderMapSection{
   display:none !important;
 }
 
 .scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderTrackingContent,
+.scurbOrderTrackingPage.scurbStatusCancelled
 .scurbOrderTrackingContent{
-  padding-top:
-    calc(
-      62px +
-      env(safe-area-inset-top,0px)
-    );
-
-  background:
-    radial-gradient(
-      circle at 92% 8%,
-      rgba(22,163,74,.09),
-      transparent 25%
-    ),
-    linear-gradient(
-      180deg,
-      #effaf2 0,
-      #f8fcf9 260px,
-      #f5f6f7 520px
-    );
+  margin:0 !important;
+  min-height:100dvh !important;
+  padding:
+    calc(82px + env(safe-area-inset-top,0px))
+    18px
+    calc(28px + env(safe-area-inset-bottom,0px))
+    !important;
+  border-radius:0 !important;
+  background:#fff !important;
 }
 
 .scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderMainStatusCard,
+.scurbOrderTrackingPage.scurbStatusCancelled
 .scurbOrderMainStatusCard{
-  min-height:190px;
-  padding:30px 20px;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  border-color:rgba(22,163,74,.13);
+  min-height:170px;
+  padding:28px 0 24px !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+  text-align:center !important;
+  border-bottom:1px solid #f0edf2 !important;
+}
+
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderMainStatusIcon,
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbOrderMainStatusIcon{
+  width:62px !important;
+  height:62px !important;
+  min-width:62px !important;
 }
 
 .scurbOrderTrackingPage.scurbStatusCompleted
 .scurbOrderMainStatusIcon{
-  width:66px;
-  height:66px;
-  border-radius:50%;
-  font-size:27px;
-}
-
-.scurbOrderTrackingPage.scurbStatusCompleted
-.scurbOrderMainStatusIcon i{
-  font-size:28px;
-}
-
-.scurbOrderTrackingPage.scurbStatusCompleted
-.scurbOrderMainStatusText h1{
-  margin-top:3px;
-  font-size:21px;
-}
-
-.scurbOrderTrackingPage.scurbStatusCompleted
-.scurbOrderCleanerCall{
-  display:none !important;
-}
-
-
-/* -------------------------
-   CANCELLED / REJECTED / REFUNDED — NO MAP
--------------------------- */
-
-.scurbOrderTrackingPage.scurbStatusCancelled{
-  --scurb-status-accent:#dc2626;
-  --scurb-status-soft:#fff0f0;
-  --scurb-status-text:#7f1d1d;
-  --scurb-status-page:#fff7f7;
-}
-
-.scurbOrderTrackingPage.scurbStatusCancelled
-.scurbOrderMapSection{
-  display:none !important;
-}
-
-.scurbOrderTrackingPage.scurbStatusCancelled
-.scurbOrderTrackingContent{
-  padding-top:
-    calc(
-      62px +
-      env(safe-area-inset-top,0px)
-    );
-
-  background:
-    radial-gradient(
-      circle at 92% 8%,
-      rgba(220,38,38,.07),
-      transparent 25%
-    ),
-    linear-gradient(
-      180deg,
-      #fff3f3 0,
-      #fffafa 260px,
-      #f5f6f7 520px
-    );
-}
-
-.scurbOrderTrackingPage.scurbStatusCancelled
-.scurbOrderMainStatusCard{
-  min-height:180px;
-  padding:30px 20px;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  border-color:rgba(220,38,38,.12);
+  background:#eaf8ef !important;
+  color:#16a34a !important;
 }
 
 .scurbOrderTrackingPage.scurbStatusCancelled
 .scurbOrderMainStatusIcon{
-  width:64px;
-  height:64px;
-  border-radius:50%;
+  background:#fff0f0 !important;
+  color:#dc2626 !important;
+}
+
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderStatusBadge{
+  color:#16a34a !important;
 }
 
 .scurbOrderTrackingPage.scurbStatusCancelled
-.scurbOrderMainStatusIcon i{
-  font-size:27px;
+.scurbOrderStatusBadge{
+  color:#dc2626 !important;
 }
 
-.scurbOrderTrackingPage.scurbStatusCancelled
-.scurbOrderMainStatusText h1{
-  margin-top:3px;
-  font-size:21px;
-}
-
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderCleanerCall,
 .scurbOrderTrackingPage.scurbStatusCancelled
 .scurbOrderCleanerCard,
 .scurbOrderTrackingPage.scurbStatusCancelled
@@ -1742,65 +1869,69 @@
   display:none !important;
 }
 
-
-/* =========================================================
-   BACK BUTTON FOR NO-MAP FINISHED SCREENS
-========================================================= */
-
+/* back button on finished screen */
 .scurbOrderTrackingPage.scurbStatusCompleted
 .scurbOrderBackButton,
 .scurbOrderTrackingPage.scurbStatusCancelled
 .scurbOrderBackButton{
-  position:fixed;
-  top:calc(env(safe-area-inset-top,0px) + 16px);
-  left:16px;
-  z-index:17020;
-  background:#fff;
+  position:fixed !important;
+  top:calc(env(safe-area-inset-top,0px) + 48px) !important;
+  left:16px !important;
+  width:38px !important;
+  height:38px !important;
+  border:0 !important;
+  background:#fff !important;
+  box-shadow:none !important;
 }
 
-
-/* =========================================================
-   ACTIVE STATUSES ALWAYS KEEP MAP
-========================================================= */
-
-.scurbOrderTrackingPage.scurbStatusPlaced
-.scurbOrderMapSection,
-.scurbOrderTrackingPage.scurbStatusAssigned
-.scurbOrderMapSection,
-.scurbOrderTrackingPage.scurbStatusOnWay
-.scurbOrderMapSection,
-.scurbOrderTrackingPage.scurbStatusArrived
-.scurbOrderMapSection,
-.scurbOrderTrackingPage.scurbStatusProgress
-.scurbOrderMapSection{
+/* ACTIVE MAP */
+.scurbOrderTrackingPage.scurbStatusPlaced .scurbOrderMapSection,
+.scurbOrderTrackingPage.scurbStatusAssigned .scurbOrderMapSection,
+.scurbOrderTrackingPage.scurbStatusOnWay .scurbOrderMapSection,
+.scurbOrderTrackingPage.scurbStatusArrived .scurbOrderMapSection,
+.scurbOrderTrackingPage.scurbStatusProgress .scurbOrderMapSection{
   display:block;
 }
 
-
-/* =========================================================
-   MOBILE TUNING
-========================================================= */
-
-@media(max-width:600px){
-
-  .scurbOrderTrackingPage.scurbStatusCompleted
-  .scurbOrderTrackingContent,
-  .scurbOrderTrackingPage.scurbStatusCancelled
-  .scurbOrderTrackingContent{
-    padding-top:
-      calc(
-        74px +
-        env(safe-area-inset-top,0px)
-      );
-  }
-
-  .scurbOrderTrackingPage.scurbStatusCompleted
-  .scurbOrderMainStatusCard,
-  .scurbOrderTrackingPage.scurbStatusCancelled
-  .scurbOrderMainStatusCard{
-    min-height:175px;
-  }
-
+/* Cancel button area also plain */
+.scurbOrderTrackingPage .scurbOrderCancelArea{
+  padding:20px 0 0 !important;
+  margin:20px 0 0 !important;
+  border-top:1px solid #f0edf2 !important;
+  background:#fff !important;
 }
 
+.scurbOrderTrackingPage .scurbOrderCancelButton{
+  width:100%;
+  height:46px;
+  border:1px solid #eadde5 !important;
+  border-radius:12px !important;
+  background:#fff !important;
+  color:#c0265e !important;
+  box-shadow:none !important;
+  font-size:13px !important;
+  font-weight:700 !important;
+}
+
+/* Small phones */
+@media(max-width:380px){
+
+  .scurbOrderTrackingPage .scurbOrderTrackingContent{
+    padding-left:15px !important;
+    padding-right:15px !important;
+    border-radius:22px 22px 0 0 !important;
+  }
+
+  .scurbOrderTrackingPage .scurbOrderMainStatusCard{
+    min-height:150px;
+  }
+
+  .scurbOrderTrackingPage .scurbOrderMainStatusText h1{
+    font-size:20px !important;
+  }
+
+  .scurbOrderTrackingPage .scurbOrderDetailsRow{
+    grid-template-columns:88px minmax(0,1fr) !important;
+  }
+}
 
