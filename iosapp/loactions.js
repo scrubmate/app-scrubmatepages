@@ -613,7 +613,7 @@ function showAutomaticLocationResult(locationData){
 
   openHomeWithSlideUp();
 
-}, 1400);
+}, 450);
 }
 
 
@@ -668,8 +668,8 @@ async function getAndSaveCurrentLocation() {
     },
 
     {
-      enableHighAccuracy: true,
-      timeout: 20000,
+      enableHighAccuracy: false,
+      timeout: 8000,
       maximumAge: 0
     }
   );
@@ -1686,9 +1686,9 @@ function openDeviceLocationOnMap(
 
 
     {
-      enableHighAccuracy:true,
-      timeout:20000,
-      maximumAge:0
+      enableHighAccuracy: false,
+      timeout: 8000,
+      maximumAge: 0
     }
 
   );
