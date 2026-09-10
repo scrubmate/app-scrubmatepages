@@ -1,0 +1,707 @@
+/* =========================================
+   COMMON SERVICE POPUP
+========================================= */
+
+.scurbServicePopup{
+  position:fixed;
+  inset:0;
+  z-index:999999;
+  display:none;
+  flex-direction:column;
+  background:#fff;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+
+.scurbServicePopup.show{
+  display:flex;
+}
+.scurbServicePopupImage::after{
+  content:"";
+  position:absolute;
+  inset:auto 0 0;
+  height:50px;
+  pointer-events:none;
+  background:linear-gradient(transparent,#fff);
+}
+/* IMAGE AREA */
+
+.scurbServicePopupImage{
+  position:relative;
+  width:100%;
+  height:clamp(290px, 40vw, 520px);
+  overflow:hidden;
+  flex-shrink:0;
+}
+.scurbServicePopupImage img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  object-position:center top;
+}
+
+
+/* BUTTONS OVER IMAGE */
+.scurbServicePopupTop{
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  z-index:5;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:50px 18px 0;
+}
+
+.scurbServicePopupIconBtn{
+  border:none;
+  background:none;
+  padding:0;
+  margin:0;
+  color:#111;
+  font-size:24px;
+  cursor:pointer;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.scurbServicePopupIconBtn i{
+  pointer-events:none;
+}
+
+.scurbServiceHeaderRow{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:14px 16px;
+}
+
+.scurbServiceHeaderInfo{
+  flex:1;
+  min-width:0;
+}
+
+.scurbServiceHeaderTitle{
+  margin:0 0 4px;
+  font-size:24px;
+  font-weight:700;
+  line-height:1.15;
+  color:#111;
+}
+
+.scurbServiceHeaderPrices{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.scurbServiceSalePrice{
+  font-size:22px;
+  font-weight:700;
+  color:#111;
+}
+
+.scurbServiceStrikePrice{
+  font-size:16px;
+  color:#9a9a9a;
+  text-decoration:line-through;
+}
+
+.scurbServiceHeaderBookBtn{
+  border:none;
+  background:#14b9bb;
+  color:#fff;
+  font-size:22px;
+  font-weight:700;
+  padding:9px 18px;
+  border-radius:10px;
+  cursor:pointer;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.scurbServiceDivider{
+  height:1px;
+  margin:0 10px;
+  background:#e8e8e8;
+}
+
+.scurbServiceDetailsHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 16px;
+}
+
+.scurbServiceDetailsTitle{
+  margin:0;
+  font-size:19px;
+  font-weight:600;
+  color:#111;
+}
+
+.scurbLanguageSwitch{
+  display:inline-block;
+  cursor:pointer;
+  user-select:none;
+}
+
+.scurbLanguageSwitch input{
+  display:none;
+}
+
+.scurbLanguageTrack{
+  position:relative;
+  width:82px;
+  height:24px;
+  background:#ececec;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+}
+
+.scurbLanguageThumb{
+  position:absolute;
+  left:2px;
+  top:2px;
+  width:39px;
+  height:20px;
+  background:#14b9bb;
+  border-radius:999px;
+  transition:.25s ease;
+}
+
+.scurbLanguageOption{
+  position:relative;
+  z-index:2;
+  width:50%;
+  text-align:center;
+  font-size:10px;
+  font-weight:700;
+  color:#666;
+  transition:.25s;
+}
+
+.scurbLanguageEnglish{
+  color:#fff;
+}
+
+.scurbLanguageTelugu{
+  font-family:"Noto Sans Telugu",sans-serif;
+}
+
+.scurbLanguageSwitch input:checked + .scurbLanguageTrack .scurbLanguageThumb{
+  transform:translateX(39px);
+}
+
+.scurbLanguageSwitch input:not(:checked) + .scurbLanguageTrack .scurbLanguageEnglish{
+  color:#fff;
+}
+
+.scurbLanguageSwitch input:not(:checked) + .scurbLanguageTrack .scurbLanguageTelugu{
+  color:#666;
+}
+
+.scurbLanguageSwitch input:checked + .scurbLanguageTrack .scurbLanguageEnglish{
+  color:#666;
+}
+
+.scurbLanguageSwitch input:checked + .scurbLanguageTrack .scurbLanguageTelugu{
+  color:#fff;
+}
+
+.scurbServiceSubTitle{
+  margin:8px 16px 4px;
+  font-size:18px;
+  font-weight:500;
+  color:#111;
+  line-height:1.4;
+}
+
+.scurbServiceDescription{
+  margin:0 16px 18px;
+  font-size:15px;
+  font-weight:400;
+  color:#666;
+  line-height:1.7;
+}
+.scurbServiceSubTitleCompact{
+  margin:4px 16px 4px;
+  font-size:18px;
+  font-weight:600;
+  color:#111;
+  line-height:1.4;
+}
+
+.scurbServiceDescriptionCompact{
+  margin:0 16px 18px;
+  font-size:15px;
+  font-weight:400;
+  color:#666;
+  line-height:1.7;
+}
+
+
+.scurbFridgeTypes{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  padding:8px 16px 18px;
+}
+
+.scurbFridgeCard{
+  text-align:center;
+}
+
+.scurbFridgeCard img{
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  border-radius:18px;
+  background:#f6f6f6;
+  display:block;
+}
+
+.scurbFridgeCard h4{
+  margin:10px 0 8px;
+  font-size:15px;
+  font-weight:600;
+  color:#111;
+  line-height:1.25;
+}
+
+.scurbFridgeCard span{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:74px;
+  height:30px;
+  padding:0 12px;
+  background:#f3f3f3;
+  border:1px solid #e3e3e3;
+  border-radius:12px;
+  font-size:12px; /* 13px → 12px */
+  font-weight:500;
+  color:#666;
+}
+.scurbServiceIncludesTitle{
+  margin:4px 16px 8px;
+  font-size:18px;
+  font-weight:600;
+  color:#111;
+  line-height:1.4;
+}
+
+.scurbServiceIncludeItem{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  margin:0 16px 12px;
+  font-size:15px;
+  color:#000000;
+  line-height:1.6;
+}
+
+.scurbServiceTick{
+  width:20px;
+  height:20px;
+  flex-shrink:0;
+  margin-top:2px;
+  border-radius:50%;
+  background:#14b9bb;
+  position:relative;
+}
+
+.scurbServiceTick::after{
+  content:"✓";
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:12px;
+  font-weight:500;
+}
+
+.scurbServiceNotIncludesTitle{
+  margin:8px 16px 8px;
+  font-size:18px;
+  font-weight:600;
+  color:#111;
+  line-height:1.4;
+}
+
+.scurbServiceCross{
+  width:20px;
+  height:20px;
+  flex-shrink:0;
+  margin-top:2px;
+  border-radius:50%;
+  background:#ef4444;
+  position:relative;
+}
+
+.scurbServiceCross::after{
+  content:"✕";
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:11px;
+  font-weight:700;
+  line-height:1;
+}
+
+.scurbServiceHowDoneTitle{
+  margin:8px 16px 8px;
+  font-size:18px;
+  font-weight:600;
+  color:#111;
+  line-height:1.4;
+}
+
+
+.scurbHowDoneList{
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+  padding:6px 16px 20px;
+}
+
+.scurbHowDoneItem{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+}
+
+.scurbHowDoneImage{
+  width:55px;
+  height:55px;
+  padding:10px;      /* Makes the PNG smaller */
+  box-sizing:border-box;
+  object-fit:contain;
+  flex-shrink:0;
+  display:block;
+  border-radius:18px;
+  background:#f3f7f4;
+}
+
+.scurbHowDoneContent{
+  flex:1;
+  min-width:0;
+}
+
+.scurbHowDoneItemTitle{
+  margin:0 0 4px;
+  font-size:15px;
+  font-weight:600;
+  color:#222;
+  line-height:1.3;
+}
+
+.scurbHowDoneItemText{
+  margin:0;
+  font-size:13px;
+  font-weight:400;
+  color:#666;
+  line-height:1.5;
+}
+
+.scurbServiceFaqTitle{
+  margin:8px 16px 10px;
+  font-size:18px;
+  font-weight:600;
+  color:#111;
+  line-height:1.4;
+}
+.scurbFaqList{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:0 16px 22px;
+}
+
+.scurbFaqItem{
+  background:#f6f6fb;
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.scurbFaqQuestion{
+  width:100%;
+  min-height:66px;
+  padding:16px 18px;
+  border:none;
+  background:transparent;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  cursor:pointer;
+  text-align:left;
+  color:#111;
+  font-size:15px;
+  font-weight:500;
+  line-height:1.45;
+}
+
+.scurbFaqQuestion span:first-child{
+  flex:1;
+  min-width:0;
+}
+
+.scurbFaqIcon{
+  position:relative;
+  width:22px;
+  height:22px;
+  flex-shrink:0;
+}
+
+.scurbFaqIcon::before,
+.scurbFaqIcon::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:16px;
+  height:2px;
+  background:#333;
+  border-radius:999px;
+  transform:translate(-50%,-50%);
+  transition:.3s ease;
+}
+
+.scurbFaqIcon::after{
+  transform:translate(-50%,-50%) rotate(90deg);
+}
+
+/* CLOSED */
+
+.scurbFaqAnswerWrap{
+  max-height:0;
+  overflow:hidden;
+  opacity:0;
+  padding:0 18px;
+  transition:
+    max-height .35s ease,
+    opacity .25s ease,
+    padding .35s ease;
+}
+
+.scurbFaqDivider{
+  height:1px;
+  background:#e5e5e8;
+  opacity:0;
+  transition:opacity .25s ease;
+}
+
+.scurbFaqAnswer{
+  margin:14px 0 0;
+  padding-bottom:18px;
+  font-size:14px;
+  font-weight:400;
+  color:#555;
+  line-height:1.6;
+}
+
+/* OPEN */
+
+.scurbFaqItem.scurbFaqOpen .scurbFaqAnswerWrap{
+  max-height:220px;
+  opacity:1;
+  padding:0 18px 18px;
+}
+
+.scurbFaqItem.scurbFaqOpen .scurbFaqDivider{
+  opacity:1;
+}
+
+.scurbFaqItem.scurbFaqOpen .scurbFaqIcon::after{
+  transform:translate(-50%,-50%) rotate(0deg);
+}
+
+.scurbServicePopupImage{
+  position:relative;
+}
+
+.scurbPopupLazyImage{
+  width:100%;
+  display:block;
+  opacity:0;
+  transition:opacity .25s;
+}
+
+
+
+.scurbPopupImageShimmer{
+  position:absolute;
+  inset:0;
+  background:#f3f3f3;
+  overflow:hidden;
+}
+
+.scurbPopupImageShimmer::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.75),
+    transparent
+  );
+  transform:translateX(-100%);
+  animation:scurbPopupImageLoading 1.1s infinite;
+}
+
+@keyframes scurbPopupImageLoading{
+  to{
+    transform:translateX(100%);
+  }
+}
+.scurbPopupLazyImage{
+  opacity:0;
+  transition:opacity .25s ease;
+}
+
+.scurbPopupLazyImage.loaded{
+  opacity:1;
+}
+
+
+/* HERO IMAGE SHIMMER */
+
+.scurbServicePopupImage{
+  position:relative;
+  overflow:hidden;
+}
+
+.scurbPopupImageShimmer{
+  position:absolute;
+  inset:0;
+  background:#eeeeee;
+  overflow:hidden;
+}
+
+
+/* SMALL CARD IMAGE SHIMMER */
+
+.scurbPopupSmallImageWrap{
+  position:relative;
+  width:100%;
+  overflow:hidden;
+}
+
+
+
+.scurbPopupSmallImageShimmer{
+  position:absolute;
+  inset:0;
+  background:#eeeeee;
+  overflow:hidden;
+}
+
+
+/* HOW DONE IMAGE SHIMMER */
+
+.scurbHowDoneImageWrap{
+  position:relative;
+  flex-shrink:0;
+  overflow:hidden;
+}
+
+
+
+.scurbHowDoneImageShimmer{
+  position:absolute;
+  inset:0;
+  background:#eeeeee;
+  overflow:hidden;
+}
+
+
+/* COMMON SHIMMER ANIMATION */
+
+.scurbPopupImageShimmer::after,
+.scurbPopupSmallImageShimmer::after,
+.scurbHowDoneImageShimmer::after{
+  content:"";
+  position:absolute;
+  inset:0;
+
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.75),
+    transparent
+  );
+
+  transform:translateX(-100%);
+  animation:scurbPopupImageLoading 1.1s infinite;
+}
+
+@keyframes scurbPopupImageLoading{
+
+  100%{
+    transform:translateX(100%);
+  }
+
+}
+/* POPUP BOOK BUTTON QUANTITY MODE */
+.scurbServiceHeaderBookBtn.scurbPopupQtyMode{
+  min-width:112px;
+  padding:6px 10px;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+}
+
+.scurbPopupBookQuantityRow{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.scurbPopupBookMinus,
+.scurbPopupBookPlus{
+  min-width:24px;
+  font-size:23px;
+  font-weight:700;
+  line-height:1;
+  text-align:center;
+}
+
+.scurbPopupBookQty{
+  min-width:20px;
+  font-size:19px;
+  font-weight:800;
+  line-height:1;
+  text-align:center;
+}
+
+.scurbPopupBookQuantityLabel{
+  display:block;
+  width:100%;
+  margin-top:1px;
+
+  font-size:10px;
+  font-weight:700;
+  line-height:1.1;
+  text-align:center;
+  color:#fff;
+}
