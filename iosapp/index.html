@@ -1029,6 +1029,76 @@ input{
 }
 </style>
 
+
+<style id="scrubmate-stock-busy25">
+/* =========================================
+   SERVICE STOCK / BUSY DESIGN 25
+   DB: service_prices.stock
+   true  = +
+   false = Busy
+========================================= */
+
+.scurbServiceAddBtn.busy25{
+  min-width:58px !important;
+  width:auto !important;
+  height:32px !important;
+  padding:0 13px !important;
+
+  border:none !important;
+  border-radius:6px !important;
+
+  background:#fff1f1 !important;
+  color:#e53935 !important;
+
+  font-size:12px !important;
+  font-weight:700 !important;
+
+  border-bottom:3px solid #e53935 !important;
+
+  cursor:not-allowed !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  box-shadow:none !important;
+  transform:none !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+}
+
+.scurbServiceAddBtn.busy25:hover,
+.scurbServiceAddBtn.busy25:active{
+  background:#fff1f1 !important;
+  color:#e53935 !important;
+  transform:none !important;
+}
+
+.scurbServiceAddBtn.busy25 .scurbSinglePlus{
+  display:none !important;
+}
+
+.scurbServiceAddBtn.busy25 .scurbBusyText{
+  display:block !important;
+  line-height:1 !important;
+}
+
+/* Popup Book button stays in the same place/design.
+   When service is unavailable we only block booking. */
+.scurbServiceHeaderBookBtn.scrub-book-disabled{
+  cursor:not-allowed !important;
+  opacity:.55 !important;
+}
+
+/* Small clean unavailable message inside popup */
+.scrub-stock-message{
+  margin:10px 0 0 !important;
+  color:#e53935 !important;
+  font-size:13px !important;
+  font-weight:700 !important;
+  text-align:right !important;
+}
+</style>
+
 </head>
 
 <body>
@@ -5166,7 +5236,7 @@ const SUPABASE_URL = "https://tigomzzcyxzwfvemmbqp.supabase.co";
       const { data, error } =
         await supabaseClient
           .from("service_prices")
-          .select("service_name, price, old_price");
+          .select("service_name, price, old_price, stock");
 
       if(error){
         console.error(
@@ -5194,7 +5264,8 @@ const SUPABASE_URL = "https://tigomzzcyxzwfvemmbqp.supabase.co";
         ] = {
           service_name: serviceName,
           price: service.price,
-          old_price: service.old_price
+          old_price: service.old_price,
+          stock: service.stock !== false
         };
 
         const cards =
@@ -5297,7 +5368,8 @@ const SUPABASE_URL = "https://tigomzzcyxzwfvemmbqp.supabase.co";
     ] = {
       service_name: serviceName,
       price: service.price,
-      old_price: service.old_price
+      old_price: service.old_price,
+      stock: service.stock !== false
     };
 
     const cards =
@@ -5360,6 +5432,58 @@ const SUPABASE_URL = "https://tigomzzcyxzwfvemmbqp.supabase.co";
         scrubNormalizeServiceName(serviceName)
       ]
     );
+
+    /* Keep stock synchronized when the existing service_prices
+       realtime handler receives the same row update. */
+    if(
+      window.scrubMateServiceStock &&
+      typeof window.scrubMateServiceStock === "object"
+    ){
+      const stockValue =
+        service.stock !== false;
+
+      window.scrubMateServiceStock[
+        scrubNormalizeServiceName(serviceName)
+      ] = {
+        service_name: serviceName,
+        stock: stockValue
+      };
+
+      document
+        .querySelectorAll(
+          ".scurbServiceCard[data-service]"
+        )
+        .forEach(function(card){
+
+          if(
+            scrubNormalizeServiceName(
+              card.getAttribute("data-service")
+            ) !== scrubNormalizeServiceName(serviceName)
+          ){
+            return;
+          }
+
+          const button =
+            card.querySelector(
+              ".scurbServiceAddBtn"
+            );
+
+          if(button){
+            if(stockValue){
+              button.classList.remove("busy25");
+              button.innerHTML =
+                '<span class="scurbSinglePlus">+</span>';
+              button.removeAttribute("aria-disabled");
+            }else{
+              button.classList.add("busy25");
+              button.setAttribute("aria-disabled","true");
+              button.innerHTML =
+                '<span class="scurbBusyText">Busy</span>';
+            }
+          }
+
+        });
+    }
 
   }
 
@@ -7060,6 +7184,429 @@ window.addEventListener("pageshow", function(){
     }
   }
 });
+</script>
+
+
+<script id="scrubmate-stock-system">
+/* =========================================
+   SCRUB MATE SERVICE STOCK SYSTEM
+   Reads service_prices.stock from Supabase.
+   true  -> original +
+   false -> Busy Design 25
+========================================= */
+
+(function(){
+
+  window.scrubMateServiceStock = Object.create(null);
+
+  function scrubStockKey(value){
+    return String(value || "")
+      .trim()
+      .replace(/\s+/g," ")
+      .toLowerCase();
+  }
+
+  function scrubIsServiceAvailable(serviceName){
+    const key = scrubStockKey(serviceName);
+    if(!key) return true;
+
+    const data = window.scrubMateServiceStock[key];
+
+    /* If a service is not present in DB, keep existing behaviour. */
+    if(!data) return true;
+
+    return data.stock !== false;
+  }
+
+  function scrubApplyBusyButton(button, available){
+    if(!button) return;
+
+    if(available){
+      button.classList.remove("busy25");
+      button.removeAttribute("aria-disabled");
+      button.disabled = false;
+
+      button.innerHTML =
+        '<span class="scurbSinglePlus">+</span>';
+
+      return;
+    }
+
+    button.classList.add("busy25");
+    button.setAttribute("aria-disabled","true");
+    button.disabled = false; /* keep capture click handling working */
+
+    button.innerHTML =
+      '<span class="scurbBusyText">Busy</span>';
+  }
+
+  function scrubUpdateServiceStockUI(serviceName, stock){
+    const key = scrubStockKey(serviceName);
+    if(!key) return;
+
+    window.scrubMateServiceStock[key] = {
+      service_name: serviceName,
+      stock: stock === true
+    };
+
+    document
+      .querySelectorAll(".scurbServiceCard[data-service]")
+      .forEach(function(card){
+
+        const cardService =
+          String(card.getAttribute("data-service") || "").trim();
+
+        if(scrubStockKey(cardService) !== key) return;
+
+        const addButton =
+          card.querySelector(".scurbServiceAddBtn");
+
+        scrubApplyBusyButton(
+          addButton,
+          stock === true
+        );
+      });
+
+    scrubUpdateOpenPopupStock(serviceName);
+  }
+
+  function scrubUpdateAllServiceStockUI(){
+    Object.keys(window.scrubMateServiceStock).forEach(function(key){
+      const service =
+        window.scrubMateServiceStock[key];
+
+      scrubUpdateServiceStockUI(
+        service.service_name,
+        service.stock
+      );
+    });
+  }
+
+  function scrubFindPopupService(popup){
+    if(!popup) return "";
+
+    const direct =
+      popup.getAttribute("data-popup-service");
+
+    if(direct) return direct;
+
+    const popupMap = {
+      fridgeCleaningPopup:"Fridge Cleaning",
+      windowCleaningPopup:"Window Cleaning",
+      utilitiesCleaningPopup:"Utilities Cleaning",
+      acCleaningPopup:"AC Cleaning",
+      bathroomCleaningPopup:"Bathroom Cleaning",
+      kitchenHelpPopup:"Kitchen Help",
+      dustingWipingPopup:"Dusting and Wiping",
+      packingUnpackingPopup:"Packing and Unpacking",
+      ironingPopup:"Ironing",
+      sweepingMoppingPopup:"Sweeping & Mopping",
+      stageCleaningPopup:"Stage Cleaning",
+      laundryServicePopup:"Laundry Service",
+      bikeCleaningPopup:"Bike Cleaning",
+      shopCleaningPopup:"Shop Cleaning",
+      bedroomCleaningPopup:"Bedroom Cleaning",
+      fanCleaningPopup:"Fan Cleaning"
+    };
+
+    return popupMap[popup.id] || "";
+  }
+
+  function scrubUpdateOpenPopupStock(serviceName){
+    const wanted = scrubStockKey(serviceName);
+    if(!wanted) return;
+
+    document.querySelectorAll(
+      "[id$='CleaningPopup'],[id$='Popup']"
+    ).forEach(function(popup){
+
+      const popupService =
+        scrubStockKey(
+          scrubFindPopupService(popup)
+        );
+
+      if(popupService !== wanted) return;
+
+      const available =
+        scrubIsServiceAvailable(serviceName);
+
+      const bookButton =
+        popup.querySelector(
+          ".scurbServiceHeaderBookBtn"
+        );
+
+      if(!bookButton) return;
+
+      bookButton.classList.toggle(
+        "scrub-book-disabled",
+        !available
+      );
+
+      bookButton.setAttribute(
+        "aria-disabled",
+        available ? "false" : "true"
+      );
+
+      if(!available){
+        if(
+          !popup.querySelector(
+            ".scrub-stock-message"
+          )
+        ){
+          const message =
+            document.createElement("div");
+
+          message.className =
+            "scrub-stock-message";
+
+          message.textContent =
+            "This service is currently unavailable.";
+
+          bookButton.parentElement?.appendChild(message);
+        }
+      }else{
+        popup
+          .querySelectorAll(".scrub-stock-message")
+          .forEach(function(message){
+            message.remove();
+          });
+      }
+    });
+  }
+
+  async function scrubLoadServiceStock(){
+    try{
+
+      const result =
+        await supabaseClient
+          .from("service_prices")
+          .select("service_name, stock");
+
+      if(result.error){
+        console.error(
+          "❌ Service stock load failed:",
+          result.error
+        );
+        return;
+      }
+
+      if(!Array.isArray(result.data)) return;
+
+      result.data.forEach(function(service){
+
+        const serviceName =
+          String(
+            service?.service_name || ""
+          ).trim();
+
+        if(!serviceName) return;
+
+        scrubUpdateServiceStockUI(
+          serviceName,
+          service.stock === true
+        );
+      });
+
+      console.log(
+        "✅ Service stock loaded from Supabase"
+      );
+
+    }catch(error){
+
+      console.error(
+        "❌ Service stock loading error:",
+        error
+      );
+
+    }
+  }
+
+  function scrubHandleStockRealtime(payload){
+
+    if(!payload) return;
+
+    if(payload.eventType === "DELETE"){
+      return;
+    }
+
+    if(payload.new){
+
+      const service =
+        payload.new;
+
+      const serviceName =
+        String(
+          service?.service_name || ""
+        ).trim();
+
+      if(!serviceName) return;
+
+      scrubUpdateServiceStockUI(
+        serviceName,
+        service.stock === true
+      );
+    }
+  }
+
+  function scrubStartStockRealtime(){
+
+    try{
+
+      supabaseClient
+        .channel("service-stock-live")
+        .on(
+          "postgres_changes",
+          {
+            event:"*",
+            schema:"public",
+            table:"service_prices"
+          },
+          function(payload){
+
+            console.log(
+              "🔄 Live service stock update:",
+              payload
+            );
+
+            scrubHandleStockRealtime(payload);
+          }
+        )
+        .subscribe(function(status){
+
+          console.log(
+            "📡 Service stock realtime:",
+            status
+          );
+
+        });
+
+    }catch(error){
+
+      console.error(
+        "❌ Service stock realtime error:",
+        error
+      );
+
+    }
+  }
+
+  /*
+    Capture phase is intentional:
+    if Busy is tapped, existing + button/cart handlers
+    must NOT run.
+  */
+  document.addEventListener(
+    "click",
+    function(event){
+
+      const busyButton =
+        event.target.closest(
+          ".scurbServiceAddBtn.busy25"
+        );
+
+      if(busyButton){
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        return;
+      }
+
+      const bookButton =
+        event.target.closest(
+          ".scurbServiceHeaderBookBtn"
+        );
+
+      if(bookButton){
+
+        const popup =
+          bookButton.closest(
+            "[id$='CleaningPopup'],[id$='Popup']"
+          );
+
+        const serviceName =
+          scrubFindPopupService(popup);
+
+        if(
+          serviceName &&
+          !scrubIsServiceAvailable(serviceName)
+        ){
+
+          event.preventDefault();
+          event.stopPropagation();
+
+          scrubUpdateOpenPopupStock(
+            serviceName
+          );
+
+          return;
+        }
+      }
+
+    },
+    true
+  );
+
+  /*
+    Existing popup observer creates popup HTML dynamically.
+    Apply stock state immediately after creation.
+  */
+  function scrubStartStockPopupObserver(){
+
+    if(!document.body) return;
+
+    const observer =
+      new MutationObserver(function(){
+
+        scrubUpdateAllServiceStockUI();
+
+      });
+
+    observer.observe(
+      document.body,
+      {
+        childList:true,
+        subtree:true
+      }
+    );
+
+    scrubUpdateAllServiceStockUI();
+  }
+
+  function scrubInitStockSystem(){
+
+    if(
+      typeof supabaseClient === "undefined"
+    ){
+      setTimeout(
+        scrubInitStockSystem,
+        300
+      );
+      return;
+    }
+
+    scrubLoadServiceStock();
+    scrubStartStockRealtime();
+    scrubStartStockPopupObserver();
+
+  }
+
+  if(
+    document.readyState === "loading"
+  ){
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      scrubInitStockSystem
+    );
+
+  }else{
+
+    scrubInitStockSystem();
+
+  }
+
+})();
 </script>
 
 </body>
