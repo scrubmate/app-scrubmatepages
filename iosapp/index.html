@@ -4976,6 +4976,156 @@ const SUPABASE_URL = "https://tigomzzcyxzwfvemmbqp.supabase.co";
      Existing design / HTML structure stays unchanged.
   ========================================= */
 
+  /* =========================================
+     SHARED PRICE STORE
+     Home cards + dynamically created service popups
+     use the same Supabase values.
+  ========================================= */
+  window.scrubMateServicePrices = Object.create(null);
+
+  const SCRUB_MATE_POPUP_SERVICES = {
+    fridgeCleaningPopup: "Fridge Cleaning",
+    windowCleaningPopup: "Window Cleaning",
+    utilitiesCleaningPopup: "Utilities Cleaning",
+    acCleaningPopup: "AC Cleaning",
+    bathroomCleaningPopup: "Bathroom Cleaning",
+    kitchenHelpPopup: "Kitchen Help",
+    dustingWipingPopup: "Dusting and Wiping",
+    packingUnpackingPopup: "Packing and Unpacking",
+    ironingPopup: "Ironing",
+    sweepingMoppingPopup: "Sweeping & Mopping",
+    stageCleaningPopup: "Stage Cleaning",
+    laundryServicePopup: "Laundry Service",
+    bikeCleaningPopup: "Bike Cleaning",
+    shopCleaningPopup: "Shop Cleaning",
+    bedroomCleaningPopup: "Bedroom Cleaning",
+    fanCleaningPopup: "Fan Cleaning"
+  };
+
+  function scrubNormalizeServiceName(value){
+    return String(value || "")
+      .trim()
+      .replace(/\s+/g, " ")
+      .toLowerCase();
+  }
+
+  function scrubSetPriceElement(element, value){
+    if(!element || value === null || value === undefined) return;
+    element.textContent = "₹" + Number(value);
+  }
+
+  function updateServicePopupPrices(serviceName, serviceData){
+    const wanted = scrubNormalizeServiceName(serviceName);
+    if(!wanted || !serviceData) return;
+
+    Object.keys(SCRUB_MATE_POPUP_SERVICES).forEach(function(popupId){
+      const popupService = SCRUB_MATE_POPUP_SERVICES[popupId];
+
+      if(scrubNormalizeServiceName(popupService) !== wanted) return;
+
+      const popup = document.getElementById(popupId);
+      if(!popup) return;
+
+      popup.setAttribute("data-popup-service", popupService);
+
+      /* Preferred selectors used by popup designs. */
+      const currentSelectors = [
+        ".scurbServicePrice",
+        ".servicePrice",
+        ".service-price",
+        ".popupPrice",
+        ".popup-price",
+        ".currentPrice",
+        ".current-price",
+        ".discountPrice",
+        ".discount-price",
+        "[data-price]",
+        "[data-service-price]"
+      ];
+
+      const oldSelectors = [
+        ".scurbServiceOldPrice",
+        ".serviceOldPrice",
+        ".service-old-price",
+        ".popupOldPrice",
+        ".popup-old-price",
+        ".oldPrice",
+        ".old-price",
+        ".originalPrice",
+        ".original-price",
+        "[data-old-price]",
+        "[data-original-price]"
+      ];
+
+      let currentElements = [];
+      let oldElements = [];
+
+      currentSelectors.forEach(function(selector){
+        popup.querySelectorAll(selector).forEach(function(el){
+          if(currentElements.indexOf(el) === -1){
+            currentElements.push(el);
+          }
+        });
+      });
+
+      oldSelectors.forEach(function(selector){
+        popup.querySelectorAll(selector).forEach(function(el){
+          if(oldElements.indexOf(el) === -1){
+            oldElements.push(el);
+          }
+        });
+      });
+
+      currentElements.forEach(function(el){
+        if(!el.matches("[data-price-role='old'],[data-price-type='old']")){
+          scrubSetPriceElement(el, serviceData.price);
+        }
+      });
+
+      oldElements.forEach(function(el){
+        if(serviceData.old_price !== null && serviceData.old_price !== undefined){
+          scrubSetPriceElement(el, serviceData.old_price);
+          el.style.display = "";
+        }else{
+          el.style.display = "none";
+        }
+      });
+
+      /* Fallback for existing popup files with only hard-coded ₹ text. */
+      if(currentElements.length === 0){
+        const currencyElements = Array.from(
+          popup.querySelectorAll("*")
+        ).filter(function(el){
+          if(el.children.length > 0) return false;
+          const value = String(el.textContent || "").trim();
+          return /₹\s*\d+(?:\.\d+)?/.test(value);
+        });
+
+        if(currencyElements.length > 0){
+          scrubSetPriceElement(currencyElements[0], serviceData.price);
+        }
+
+        if(currencyElements.length > 1){
+          if(serviceData.old_price !== null && serviceData.old_price !== undefined){
+            scrubSetPriceElement(currencyElements[1], serviceData.old_price);
+            currencyElements[1].style.display = "";
+          }else{
+            currencyElements[1].style.display = "none";
+          }
+        }
+      }
+    });
+  }
+
+  function updateAllServicePopupPrices(){
+    Object.keys(window.scrubMateServicePrices).forEach(function(serviceName){
+      updateServicePopupPrices(
+        serviceName,
+        window.scrubMateServicePrices[serviceName]
+      );
+    });
+  }
+
   async function loadServicePricesFromSupabase(){
 
     try{
@@ -5005,6 +5155,14 @@ const SUPABASE_URL = "https://tigomzzcyxzwfvemmbqp.supabase.co";
         if(!serviceName){
           return;
         }
+
+        window.scrubMateServicePrices[
+          scrubNormalizeServiceName(serviceName)
+        ] = {
+          service_name: serviceName,
+          price: service.price,
+          old_price: service.old_price
+        };
 
         const cards =
           document.querySelectorAll(
@@ -5060,7 +5218,16 @@ const SUPABASE_URL = "https://tigomzzcyxzwfvemmbqp.supabase.co";
 
         });
 
+        updateServicePopupPrices(
+          serviceName,
+          window.scrubMateServicePrices[
+            scrubNormalizeServiceName(serviceName)
+          ]
+        );
+
       });
+
+      updateAllServicePopupPrices();
 
       console.log(
         "✅ Service prices loaded from Supabase"
@@ -5091,6 +5258,14 @@ const SUPABASE_URL = "https://tigomzzcyxzwfvemmbqp.supabase.co";
     if(!serviceName){
       return;
     }
+
+    window.scrubMateServicePrices[
+      scrubNormalizeServiceName(serviceName)
+    ] = {
+      service_name: serviceName,
+      price: service.price,
+      old_price: service.old_price
+    };
 
     const cards =
       document.querySelectorAll(
@@ -5146,6 +5321,51 @@ const SUPABASE_URL = "https://tigomzzcyxzwfvemmbqp.supabase.co";
 
     });
 
+    updateServicePopupPrices(
+      serviceName,
+      window.scrubMateServicePrices[
+        scrubNormalizeServiceName(serviceName)
+      ]
+    );
+
+  }
+
+
+  /* =========================================
+     POPUP PRICE AUTO-SYNC
+     Popup JS files create their HTML dynamically.
+     This observer catches that HTML immediately.
+  ========================================= */
+  const scrubMatePopupObserver = new MutationObserver(function(mutations){
+    let shouldRefresh = false;
+
+    mutations.forEach(function(mutation){
+      mutation.addedNodes.forEach(function(node){
+        if(node.nodeType !== 1) return;
+
+        const isPopup =
+          SCRUB_MATE_POPUP_SERVICES[node.id] ||
+          node.closest?.("[id$='CleaningPopup'],[id$='Popup']");
+
+        if(isPopup){
+          shouldRefresh = true;
+        }
+      });
+    });
+
+    if(shouldRefresh){
+      updateAllServicePopupPrices();
+    }
+  });
+
+  function startServicePopupPriceObserver(){
+    if(document.body){
+      scrubMatePopupObserver.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+    }
+    updateAllServicePopupPrices();
   }
 
 
@@ -5213,6 +5433,7 @@ const SUPABASE_URL = "https://tigomzzcyxzwfvemmbqp.supabase.co";
       function(){
         loadServicePricesFromSupabase();
         startServicePriceRealtime();
+        startServicePopupPriceObserver();
       }
     );
 
@@ -5221,6 +5442,7 @@ const SUPABASE_URL = "https://tigomzzcyxzwfvemmbqp.supabase.co";
 
     loadServicePricesFromSupabase();
     startServicePriceRealtime();
+    startServicePopupPriceObserver();
 
   }
 
