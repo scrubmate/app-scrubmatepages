@@ -1419,6 +1419,84 @@ function isScurbTrackingFinishedStatus(
 }
 
 
+
+/* =========================================
+   CEZOO-STYLE STATUS UI MODE
+   Different booking status = different UI.
+========================================= */
+
+function applyScurbOrderStatusMode(status){
+
+  if(!scurbOrderTrackingPage){
+    return;
+  }
+
+  const normalized =
+    normalizeScurbBookingStatus(status);
+
+  const modeClasses = [
+    "scurbStatusPlaced",
+    "scurbStatusAssigned",
+    "scurbStatusOnWay",
+    "scurbStatusArrived",
+    "scurbStatusProgress",
+    "scurbStatusCompleted",
+    "scurbStatusCancelled"
+  ];
+
+  scurbOrderTrackingPage.classList.remove(
+    ...modeClasses
+  );
+
+  let modeClass =
+    "scurbStatusPlaced";
+
+  if(
+    [
+      "confirmed",
+      "accepted",
+      "assigned",
+      "partner_assigned"
+    ].includes(normalized)
+  ){
+    modeClass =
+      "scurbStatusAssigned";
+  }else if(normalized === "on_the_way"){
+    modeClass =
+      "scurbStatusOnWay";
+  }else if(normalized === "arrived"){
+    modeClass =
+      "scurbStatusArrived";
+  }else if(normalized === "in_progress"){
+    modeClass =
+      "scurbStatusProgress";
+  }else if(
+    normalized === "completed" ||
+    normalized === "delivered"
+  ){
+    modeClass =
+      "scurbStatusCompleted";
+  }else if(
+    [
+      "cancelled",
+      "canceled",
+      "rejected",
+      "refunded"
+    ].includes(normalized)
+  ){
+    modeClass =
+      "scurbStatusCancelled";
+  }
+
+  scurbOrderTrackingPage.classList.add(
+    modeClass
+  );
+
+  scurbOrderTrackingPage.dataset.bookingStatus =
+    normalized;
+
+}
+
 /* =========================================
    UPDATE STATUS
 ========================================= */
@@ -1431,6 +1509,10 @@ function updateScurbOrderTrackingStatus(
     normalizeScurbBookingStatus(
       booking.booking_status
     );
+
+  applyScurbOrderStatusMode(
+    status
+  );
 
   const cleanerAccepted =
     hasScurbCleanerAccepted(
@@ -2126,8 +2208,8 @@ async function renderScurbBookedLocationMap(
 
 
   /*
-    Always keep the map visible.
-    Clear old markers and route before drawing.
+    Get map section first.
+    Active statuses show it; finished statuses hide it.
   */
 
   const mapElement =
@@ -2139,16 +2221,6 @@ async function renderScurbBookedLocationMap(
     mapElement?.closest(
       ".scurbOrderMapSection"
     ) || mapElement?.parentElement;
-
-  if(mapSection){
-
-    mapSection.hidden =
-      false;
-
-    mapSection.style.display =
-      "";
-
-  }
 
 
   scurbTrackingCustomerMarker?.remove();
@@ -2203,33 +2275,47 @@ async function renderScurbBookedLocationMap(
 
 
   /*
-    COMPLETED / CANCELLED:
-    Keep map visible, but show only customer location.
+    COMPLETED / CANCELLED / REJECTED / REFUNDED:
+    CEZOO-style finished screen = NO MAP.
   */
 
   if(finishedBooking){
 
-    scurbTrackingMap.setView(
-      [
-        mapLatitude,
-        mapLongitude
-      ],
-      validCustomerLocation
-        ? 18
-        : 17
-    );
+    if(mapSection){
 
+      mapSection.hidden =
+        true;
 
-    setTimeout(
-      function(){
+      mapSection.style.display =
+        "none";
 
-        scurbTrackingMap.invalidateSize();
+    }
 
-      },
-      250
-    );
+    scurbTrackingCustomerMarker?.remove();
+    scurbTrackingCleanerMarker?.remove();
+    scurbTrackingRouteLine?.remove();
+
+    scurbTrackingCustomerMarker = null;
+    scurbTrackingCleanerMarker = null;
+    scurbTrackingRouteLine = null;
 
     return;
+
+  }
+
+
+  /*
+    ACTIVE BOOKING:
+    Keep the map visible.
+  */
+
+  if(mapSection){
+
+    mapSection.hidden =
+      false;
+
+    mapSection.style.display =
+      "";
 
   }
 
