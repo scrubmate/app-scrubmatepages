@@ -996,6 +996,39 @@ input{
 
 </style>
 
+
+<style id="scrubmate-plus-fix">
+/* =========================================================
+   PLUS BUTTON FIX
+   No stock / no availability logic here.
+   Keep the original + button clickable.
+========================================================= */
+
+.scurbServiceImageBox{
+  position:relative !important;
+}
+
+.scurbServiceAddBtn{
+  position:absolute !important;
+  z-index:50 !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+  -webkit-tap-highlight-color:transparent !important;
+}
+
+.scurbServiceAddBtn .scurbSinglePlus{
+  pointer-events:none !important;
+}
+
+.scurbServiceCard{
+  cursor:pointer;
+}
+
+.scurbServiceAddBtn:active{
+  transform:scale(.94);
+}
+</style>
+
 </head>
 
 <body>
