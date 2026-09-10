@@ -613,7 +613,7 @@ function showAutomaticLocationResult(locationData){
 
   openHomeWithSlideUp();
 
-}, 250);
+}, 1400);
 }
 
 
@@ -631,302 +631,47 @@ function handleAutomaticLocationFailure(){
   locationPage.classList.add("show");
 }
 
-
-/* =========================================
-   FAST LOCATION CACHE / PRELOAD
-========================================= */
-
-const SCRUB_FAST_LOCATION_MAX_AGE = 5 * 60 * 1000; // 5 minutes
-const SCRUB_FAST_GPS_TIMEOUT = 6000;                // 6 seconds
-const SCRUB_PRECISE_GPS_TIMEOUT = 12000;            // background only
-
-function getCachedScrubLocation(){
-
-  try{
-
-    const raw =
-      localStorage.getItem("scurbMateCurrentLocation");
-
-    if(!raw){
-      return null;
-    }
-
-    const saved = JSON.parse(raw);
-
-    const lat = Number(saved?.latitude);
-    const lon = Number(saved?.longitude);
-
-    if(
-      !Number.isFinite(lat) ||
-      !Number.isFinite(lon)
-    ){
-      return null;
-    }
-
-    const savedTime =
-      Date.parse(saved?.locationSavedAt || "");
-
-    if(
-      !Number.isFinite(savedTime) ||
-      Date.now() - savedTime > SCRUB_FAST_LOCATION_MAX_AGE
-    ){
-      return null;
-    }
-
-    return saved;
-
-  }catch(error){
-
-    return null;
-
-  }
-
-}
-
-
-function refreshPreciseLocationInBackground(){
-
-  if(
-    !navigator.geolocation ||
-    isScrubMateIOSApp()
-  ){
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-
-    async function(position){
-
-      const latitude =
-        position.coords.latitude;
-
-      const longitude =
-        position.coords.longitude;
-
-      const accuracy =
-        position.coords.accuracy ?? null;
-
-      try{
-
-        const locationData =
-          await reverseGeocode(
-            latitude,
-            longitude
-          );
-
-        const finalLocationData = {
-          ...locationData,
-          latitude,
-          longitude,
-          accuracy,
-          locationType:"current",
-          addressFound:true
-        };
-
-        saveLocationToStorage(
-          finalLocationData
-        );
-
-        /*
-          User may already be on Home by now.
-          Update header silently without showing
-          the fetching screen again.
-        */
-        if(
-          typeof updateScurbHomeLocation ===
-          "function"
-        ){
-          updateScurbHomeLocation();
-        }
-
-      }catch(error){
-
-        /*
-          Keep the fast location already shown.
-          Background precision failure should
-          never block the user.
-        */
-        console.warn(
-          "Background precise location refresh skipped:",
-          error
-        );
-
-      }
-
-    },
-
-    function(){},
-
-    {
-      enableHighAccuracy:true,
-      timeout:SCRUB_PRECISE_GPS_TIMEOUT,
-      maximumAge:0
-    }
-
-  );
-
-}
-
-
-function useFastCachedLocationIfAvailable(){
-
-  const cached =
-    getCachedScrubLocation();
-
-  if(!cached){
-    return false;
-  }
-
-  /*
-    Show previously saved fresh location immediately.
-    No GPS/reverse-geocode waiting screen.
-  */
-  hideCurrentLocationSpinner();
-
-  if(isAutomaticLoginLocation){
-
-    showAutomaticLocationResult(
-      cached
-    );
-
-  }else{
-
-    if(
-      typeof updateScurbHomeLocation ===
-      "function"
-    ){
-      updateScurbHomeLocation();
-    }
-
-    openScurbHomePage();
-
-  }
-
-  /*
-    Improve accuracy silently after the screen
-    has already opened.
-  */
-  setTimeout(
-    refreshPreciseLocationInBackground,
-    50
-  );
-
-  return true;
-}
-
-
 async function getAndSaveCurrentLocation() {
 
   showCurrentLocationSpinner();
 
-  /*
-    FASTEST PATH:
-    If a good location was saved within the last
-    5 minutes, show it immediately and refresh
-    precise GPS silently in the background.
-  */
-  if(useFastCachedLocationIfAvailable()){
-    return;
-  }
-
   // iOS native app
-  if(isScrubMateIOSApp()){
-
+  if (isScrubMateIOSApp()) {
     requestScrubMateNativeLocation(
       "saveCurrentLocation"
     );
-
     return;
   }
 
   // Normal browser fallback
-  if(!navigator.geolocation){
-
+  if (!navigator.geolocation) {
     console.error(
       "Geolocation is not supported."
     );
 
     hideCurrentLocationSpinner();
-
-    handleAutomaticLocationFailure();
-
     return;
   }
 
-  /*
-    QUICK FIRST FIX:
-    Low-power / network-assisted location is much
-    faster than forcing GPS high accuracy.
-    This gets the user through the loading screen
-    quickly. A precise refresh happens afterwards.
-  */
   navigator.geolocation.getCurrentPosition(
-
-    async function(position){
-
+    async function(position) {
       await saveCurrentCoordinates(
         position.coords.latitude,
         position.coords.longitude,
         position.coords.accuracy ?? null
       );
-
-      /*
-        Refresh precise GPS only after the user
-        already has a usable location.
-      */
-      setTimeout(
-        refreshPreciseLocationInBackground,
-        100
-      );
-
     },
 
-    function(error){
-
-      /*
-        If quick location fails, make one precise
-        attempt before showing failure.
-      */
-      navigator.geolocation.getCurrentPosition(
-
-        async function(position){
-
-          await saveCurrentCoordinates(
-            position.coords.latitude,
-            position.coords.longitude,
-            position.coords.accuracy ?? null
-          );
-
-        },
-
-        function(finalError){
-
-          hideCurrentLocationSpinner();
-
-          handleBrowserLocationError(
-            finalError || error
-          );
-
-          handleAutomaticLocationFailure();
-
-        },
-
-        {
-          enableHighAccuracy:true,
-          timeout:10000,
-          maximumAge:60000
-        }
-
-      );
-
+    function(error) {
+      hideCurrentLocationSpinner();
+      handleBrowserLocationError(error);
     },
 
     {
-      enableHighAccuracy:false,
-      timeout:SCRUB_FAST_GPS_TIMEOUT,
-      maximumAge:SCRUB_FAST_LOCATION_MAX_AGE
+      enableHighAccuracy: true,
+      timeout: 20000,
+      maximumAge: 0
     }
-
   );
 }
 async function saveCurrentCoordinates(
@@ -2119,50 +1864,6 @@ confirmManualLocationButton.addEventListener(
 
 async function reverseGeocode(latitude, longitude){
 
-  /*
-    Reuse the last address when coordinates are nearly
-    identical. This avoids another Nominatim round-trip.
-  */
-  try{
-
-    const cachedRaw =
-      sessionStorage.getItem(
-        "scrubMateReverseGeocodeCache"
-      );
-
-    if(cachedRaw){
-
-      const cached =
-        JSON.parse(cachedRaw);
-
-      const latDiff =
-        Math.abs(
-          Number(cached.latitude) -
-          Number(latitude)
-        );
-
-      const lonDiff =
-        Math.abs(
-          Number(cached.longitude) -
-          Number(longitude)
-        );
-
-      /*
-        Roughly within ~100-150m.
-      */
-      if(
-        latDiff < 0.0012 &&
-        lonDiff < 0.0012 &&
-        cached.data
-      ){
-        return cached.data;
-      }
-
-    }
-
-  }catch(error){}
-
-
   const url =
     "https://nominatim.openstreetmap.org/reverse" +
     "?format=jsonv2" +
@@ -2171,115 +1872,78 @@ async function reverseGeocode(latitude, longitude){
     "&zoom=18" +
     "&addressdetails=1";
 
-  const controller =
-    new AbortController();
-
-  const timeoutId =
-    setTimeout(function(){
-      controller.abort();
-    }, 6500);
-
-  try{
-
-    const response =
-      await fetch(
-        url,
-        {
-          headers:{
-            "Accept":"application/json",
-            "Accept-Language":"en"
-          },
-          signal:controller.signal,
-          cache:"default"
-        }
-      );
-
-    if(!response.ok){
-      throw new Error(
-        "Address request failed."
-      );
+  const response = await fetch(url, {
+    headers:{
+      "Accept":"application/json",
+      "Accept-Language":"en"
     }
+  });
 
-    const result =
-      await response.json();
+  if(!response.ok){
+    throw new Error("Address request failed.");
+  }
 
-    const address =
-      result.address || {};
+  const result = await response.json();
+  const address = result.address || {};
 
-    const houseNumber =
-      address.house_number || "";
+  const houseNumber =
+    address.house_number || "";
 
-    const road =
-      address.road ||
-      address.residential ||
-      address.pedestrian ||
-      address.footway ||
-      address.path ||
-      "";
+  const road =
+    address.road ||
+    address.residential ||
+    address.pedestrian ||
+    address.footway ||
+    address.path ||
+    "";
 
-    const neighbourhood =
-      address.neighbourhood ||
-      address.suburb ||
-      address.quarter ||
-      address.hamlet ||
-      "";
+  const neighbourhood =
+    address.neighbourhood ||
+    address.suburb ||
+    address.quarter ||
+    address.hamlet ||
+    "";
 
-    const village =
-      address.village ||
-      address.hamlet ||
-      address.locality ||
-      "";
+  const village =
+    address.village ||
+    address.hamlet ||
+    address.locality ||
+    "";
 
-    const city =
-      address.city ||
-      address.town ||
-      address.municipality ||
-      address.village ||
-      "";
+  const city =
+    address.city ||
+    address.town ||
+    address.municipality ||
+    address.village ||
+    "";
 
-    const district =
-      address.state_district ||
-      address.county ||
-      address.district ||
-      "";
+  const district =
+    address.state_district ||
+    address.county ||
+    address.district ||
+    "";
 
-    const state =
-      address.state || "";
+  const state =
+    address.state || "";
 
-    const postcode =
-      address.postcode || "";
+  const postcode =
+    address.postcode || "";
 
-    const country =
-      address.country || "";
+  const country =
+    address.country || "";
 
-    const countryCode =
-      address.country_code || "";
+  const countryCode =
+    address.country_code || "";
 
-    const streetAddress = [
-      houseNumber,
-      road
-    ]
-    .filter(Boolean)
-    .join(", ");
+  const streetAddress = [
+    houseNumber,
+    road
+  ]
+  .filter(Boolean)
+  .join(", ");
 
-    const fullAddress =
-      result.display_name || [
-        streetAddress,
-        neighbourhood,
-        village,
-        city,
-        district,
-        state,
-        postcode,
-        country
-      ]
-      .filter(Boolean)
-      .join(", ");
-
-    const data = {
-      houseNumber,
-      road,
-      streetName:road,
+  const fullAddress =
+    result.display_name || [
       streetAddress,
       neighbourhood,
       village,
@@ -2287,33 +1951,29 @@ async function reverseGeocode(latitude, longitude){
       district,
       state,
       postcode,
-      country,
-      countryCode,
-      fullAddress
-    };
+      country
+    ]
+    .filter(Boolean)
+    .join(", ");
 
-    try{
-
-      sessionStorage.setItem(
-        "scrubMateReverseGeocodeCache",
-        JSON.stringify({
-          latitude:Number(latitude),
-          longitude:Number(longitude),
-          data
-        })
-      );
-
-    }catch(error){}
-
-    return data;
-
-  }finally{
-
-    clearTimeout(timeoutId);
-
-  }
+  return {
+    houseNumber,
+    road,
+    streetName:road,
+    streetAddress,
+    neighbourhood,
+    village,
+    city,
+    district,
+    state,
+    postcode,
+    country,
+    countryCode,
+    fullAddress
+  };
 
 }
+
 
 /* =========================
    SAVE LOCAL STORAGE
