@@ -1,1 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    .welcome-box {
+      text-align: center;
+      color: white;
+    }
+
+    h1 {
+      font-size: 60px;
+      margin-bottom: 15px;
+    }
+
+    p {
+      font-size: 22px;
+      margin-bottom: 25px;
+    }
+
+    button {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      background: white;
+      color: #667eea;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #eee;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="welcome-box">
+    <h1>Welcome! 👋</h1>
+    <p id="message">Welcome to my website</p>
+    <button onclick="showMessage()">Click Me</button>
+  </div>
+
+  <script>
+    function showMessage() {
+      document.getElementById("message").textContent =
+        "Thanks for visiting! 🎉";
+    }
+  </script>
+
+</body>
+</html>
 
