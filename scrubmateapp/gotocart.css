@@ -1,0 +1,1413 @@
+/* =========================================
+   FULL CART PAGE
+========================================= */
+
+.scurbCartPage{
+  position:fixed;
+  inset:0;
+
+  z-index:12000;
+
+ 
+  height:100%;
+  margin:auto;
+
+  display:flex;
+  flex-direction:column;
+
+  background:#f6f7f8;
+
+  visibility:hidden;
+  opacity:0;
+  pointer-events:none;
+
+  transform:translate3d(100%,0,0);
+
+  transition:
+    transform .32s cubic-bezier(.22,.8,.25,1),
+    opacity .22s ease,
+    visibility .22s ease;
+}
+
+.scurbCartPage.show{
+  visibility:visible;
+  opacity:1;
+  pointer-events:auto;
+
+  transform:translate3d(0,0,0);
+}
+
+.scurbCartDeliveryRow{
+  align-items:center;
+}
+
+.scurbCartDeliveryText{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+
+.scurbCartDeliveryText > span{
+  font-size:14px;
+  color:#333;
+}
+
+.scurbCartDeliveryText small{
+  font-size:11px;
+  font-weight:500;
+  color:#777;
+}
+
+#scurbCartDeliveryFee{
+  white-space:nowrap;
+}
+
+.scurbCartDeliveryRow.deliveryFree
+#scurbCartDeliveryFee{
+  color:#0a9f55;
+}
+/* =========================================
+   FIXED CART HEADER
+========================================= */
+
+.scurbCartHeader{
+  position:relative;
+  z-index:10;
+
+  flex:none;
+
+  min-height:calc(
+    66px +
+    env(safe-area-inset-top, 0px)
+  );
+
+  padding:
+  calc(
+    env(safe-area-inset-top, 0px) +
+    60px
+  )
+  16px
+  12px;
+
+  display:flex;
+  align-items:center;
+  gap:13px;
+
+  border-bottom:1px solid #eeeeee;
+
+  background:#ffffff;
+}
+
+.scurbCartBackButton{
+  flex:none;
+
+  width:40px;
+  height:40px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0;
+
+  border:none;
+  border-radius:50%;
+
+  background:#f4f4f4;
+  color:#171717;
+
+  cursor:pointer;
+}
+
+.scurbCartBackButton i{
+  font-size:17px;
+}
+
+.scurbCartHeader h1{
+  margin:0;
+
+  color:#171717;
+
+  font-family:'DM Sans', sans-serif;
+  font-size:21px;
+  font-weight:800;
+}
+
+
+/* =========================================
+   SCROLLABLE CART CONTENT
+========================================= */
+
+.scurbCartContent{
+  flex:1;
+  min-height:0;
+
+  padding:16px 12px 0;
+
+  overflow-y:auto;
+  overflow-x:hidden;
+
+  -webkit-overflow-scrolling:touch;
+}
+
+.scurbCartReviewSection,
+.scurbCartDetailsCard,
+.scurbCartBillCard{
+  width:100%;
+
+  padding:18px 14px;
+
+  border:1px solid #eeeeee;
+  border-radius:18px;
+
+  background:#ffffff;
+
+  box-shadow:0 4px 16px rgba(0,0,0,.035);
+}
+
+
+/* REVIEW HEADER */
+
+.scurbCartSectionHeading{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+
+  margin-bottom:6px;
+}
+
+.scurbCartSectionHeading h2,
+.scurbCartDetailsCard h2,
+.scurbCartBillCard h2{
+  margin:0;
+
+  color:#171717;
+
+  font-size:19px;
+  font-weight:800;
+}
+
+.scurbCartSectionHeading span{
+  color:#777777;
+
+  font-size:13px;
+  font-weight:700;
+}
+
+
+/* =========================================
+   CART ITEM
+========================================= */
+
+.scurbCartItem{
+  width:100%;
+
+  display:grid;
+  grid-template-columns:62px minmax(0,1fr) auto;
+  align-items:center;
+  gap:11px;
+
+  padding:16px 0;
+
+  border-bottom:1px solid #eeeeee;
+}
+
+.scurbCartItem:last-child{
+  border-bottom:none;
+}
+
+.scurbCartItemImage{
+  width:62px;
+  height:62px;
+
+  display:block;
+
+  object-fit:cover;
+
+  border-radius:14px;
+
+  background:#eef8f8;
+}
+
+.scurbCartItemInfo{
+  min-width:0;
+}
+
+.scurbCartItemInfo h3{
+  margin:0;
+
+  color:#222222;
+
+  font-size:15px;
+  font-weight:800;
+  line-height:1.3;
+}
+
+.scurbCartItemPrice{
+  margin-top:6px;
+
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+
+.scurbCartItemCurrentPrice{
+  color:#111111;
+
+  font-size:16px;
+  font-weight:800;
+}
+
+.scurbCartItemOldPrice{
+  color:#999999;
+
+  font-size:12px;
+  font-weight:600;
+
+  text-decoration:line-through;
+}
+
+
+/* CART QUANTITY */
+
+.scurbCartItemQuantity{
+  width:94px;
+  min-height:48px;
+
+  display:grid;
+  grid-template-columns:30px 1fr 30px;
+  align-items:center;
+
+  padding:3px;
+
+  border:1.5px solid #14b9bb;
+  border-radius:13px;
+
+  background:#ffffff;
+}
+
+.scurbCartItemMinus,
+.scurbCartItemPlus{
+  width:30px;
+  height:38px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0;
+  border:none;
+
+  background:transparent;
+  color:#14b9bb;
+
+  font-size:22px;
+  font-weight:800;
+
+  cursor:pointer;
+}
+
+.scurbCartItemQty{
+  color:#111111;
+
+  font-size:15px;
+  font-weight:800;
+  text-align:center;
+}
+
+
+/* ADD MORE */
+
+.scurbCartAddMoreButton{
+  width:100%;
+
+  margin-top:5px;
+  padding:16px 6px 2px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+
+  border:none;
+  border-top:1px solid #eeeeee;
+
+  background:#ffffff;
+
+  cursor:pointer;
+}
+
+.scurbCartAddMoreButton span{
+  color:#666666;
+
+  font-size:14px;
+  font-weight:600;
+}
+
+.scurbCartAddMoreButton strong{
+  color:#14b9bb;
+
+  font-size:14px;
+  font-weight:800;
+}
+
+
+/* =========================================
+   PROMO CARD
+========================================= */
+
+.scurbCartPromoCard{
+  width:100%;
+
+  margin-top:14px;
+  padding:16px 14px;
+
+  display:flex;
+  align-items:center;
+  gap:12px;
+
+  border:1px solid #eeeeee;
+  border-radius:18px;
+
+  background:#ffffff;
+  color:#222222;
+
+  text-align:left;
+
+  cursor:pointer;
+
+  box-shadow:0 4px 16px rgba(0,0,0,.035);
+}
+
+.scurbCartPromoIcon{
+  flex:none;
+
+  width:42px;
+  height:42px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:12px;
+
+  background:rgba(20,185,187,.12);
+  color:#14b9bb;
+}
+
+.scurbCartPromoIcon i{
+  font-size:18px;
+}
+
+.scurbCartPromoText{
+  flex:1;
+  min-width:0;
+
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+
+.scurbCartPromoText strong{
+  color:#222222;
+
+  font-size:15px;
+  font-weight:800;
+}
+
+.scurbCartPromoText span{
+  color:#888888;
+
+  font-size:12px;
+  font-weight:600;
+}
+
+.scurbCartPromoCard > i{
+  color:#999999;
+
+  font-size:13px;
+}
+
+
+/* =========================================
+   BOOKING DETAILS
+========================================= */
+
+.scurbCartDetailsCard{
+  margin-top:14px;
+}
+
+.scurbCartDetailRow{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+
+  margin-top:17px;
+}
+
+.scurbCartDetailIcon{
+  flex:none;
+
+  width:36px;
+  height:36px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:11px;
+
+  background:#f0fbfb;
+  color:#14b9bb;
+}
+
+.scurbCartDetailIcon i{
+  font-size:15px;
+}
+
+.scurbCartDetailRow > div:last-child{
+  min-width:0;
+
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+
+.scurbCartDetailRow span{
+  color:#888888;
+
+  font-size:11px;
+  font-weight:700;
+}
+
+.scurbCartDetailRow strong{
+  color:#222222;
+
+  font-size:14px;
+  font-weight:700;
+  line-height:1.4;
+
+  overflow-wrap:anywhere;
+}
+
+
+/* =========================================
+   BILL DETAILS
+========================================= */
+
+.scurbCartBillCard{
+  margin-top:14px;
+}
+
+.scurbCartBillRow{
+  margin-top:15px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+
+  color:#555555;
+
+  font-size:14px;
+  font-weight:600;
+}
+
+.scurbCartBillRow strong{
+  color:#222222;
+
+  font-size:14px;
+  font-weight:800;
+}
+
+.scurbCartDiscountRow,
+.scurbCartDiscountRow strong{
+  color:#149447;
+}
+
+.scurbCartBillDivider{
+  width:100%;
+  height:1px;
+
+  margin-top:16px;
+
+  background:#eeeeee;
+}
+
+.scurbCartBillTotalRow{
+  color:#111111;
+
+  font-size:16px;
+  font-weight:800;
+}
+
+.scurbCartBillTotalRow strong{
+  font-size:18px;
+}
+
+.scurbCartBottomSpace{
+  height:20px;
+}
+
+
+/* =========================================
+   FIXED CART BOTTOM
+========================================= */
+
+.scurbCartBottomBar{
+  position:relative;
+  z-index:10;
+
+  flex:none;
+
+  min-height:calc(
+    90px +
+    env(safe-area-inset-bottom, 0px)
+  );
+
+  padding:
+    12px
+    12px
+    calc(
+      env(safe-area-inset-bottom, 0px) +
+      12px
+    );
+
+  display:grid;
+  grid-template-columns:auto 1fr 1.15fr;
+  align-items:center;
+  gap:9px;
+
+  border-top:1px solid #e8e8e8;
+
+  background:#ffffff;
+
+  box-shadow:0 -7px 24px rgba(0,0,0,.08);
+}
+
+.scurbCartToPay{
+  min-width:65px;
+
+  margin-left:13px;
+
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.scurbCartToPay span{
+  color:#555555;
+
+  font-size:11px;
+  font-weight:700;
+}
+
+.scurbCartToPay strong{
+  color:#111111;
+
+  font-size:22px;
+  font-weight:900;
+}
+
+.scurbCartPayOnlineButton,
+.scurbCartCashButton{
+  min-width:0;
+  min-height:56px;
+
+  padding:7px 8px;
+
+  border-radius:14px;
+
+  font-size:13px;
+  font-weight:800;
+
+  cursor:pointer;
+}
+
+.scurbCartPayOnlineButton{
+  border:1.5px solid #dddddd;
+
+  background:#ffffff;
+  color:#111111;
+}
+
+.scurbCartCashButton{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:1px;
+
+  border:none;
+
+  background:#14b9bb;
+  color:#ffffff;
+}
+
+.scurbCartCashButton strong{
+  font-size:13px;
+  font-weight:900;
+}
+
+.scurbCartCashButton span{
+  font-size:10px;
+  font-weight:700;
+}
+
+
+/* SMALL PHONES */
+
+@media (max-width:380px){
+
+  .scurbCartBottomBar{
+    grid-template-columns:auto .9fr 1.1fr;
+    gap:6px;
+    padding-left:8px;
+    padding-right:8px;
+  }
+.scurbCartItemQuantityWrap{
+  width:88px;
+}
+
+.scurbCartItemQuantityLabel{
+  max-width:82px;
+}
+  .scurbCartToPay{
+    min-width:64px;
+  }
+
+  .scurbCartToPay strong{
+    font-size:19px;
+  }
+
+  .scurbCartPayOnlineButton,
+  .scurbCartCashButton{
+    min-height:52px;
+    font-size:11px;
+  }
+
+  .scurbCartCashButton strong{
+    font-size:11px;
+  }
+
+  .scurbCartItem{
+    grid-template-columns:54px minmax(0,1fr) 88px;
+    gap:8px;
+  }
+
+  .scurbCartItemImage{
+    width:54px;
+    height:54px;
+  }
+
+  .scurbCartItemQuantity{
+    width:88px;
+  }
+
+}
+
+/* =========================================
+   CART QUANTITY LABEL
+========================================= */
+
+.scurbCartItemQuantityWrap{
+  width:94px;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+
+  gap:2px;
+}
+
+.scurbCartItemQuantityLabel{
+  max-width:88px;
+
+  padding:0 5px;
+
+  color:#000000;
+  
+
+  font-size:10px;
+  font-weight:600;
+  line-height:1.15;
+  text-align:center;
+
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+
+  pointer-events:none;
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+/* =========================================
+   ORDER TRACKING PAGE
+========================================= */
+
+.scurbOrderTrackingPage{
+  position:fixed;
+  inset:0;
+  z-index:16000;
+
+ 
+  height:100%;
+  margin:auto;
+
+  display:flex;
+  flex-direction:column;
+
+  background:#f5f6f7;
+
+  visibility:hidden;
+  opacity:0;
+  pointer-events:none;
+
+  transform:translate3d(100%,0,0);
+
+  transition:
+    transform .32s cubic-bezier(.22,.8,.25,1),
+    opacity .22s ease,
+    visibility .22s ease;
+}
+
+.scurbOrderTrackingPage.show{
+  visibility:visible;
+  opacity:1;
+  pointer-events:auto;
+
+  transform:translate3d(0,0,0);
+}
+
+
+/* =========================================
+   MAP SECTION
+========================================= */
+
+.scurbOrderMapSection{
+  position:relative;
+  flex:none;
+
+  width:100%;
+  height:clamp(275px, 40vh, 390px);
+
+  overflow:hidden;
+
+  background:#e1eeee;
+}
+
+.scurbOrderMap{
+  width:100%;
+  height:100%;
+}
+
+.scurbOrderBackButton{
+  position:absolute;
+  z-index:700;
+
+  top:calc(env(safe-area-inset-top, 0px) + 50px);
+  left:16px;
+
+  width:44px;
+  height:44px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0;
+
+  border:none;
+  border-radius:50%;
+
+  background:rgba(255,255,255,.97);
+  color:#171717;
+
+  font-size:16px;
+
+  box-shadow:
+    0 6px 22px rgba(0,0,0,.18);
+
+  cursor:pointer;
+}
+
+.scurbOrderBackButton:active{
+  transform:scale(.95);
+}
+
+
+
+.scurbOrderMapLabel i{
+  color:#14b9bb;
+}
+
+
+/* =========================================
+   MAP CUSTOM ICONS
+========================================= */
+
+.scurbOrderCustomerMarker,
+.scurbOrderCleanerMarker{
+  width:48px;
+  height:48px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border:4px solid #ffffff;
+  border-radius:50%;
+
+  box-shadow:
+    0 5px 18px rgba(0,0,0,.22);
+}
+
+.scurbOrderCustomerMarker{
+  background:#14b9bb;
+  color:#ffffff;
+}
+
+.scurbOrderCleanerMarker{
+  background:#ffffff;
+  color:#14b9bb;
+}
+
+.scurbOrderCustomerMarker i,
+.scurbOrderCleanerMarker i{
+  font-size:21px;
+}
+
+
+/* =========================================
+   CONTENT
+========================================= */
+
+.scurbOrderTrackingContent{
+  flex:1;
+  min-height:0;
+
+  padding:
+    14px
+    12px
+    calc(28px + env(safe-area-inset-bottom, 0px));
+
+  overflow-y:auto;
+  overflow-x:hidden;
+
+  overscroll-behavior-y:contain;
+  -webkit-overflow-scrolling:touch;
+
+  background:#f5f6f7;
+
+  font-family:"Manrope",sans-serif;
+}
+
+
+/* =========================================
+   COMMON CARDS
+========================================= */
+
+.scurbOrderMainStatusCard,
+.scurbOrderCleanerCard,
+.scurbOrderCard{
+  width:100%;
+
+  padding:17px 15px;
+
+  border:1px solid #ebeeee;
+  border-radius:19px;
+
+  background:#ffffff;
+
+  box-shadow:
+    0 5px 18px rgba(0,0,0,.045);
+}
+
+.scurbOrderCleanerCard,
+.scurbOrderCard{
+  margin-top:13px;
+}
+
+
+/* =========================================
+   MAIN STATUS CARD
+========================================= */
+
+.scurbOrderMainStatusCard{
+  display:flex;
+  align-items:flex-start;
+  gap:13px;
+}
+
+.scurbOrderMainStatusIcon{
+  flex:none;
+
+  width:50px;
+  height:50px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:15px;
+
+  background:rgba(20,185,187,.12);
+  color:#14b9bb;
+}
+
+.scurbOrderMainStatusIcon i{
+  font-size:22px;
+}
+
+.scurbOrderMainStatusText{
+  flex:1;
+  min-width:0;
+}
+
+.scurbOrderMainStatusText h1{
+  margin:0;
+
+  color:#171717;
+
+  font-size:17px;
+  font-weight:850;
+  line-height:1.35;
+}
+
+.scurbOrderMainStatusText p{
+  margin:6px 0 0;
+
+  color:#727272;
+
+  font-size:13px;
+  font-weight:600;
+  line-height:1.5;
+}
+
+
+/* =========================================
+   CLEANER CARD
+========================================= */
+
+.scurbOrderCleanerCard[hidden]{
+  display:none;
+}
+
+.scurbOrderCleanerTop{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.scurbOrderCleanerAvatar{
+  flex:none;
+
+  width:58px;
+  height:58px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:50%;
+
+  background:rgba(20,185,187,.12);
+  color:#14b9bb;
+
+  font-size:23px;
+}
+
+.scurbOrderCleanerInformation{
+  flex:1;
+  min-width:0;
+
+  display:flex;
+  flex-direction:column;
+}
+
+.scurbOrderCleanerInformation > span{
+  color:#888888;
+
+  font-size:11px;
+  font-weight:700;
+}
+
+.scurbOrderCleanerInformation strong{
+  margin-top:3px;
+
+  color:#171717;
+
+  font-size:16px;
+  font-weight:850;
+
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.scurbOrderCleanerInformation p{
+  margin:4px 0 0;
+
+  color:#079fa2;
+
+  font-size:12px;
+  font-weight:750;
+  line-height:1.4;
+}
+
+.scurbOrderCleanerCall{
+  flex:none;
+
+  width:44px;
+  height:44px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:50%;
+
+  background:#14b9bb;
+  color:#ffffff;
+
+  text-decoration:none;
+
+  box-shadow:
+    0 6px 15px rgba(20,185,187,.25);
+}
+
+.scurbOrderReadyMessage{
+  margin-top:15px;
+  padding:12px;
+
+  display:flex;
+  align-items:center;
+  gap:9px;
+
+  border-radius:13px;
+
+  background:#eefafa;
+  color:#444444;
+
+  font-size:12px;
+  font-weight:650;
+  line-height:1.45;
+}
+
+.scurbOrderReadyMessage i{
+  flex:none;
+
+  color:#14b9bb;
+  font-size:15px;
+}
+
+
+/* =========================================
+   SECTION HEADING
+========================================= */
+
+.scurbOrderSectionHeading{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+
+  margin-bottom:4px;
+}
+
+.scurbOrderSectionHeading h2{
+  margin:0;
+
+  color:#171717;
+
+  font-size:17px;
+  font-weight:850;
+}
+
+
+/* =========================================
+   STATUS BADGE
+========================================= */
+
+.scurbOrderStatusBadge{
+  flex:none;
+
+  padding:6px 10px;
+
+  border-radius:999px;
+
+  background:#e9fafa;
+  color:#079fa2;
+
+  font-size:10px;
+  font-weight:850;
+
+  text-transform:capitalize;
+}
+
+.scurbOrderStatusBadge.completed{
+  background:#e9f8ed;
+  color:#218442;
+}
+
+.scurbOrderStatusBadge.cancelled{
+  background:#fff0f0;
+  color:#d33b3b;
+}
+
+
+/* =========================================
+   DETAILS ROW
+========================================= */
+
+.scurbOrderDetailsRow{
+  display:grid;
+  grid-template-columns:39px minmax(0,1fr);
+  align-items:start;
+  gap:11px;
+
+  margin-top:16px;
+}
+
+.scurbOrderDetailsIcon{
+  width:39px;
+  height:39px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:12px;
+
+  background:#effafa;
+  color:#14b9bb;
+}
+
+.scurbOrderDetailsIcon i{
+  font-size:14px;
+}
+
+.scurbOrderDetailsRow > div:last-child{
+  min-width:0;
+
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+
+.scurbOrderDetailsRow span{
+  color:#888888;
+
+  font-size:11px;
+  font-weight:700;
+}
+
+.scurbOrderDetailsRow strong{
+  color:#242424;
+
+  font-size:14px;
+  font-weight:750;
+  line-height:1.45;
+
+  overflow-wrap:anywhere;
+}
+
+
+/* =========================================
+   SERVICES
+========================================= */
+
+.scurbOrderServicesList{
+  margin-top:7px;
+}
+
+.scurbOrderServiceRow{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:12px;
+
+  padding:14px 0;
+
+  border-bottom:1px solid #eeeeee;
+}
+
+.scurbOrderServiceRow:last-child{
+  border-bottom:none;
+}
+
+.scurbOrderServiceInformation{
+  min-width:0;
+}
+
+.scurbOrderServiceInformation strong{
+  display:block;
+
+  color:#222222;
+
+  font-size:14px;
+  font-weight:800;
+}
+
+.scurbOrderServiceInformation span{
+  display:block;
+
+  margin-top:4px;
+
+  color:#888888;
+
+  font-size:12px;
+  font-weight:600;
+}
+
+.scurbOrderServiceQuantity{
+  flex:none;
+
+  color:#14b9bb;
+
+  font-size:13px;
+  font-weight:850;
+}
+
+
+/* =========================================
+   BILL DETAILS
+========================================= */
+
+.scurbOrderBillRow{
+  margin-top:15px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+
+  color:#555555;
+
+  font-size:14px;
+  font-weight:650;
+}
+
+.scurbOrderBillRow strong{
+  color:#222222;
+
+  font-size:14px;
+  font-weight:850;
+}
+
+.scurbOrderSavingRow,
+.scurbOrderSavingRow strong{
+  color:#149447;
+}
+
+.scurbOrderBillRow[hidden]{
+  display:none;
+}
+
+.scurbOrderBillDivider{
+  width:100%;
+  height:1px;
+
+  margin-top:16px;
+
+  background:#eeeeee;
+}
+
+.scurbOrderFinalRow{
+  color:#111111;
+
+  font-size:16px;
+  font-weight:850;
+}
+
+.scurbOrderFinalRow strong{
+  font-size:18px;
+}
+
+.scurbOrderBottomSpace{
+  height:18px;
+}
+
+/* USER BOOKED LOCATION PIN */
+
+.scurbOrderCustomerPin{
+  position:relative;
+
+  width:52px;
+  height:62px;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.scurbOrderCustomerPinCircle{
+  position:relative;
+  z-index:2;
+
+  width:34px;
+  height:34px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border:3px solid #ffffff;
+  border-radius:50%;
+
+  background:#14b9bb;
+  color:#ffffff;
+
+  box-shadow:
+    0 4px 12px rgba(0,0,0,.22);
+}
+
+.scurbOrderCustomerPinCircle i{
+  font-size:16px;
+}
+
+.scurbOrderCustomerPinPoint{
+  width:11px;
+  height:11px;
+
+  margin-top:-6px;
+
+  background:#14b9bb;
+
+  transform:rotate(45deg);
+
+  border-right:2px solid #ffffff;
+  border-bottom:2px solid #ffffff;
+
+  box-shadow:
+    3px 3px 6px rgba(0,0,0,.10);
+}
+/* =========================================
+   MAP BOTTOM FADE
+========================================= */
+
+.scurbOrderMapSection::after{
+  content:"";
+
+  position:absolute;
+
+  left:0;
+  right:0;
+  bottom:0;
+
+  height:90px;
+
+  pointer-events:none;
+
+  background:linear-gradient(
+    to bottom,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.15) 25%,
+    rgba(255,255,255,0.45) 55%,
+    rgba(245,246,247,0.80) 80%,
+    #f5f6f7 100%
+  );
+
+  z-index:200;
+}
