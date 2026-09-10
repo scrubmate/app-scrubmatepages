@@ -5279,6 +5279,21 @@ const SUPABASE_URL = "https://tigomzzcyxzwfvemmbqp.supabase.co";
       addBtn.dataset.stockAvailable = isAvailable ? "true" : "false";
       addBtn.setAttribute("aria-disabled", isAvailable ? "false" : "true");
     });
+
+    const rawStock = stockValue;
+
+    const isUnavailable =
+      rawStock === false ||
+      rawStock === 0 ||
+      String(rawStock).trim().toLowerCase() === "false" ||
+      String(rawStock).trim() === "0";
+
+    if(
+      isUnavailable &&
+      typeof window.scrubMateRemoveUnavailableService === "function"
+    ){
+      window.scrubMateRemoveUnavailableService(serviceName);
+    }
   }
 
   async function loadServicePricesFromSupabase(){
