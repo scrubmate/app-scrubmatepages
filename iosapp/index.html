@@ -7050,18 +7050,15 @@ window.addEventListener("pageshow", function(){
     cursor:not-allowed !important;
     pointer-events:none !important;
   }
-
   .scurbServiceAddBtn.scrub-stock-busy .scurbSinglePlus{
     display:none !important;
   }
-
   .scurbServiceAddBtn.scrub-stock-busy::after{
     content:"Busy";
     font-size:11px;
     line-height:1;
     font-weight:800;
   }
-
   .scrub-stock-popup-hidden{
     display:none !important;
     visibility:hidden !important;
@@ -7073,265 +7070,241 @@ window.addEventListener("pageshow", function(){
 (function(){
   "use strict";
 
+  /*
+    STOCK MODE:
+    Supabase stock can be boolean TRUE/FALSE.
+    For safety this also understands the old integer values,
+    so the app will NOT crash if the database column is still integer.
+  */
   const STOCK_TABLE = "service_prices";
-  let scrubServiceStock = Object.create(null);
-  let scrubStockRealtimeChannel = null;
-  let scrubStockObserver = null;
+  let serviceStock = Object.create(null);
+  let realtimeChannel = null;
+  let observerStarted = false;
 
-  function normalizeServiceName(value){
-    return String(value || "").trim().toLowerCase();
+  function normalize(value){
+    return String(value == null ? "" : value).trim().toLowerCase();
   }
 
-  function stockIsAvailable(value){
-    /* Stock is YES / NO (boolean), never a number. */
-    return value === true || String(value).toLowerCase() === "true";
+  function isAvailable(value){
+    if(value === true || value === false) return value;
+
+    const text = normalize(value);
+    if(text === "true" || text === "yes") return true;
+    if(text === "false" || text === "no" || text === "") return false;
+
+    /* Backward compatibility with old integer stock column. */
+    const number = Number(value);
+    return Number.isFinite(number) && number > 0;
   }
 
-  function getHomeCard(serviceName){
-    const wanted = normalizeServiceName(serviceName);
+  function getCard(serviceName){
+    const wanted = normalize(serviceName);
     if(!wanted) return null;
 
     const cards = document.querySelectorAll(
       ".scurbServiceCard[data-service]"
     );
 
-    for(const card of cards){
-      if(normalizeServiceName(card.getAttribute("data-service")) === wanted){
-        return card;
+    for(let i=0;i<cards.length;i++){
+      if(normalize(cards[i].getAttribute("data-service")) === wanted){
+        return cards[i];
       }
     }
     return null;
   }
 
-  function updateHomeStockUI(serviceName, stock){
-    const card = getHomeCard(serviceName);
+  function setHomeUI(serviceName, stock){
+    const card = getCard(serviceName);
     if(!card) return;
 
-    const addButton = card.querySelector(".scurbServiceAddBtn");
-    if(!addButton) return;
+    const button = card.querySelector(".scurbServiceAddBtn");
+    if(!button) return;
 
-    const available = stockIsAvailable(stock);
-    addButton.classList.toggle("scrub-stock-busy", !available);
-    addButton.setAttribute("data-stock", stockIsAvailable(stock) ? "true" : "false");
+    const available = isAvailable(stock);
+
+    button.classList.toggle("scrub-stock-busy", !available);
+    button.setAttribute("data-stock", available ? "true" : "false");
 
     if(available){
-      addButton.disabled = false;
-      addButton.setAttribute("aria-label", "Add " + serviceName);
+      button.disabled = false;
+      button.removeAttribute("title");
+      button.setAttribute("aria-label", "Add " + serviceName);
     }else{
-      addButton.disabled = true;
-      addButton.setAttribute("aria-label", serviceName + " is busy");
-      addButton.setAttribute("title", "Service currently busy");
+      button.disabled = true;
+      button.setAttribute("title", "Service currently busy");
+      button.setAttribute("aria-label", serviceName + " is busy");
     }
   }
 
-  function isPopupElement(element){
-    if(!element || element.nodeType !== 1) return false;
-
-    const text = (
-      (element.id || "") + " " +
-      (element.className && typeof element.className === "string" ? element.className : "")
+  function isPopup(el){
+    if(!el || el.nodeType !== 1) return false;
+    const value = (
+      String(el.id || "") + " " +
+      (typeof el.className === "string" ? el.className : "")
     ).toLowerCase();
-
-    return (
-      text.includes("popup") ||
-      text.includes("sheet") ||
-      text.includes("modal")
-    );
+    return /popup|sheet|modal/.test(value);
   }
 
-  function buttonLooksLikeAdd(button){
-    if(!button || button.tagName !== "BUTTON") return false;
-
-    const text = String(button.innerText || button.textContent || "")
-      .replace(/\s+/g," ")
-      .trim()
-      .toLowerCase();
-
-    const aria = String(
-      button.getAttribute("aria-label") || ""
-    ).toLowerCase();
-
-    const idClass = (
-      String(button.id || "") + " " +
-      (typeof button.className === "string" ? button.className : "")
-    ).toLowerCase();
-
-    /* Do NOT hide close/back buttons. */
-    if(/close|cancel|back|previous|minus|remove/.test(idClass + " " + aria + " " + text)){
-      return false;
-    }
-
-    return (
-      /\badd\b/.test(text) ||
-      /\+/.test(text) ||
-      /\badd\b/.test(aria) ||
-      /\badd\b/.test(idClass) ||
-      /\bplus\b/.test(idClass)
-    );
-  }
-
-  function getVisiblePopups(){
-    const all = document.querySelectorAll(
-      '[id*="Popup"], [id*="popup"], [class*="Popup"], [class*="popup"], [class*="Sheet"], [class*="sheet"], [class*="Modal"], [class*="modal"]'
-    );
-
-    return Array.from(all).filter(function(el){
-      const style = window.getComputedStyle(el);
-      const rect = el.getBoundingClientRect();
-      return (
-        style.display !== "none" &&
-        style.visibility !== "hidden" &&
-        Number(style.opacity || 1) > 0 &&
-        rect.width > 0 &&
-        rect.height > 0
-      );
-    });
-  }
-
-  function findServiceNameInPopup(popup){
+  function popupServiceName(popup){
     if(!popup) return "";
 
-    /* Prefer an explicit service marker if popup code has one. */
-    const explicit = popup.querySelector(
-      '[data-service], [data-service-name], [data-servicename]'
+    const marker = popup.querySelector(
+      "[data-service],[data-service-name],[data-servicename]"
     );
-
-    if(explicit){
-      const value =
-        explicit.getAttribute("data-service") ||
-        explicit.getAttribute("data-service-name") ||
-        explicit.getAttribute("data-servicename");
+    if(marker){
+      const value = marker.getAttribute("data-service") ||
+                    marker.getAttribute("data-service-name") ||
+                    marker.getAttribute("data-servicename");
       if(value) return String(value).trim();
     }
 
-    /* Match popup id to the same service mapping used by the page. */
-    const id = String(popup.id || "").toLowerCase();
+    const id = normalize(popup.id).replace(/[^a-z0-9]/g, "");
     const map = {
-      "fridgecleaning":"Fridge Cleaning",
-      "windowcleaning":"Window Cleaning",
-      "utilitiescleaning":"Utilities Cleaning",
-      "accleaning":"AC Cleaning",
-      "bathroomcleaning":"Bathroom Cleaning",
-      "kitchenhelp":"Kitchen Help",
-      "dustingwiping":"Dusting and Wiping",
-      "packingunpacking":"Packing and Unpacking",
-      "ironing":"Ironing",
-      "fancleaning":"Fan Cleaning",
-      "bedroomcleaning":"Bedroom Cleaning",
-      "shopcleaning":"Shop Cleaning",
-      "bikecleaning":"Bike Cleaning",
-      "laundryservice":"Laundry Service",
-      "sweepingmopping":"Sweeping and Mopping",
-      "stagecleaning":"Stage Cleaning"
+      fridgecleaning:"Fridge Cleaning",
+      windowcleaning:"Window Cleaning",
+      utilitiescleaning:"Utilities Cleaning",
+      accleaning:"AC Cleaning",
+      bathroomcleaning:"Bathroom Cleaning",
+      kitchenhelp:"Kitchen Help",
+      dustingwiping:"Dusting and Wiping",
+      packingunpacking:"Packing and Unpacking",
+      ironing:"Ironing",
+      fancleaning:"Fan Cleaning",
+      bedroomcleaning:"Bedroom Cleaning",
+      shopcleaning:"Shop Cleaning",
+      bikecleaning:"Bike Cleaning",
+      laundryservice:"Laundry Service",
+      sweepingmopping:"Sweeping and Mopping",
+      stagecleaning:"Stage Cleaning"
     };
 
     for(const key in map){
-      if(id.includes(key)) return map[key];
+      if(id.indexOf(key) !== -1) return map[key];
     }
 
-    /* Finally inspect nearby heading text. */
     const heading = popup.querySelector("h1,h2,h3,h4,h5,[role='heading']");
-    const headingText = String(
-      heading ? heading.textContent : ""
-    ).replace(/\s+/g," ").trim().toLowerCase();
+    const headingText = normalize(heading ? heading.textContent : "");
 
-    for(const serviceName in scrubServiceStock){
-      if(headingText === serviceName || headingText.includes(serviceName)){
-        return serviceName;
+    for(const key in serviceStock){
+      if(headingText === key || headingText.indexOf(key) !== -1){
+        return key;
       }
     }
 
     return "";
   }
 
-  function updatePopupStockUI(serviceName, stock){
-    const available = stockIsAvailable(stock);
-    const popups = getVisiblePopups();
-    const wanted = normalizeServiceName(serviceName);
+  function looksLikeAdd(button){
+    if(!button || button.tagName !== "BUTTON") return false;
 
+    const text = normalize(button.innerText || button.textContent);
+    const aria = normalize(button.getAttribute("aria-label"));
+    const idClass = normalize(
+      String(button.id || "") + " " +
+      (typeof button.className === "string" ? button.className : "")
+    );
+
+    if(/close|cancel|back|previous|minus|remove/.test(idClass + " " + aria + " " + text)){
+      return false;
+    }
+
+    return /\badd\b/.test(text) ||
+           text.indexOf("+") !== -1 ||
+           /\badd\b/.test(aria) ||
+           /\badd\b/.test(idClass) ||
+           /\bplus\b/.test(idClass);
+  }
+
+  function updatePopupUI(serviceName, stock){
+    const wanted = normalize(serviceName);
     if(!wanted) return;
 
-    popups.forEach(function(popup){
-      const popupService = normalizeServiceName(
-        findServiceNameInPopup(popup)
-      );
+    const available = isAvailable(stock);
+    const all = document.querySelectorAll(
+      '[id*="Popup"],[id*="popup"],[class*="Popup"],[class*="popup"],[class*="Sheet"],[class*="sheet"],[class*="Modal"],[class*="modal"]'
+    );
 
-      if(popupService !== wanted) return;
+    for(let i=0;i<all.length;i++){
+      const popup = all[i];
+      const style = window.getComputedStyle(popup);
+      const rect = popup.getBoundingClientRect();
 
-      popup.querySelectorAll("button").forEach(function(button){
-        if(!buttonLooksLikeAdd(button)) return;
+      if(style.display === "none" || style.visibility === "hidden" ||
+         Number(style.opacity || 1) <= 0 || rect.width <= 0 || rect.height <= 0){
+        continue;
+      }
 
-        if(available){
-          button.classList.remove("scrub-stock-popup-hidden");
-          button.disabled = false;
-        }else{
-          button.classList.add("scrub-stock-popup-hidden");
-          button.disabled = true;
-        }
-      });
-    });
+      if(normalize(popupServiceName(popup)) !== wanted) continue;
+
+      const buttons = popup.querySelectorAll("button");
+      for(let j=0;j<buttons.length;j++){
+        const button = buttons[j];
+        if(!looksLikeAdd(button)) continue;
+
+        button.classList.toggle("scrub-stock-popup-hidden", !available);
+        button.disabled = !available;
+      }
+    }
   }
 
-  function updateAllStockUI(){
-    Object.keys(scrubServiceStock).forEach(function(serviceName){
-      const stock = scrubServiceStock[serviceName];
-      updateHomeStockUI(serviceName, stock);
-      updatePopupStockUI(serviceName, stock);
-    });
+  function updateAll(){
+    for(const key in serviceStock){
+      const stock = serviceStock[key];
+      setHomeUI(key, stock);
+      updatePopupUI(key, stock);
+    }
   }
 
-  async function loadServiceStock(){
+  async function loadStock(){
     try{
+      if(typeof supabaseClient === "undefined") return;
+
       const result = await supabaseClient
         .from(STOCK_TABLE)
         .select("service_name, stock");
 
       if(result.error){
-        console.error("❌ Service stock load failed:", result.error);
+        console.error("Service stock load failed:", result.error);
         return;
       }
 
       const rows = Array.isArray(result.data) ? result.data : [];
-      scrubServiceStock = Object.create(null);
+      serviceStock = Object.create(null);
 
       rows.forEach(function(row){
-        const name = String(row?.service_name || "").trim();
+        const name = String(row && row.service_name || "").trim();
         if(!name) return;
-        scrubServiceStock[normalizeServiceName(name)] =
-          stockIsAvailable(row?.stock);
+        serviceStock[normalize(name)] = row.stock;
       });
 
-      updateAllStockUI();
-      console.log("✅ Service stock loaded from Supabase", scrubServiceStock);
+      updateAll();
     }catch(error){
-      console.error("❌ Service stock error:", error);
+      console.error("Service stock error:", error);
     }
   }
 
-  function updateSingleServiceStockLive(row){
+  function handleRealtime(row){
     if(!row) return;
 
-    const serviceName = String(row.service_name || "").trim();
-    if(!serviceName) return;
+    const name = String(row.service_name || "").trim();
+    if(!name) return;
 
-    const stock = stockIsAvailable(row.stock);
-    const key = normalizeServiceName(serviceName);
+    const key = normalize(name);
+    serviceStock[key] = row.stock;
 
-    scrubServiceStock[key] = stock;
-
-    updateHomeStockUI(serviceName, stock);
-    updatePopupStockUI(serviceName, stock);
-
-    console.log("🔄 Live service stock update:", serviceName, stock);
+    setHomeUI(name, row.stock);
+    updatePopupUI(name, row.stock);
   }
 
-  function startServiceStockRealtime(){
+  function startRealtime(){
     try{
-      if(scrubStockRealtimeChannel){
-        supabaseClient.removeChannel(scrubStockRealtimeChannel);
+      if(typeof supabaseClient === "undefined") return;
+
+      if(realtimeChannel){
+        try{ supabaseClient.removeChannel(realtimeChannel); }catch(e){}
       }
 
-      scrubStockRealtimeChannel = supabaseClient
+      realtimeChannel = supabaseClient
         .channel("service-stock-live")
         .on(
           "postgres_changes",
@@ -7341,63 +7314,67 @@ window.addEventListener("pageshow", function(){
             table:STOCK_TABLE
           },
           function(payload){
-            const row = payload.new || payload.old;
-            updateSingleServiceStockLive(row);
+            handleRealtime(payload.new || payload.old);
           }
         )
-        .subscribe(function(status){
-          console.log("📡 Service stock realtime:", status);
-        });
+        .subscribe();
     }catch(error){
-      console.error("❌ Service stock realtime error:", error);
+      console.error("Service stock realtime error:", error);
     }
   }
 
-  function startServiceStockObserver(){
-    if(scrubStockObserver) scrubStockObserver.disconnect();
+  function startObserver(){
+    if(observerStarted || typeof MutationObserver === "undefined") return;
+    observerStarted = true;
 
-    scrubStockObserver = new MutationObserver(function(){
-      updateAllStockUI();
+    /* Only watch newly-created popup elements.
+       Do NOT watch class/style attributes, otherwise our own UI changes
+       can create an endless MutationObserver loop. */
+    const observer = new MutationObserver(function(mutations){
+      let changed = false;
+
+      for(let i=0;i<mutations.length;i++){
+        if(mutations[i].type === "childList" && mutations[i].addedNodes.length){
+          changed = true;
+          break;
+        }
+      }
+
+      if(changed) updateAll();
     });
 
-    scrubStockObserver.observe(document.body,{
-      childList:true,
-      subtree:true,
-      attributes:true,
-      attributeFilter:["class","style","hidden"]
-    });
+    if(document.body){
+      observer.observe(document.body,{childList:true,subtree:true});
+    }
   }
 
-  function installStockGuard(){
-    /* Prevent a stale/fast tap from opening a service after stock becomes 0. */
-    document.addEventListener("click", function(event){
-      const button = event.target.closest?.(".scurbServiceAddBtn");
+  function installGuard(){
+    document.addEventListener("click",function(event){
+      const target = event.target;
+      const button = target && target.closest ?
+        target.closest(".scurbServiceAddBtn") : null;
+
       if(!button) return;
 
-      const stock = String(button.getAttribute("data-stock") || "").toLowerCase() === "true";
-      if(!stock){
+      if(button.getAttribute("data-stock") === "false"){
         event.preventDefault();
         event.stopImmediatePropagation();
       }
-    }, true);
+    },true);
   }
 
-  function bootServiceStock(){
-    if(typeof supabaseClient === "undefined"){
-      console.error("❌ Supabase client not available for service stock.");
-      return;
-    }
-
-    loadServiceStock();
-    startServiceStockRealtime();
-    startServiceStockObserver();
-    installStockGuard();
+  function boot(){
+    if(typeof supabaseClient === "undefined") return;
+    loadStock();
+    startRealtime();
+    startObserver();
+    installGuard();
   }
 
   if(document.readyState === "loading"){
-    document.addEventListener("DOMContentLoaded", bootServiceStock, {once:true});
+    document.addEventListener("DOMContentLoaded",boot,{once:true});
   }else{
-    bootServiceStock();
+    boot();
   }
 })();
 </script>
