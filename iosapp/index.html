@@ -1031,10 +1031,8 @@ input{
 
 
 <style id="scrubmate-stock-safe-style">
-.scurbServiceAddBtn.scrubBusy25,
-.scurbServiceHeaderBookBtn.scrubBusy25{
+.scurbServiceAddBtn.scrubBusy25{
   min-width:58px !important;
-  width:auto !important;
   height:32px !important;
   padding:0 13px !important;
   border:none !important;
@@ -1049,8 +1047,6 @@ input{
   align-items:center !important;
   justify-content:center !important;
   pointer-events:auto !important;
-  box-shadow:none !important;
-  opacity:1 !important;
 }
 .scurbServiceAddBtn.scrubBusy25 .scurbSinglePlus{
   font-size:0 !important;
@@ -1059,6 +1055,27 @@ input{
   content:"Busy";
   font-size:12px;
   font-weight:700;
+}
+</style>
+
+
+<style id="scrubmate-popup-stock-safe-style">
+.scurbServiceHeaderBookBtn.scrubPopupBusy25{
+  min-width:58px !important;
+  height:32px !important;
+  padding:0 13px !important;
+  border:none !important;
+  border-radius:6px !important;
+  background:#fff1f1 !important;
+  color:#e53935 !important;
+  font-size:12px !important;
+  font-weight:700 !important;
+  border-bottom:3px solid #e53935 !important;
+  cursor:not-allowed !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  pointer-events:auto !important;
 }
 </style>
 
@@ -5183,43 +5200,123 @@ const SUPABASE_URL = "https://tigomzzcyxzwfvemmbqp.supabase.co";
     });
   }
 
-  function updateServicePopupStock(serviceName, serviceData){
-    const wanted = scrubNormalizeServiceName(serviceName);
-    if(!wanted || !serviceData) return;
-
-    Object.keys(SCRUB_MATE_POPUP_SERVICES).forEach(function(popupId){
-      const popupService = SCRUB_MATE_POPUP_SERVICES[popupId];
-
-      if(scrubNormalizeServiceName(popupService) !== wanted) return;
-
-      const popup = document.getElementById(popupId);
-      if(!popup || !popup.innerHTML.trim()) return;
-
-      const bookBtn = popup.querySelector(".scurbServiceHeaderBookBtn");
-      if(!bookBtn) return;
-
-      const isAvailable = serviceData.stock !== false;
-
-      bookBtn.classList.toggle("scrubBusy25", !isAvailable);
-      bookBtn.disabled = !isAvailable;
-      bookBtn.setAttribute("aria-disabled", isAvailable ? "false" : "true");
-      bookBtn.dataset.stockAvailable = isAvailable ? "true" : "false";
-      bookBtn.textContent = isAvailable ? "Book" : "Busy";
+  function updateAllServicePopupPrices(){
+    Object.keys(window.scrubMateServicePrices).forEach(function(serviceName){
+      updateServicePopupPrices(
+        serviceName,
+        window.scrubMateServicePrices[serviceName]
+      );
     });
   }
 
-  function updateAllServicePopupPrices(){
-    Object.keys(window.scrubMateServicePrices).forEach(function(serviceName){
-      const serviceData = window.scrubMateServicePrices[serviceName];
 
-      updateServicePopupPrices(
-        serviceName,
-        serviceData
+  /* =========================================
+     GENERIC POPUP STOCK + CART CLEANUP
+     Works for all 16 service popup JS files.
+  ========================================= */
+
+  function scrubGetPopupIdForService(serviceName){
+    const wanted = scrubNormalizeServiceName(serviceName);
+    if(!wanted) return "";
+
+    const entry = Object.entries(SCRUB_MATE_POPUP_SERVICES).find(function(item){
+      return scrubNormalizeServiceName(item[1]) === wanted;
+    });
+
+    return entry ? entry[0] : "";
+  }
+
+  function scrubApplyPopupStockState(serviceName, stockValue){
+    const popupId = scrubGetPopupIdForService(serviceName);
+    if(!popupId) return;
+
+    const popupRoot = document.getElementById(popupId);
+    if(!popupRoot) return;
+
+    const bookBtn = popupRoot.querySelector(".scurbServiceHeaderBookBtn");
+    if(!bookBtn) return;
+
+    const isAvailable = stockValue !== false;
+
+    if(!bookBtn.dataset.scrubOriginalBookText){
+      bookBtn.dataset.scrubOriginalBookText =
+        String(bookBtn.textContent || "Book").trim() || "Book";
+    }
+
+    bookBtn.classList.toggle("scrubPopupBusy25", !isAvailable);
+    bookBtn.dataset.stockAvailable = isAvailable ? "true" : "false";
+    bookBtn.setAttribute("aria-disabled", isAvailable ? "false" : "true");
+
+    if(isAvailable){
+      bookBtn.disabled = false;
+      bookBtn.textContent = bookBtn.dataset.scrubOriginalBookText || "Book";
+    }else{
+      bookBtn.disabled = true;
+      bookBtn.textContent = "Busy";
+    }
+  }
+
+  function scrubApplyAllPopupStockStates(){
+    Object.keys(window.scrubMateServicePrices || {}).forEach(function(key){
+      const service = window.scrubMateServicePrices[key];
+      if(!service) return;
+      scrubApplyPopupStockState(service.service_name || key, service.stock);
+    });
+  }
+
+  function scrubFindRemoveButtonInsideCartItem(item){
+    if(!item) return null;
+
+    const buttons = Array.from(item.querySelectorAll("button"));
+    if(!buttons.length) return null;
+
+    const strongMatch = buttons.find(function(btn){
+      const text = scrubNormalizeServiceName(
+        (btn.textContent || "") + " " +
+        (btn.getAttribute("aria-label") || "") + " " +
+        (btn.className || "")
       );
 
-      updateServicePopupStock(
-        serviceName,
-        serviceData
+      return (
+        text.includes("remove") ||
+        text.includes("delete") ||
+        text.includes("minus") ||
+        text.includes("decrease") ||
+        text.includes("trash") ||
+        text === "-" ||
+        text === "−"
+      );
+    });
+
+    return strongMatch || null;
+  }
+
+  function scrubRemoveBusyServiceFromCart(serviceName){
+    const cartItems = document.getElementById("scurbCartItems");
+    if(!cartItems) return;
+
+    const wanted = scrubNormalizeServiceName(serviceName);
+    if(!wanted) return;
+
+    Array.from(cartItems.children).forEach(function(item){
+      const itemText = scrubNormalizeServiceName(item.textContent || "");
+      if(!itemText.includes(wanted)) return;
+
+      const removeBtn = scrubFindRemoveButtonInsideCartItem(item);
+
+      if(removeBtn){
+        removeBtn.click();
+      }
+    });
+  }
+
+  function scrubCleanupBusyServicesFromCart(){
+    Object.keys(window.scrubMateServicePrices || {}).forEach(function(key){
+      const service = window.scrubMateServicePrices[key];
+      if(!service || service.stock !== false) return;
+
+      scrubRemoveBusyServiceFromCart(
+        service.service_name || key
       );
     });
   }
@@ -5240,6 +5337,12 @@ const SUPABASE_URL = "https://tigomzzcyxzwfvemmbqp.supabase.co";
       addBtn.dataset.stockAvailable = isAvailable ? "true" : "false";
       addBtn.setAttribute("aria-disabled", isAvailable ? "false" : "true");
     });
+
+    scrubApplyPopupStockState(serviceName, stockValue);
+
+    if(stockValue === false){
+      scrubRemoveBusyServiceFromCart(serviceName);
+    }
   }
 
   async function loadServicePricesFromSupabase(){
@@ -5450,13 +5553,6 @@ const SUPABASE_URL = "https://tigomzzcyxzwfvemmbqp.supabase.co";
       ]
     );
 
-    updateServicePopupStock(
-      serviceName,
-      window.scrubMateServicePrices[
-        scrubNormalizeServiceName(serviceName)
-      ]
-    );
-
   }
 
 
@@ -5484,7 +5580,10 @@ const SUPABASE_URL = "https://tigomzzcyxzwfvemmbqp.supabase.co";
 
     if(shouldRefresh){
       updateAllServicePopupPrices();
+      scrubApplyAllPopupStockStates();
     }
+
+    scrubCleanupBusyServicesFromCart();
   });
 
   function startServicePopupPriceObserver(){
@@ -5495,6 +5594,8 @@ const SUPABASE_URL = "https://tigomzzcyxzwfvemmbqp.supabase.co";
       });
     }
     updateAllServicePopupPrices();
+    scrubApplyAllPopupStockStates();
+    scrubCleanupBusyServicesFromCart();
   }
 
 
@@ -5578,9 +5679,11 @@ const SUPABASE_URL = "https://tigomzzcyxzwfvemmbqp.supabase.co";
 
   document.addEventListener("click", function(event){
     const busyBtn = event.target.closest?.(
-      ".scurbServiceAddBtn.scrubBusy25, .scurbServiceHeaderBookBtn.scrubBusy25"
+      ".scurbServiceAddBtn.scrubBusy25, .scurbServiceHeaderBookBtn.scrubPopupBusy25"
     );
+
     if(!busyBtn) return;
+
     event.preventDefault();
     event.stopPropagation();
     event.stopImmediatePropagation();
