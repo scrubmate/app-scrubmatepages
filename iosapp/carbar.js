@@ -326,6 +326,13 @@ function changeScurbServiceQuantity(
   const serviceName =
     getScurbServiceName(serviceCard);
 
+  if(
+    quantityChange > 0 &&
+    scurbMateServiceIsUnavailable(serviceName)
+  ){
+    return;
+  }
+
   const serviceIndex =
     scurbServiceCart.findIndex(
       function(item){
@@ -401,6 +408,102 @@ updateScurbFloatingCartBar();
 updateScurbPopupBookButtons();
 }
 
+
+
+/* =========================================
+   REMOVE SERVICE WHEN STOCK BECOMES FALSE
+========================================= */
+
+window.scrubMateRemoveUnavailableService =
+  function(serviceName){
+
+    const wantedName =
+      String(serviceName || "")
+        .trim()
+        .replace(/\s+/g, " ")
+        .toLowerCase();
+
+    if(!wantedName){
+      return false;
+    }
+
+    const beforeLength =
+      scurbServiceCart.length;
+
+    scurbServiceCart =
+      scurbServiceCart.filter(function(item){
+
+        const itemName =
+          String(item?.name || "")
+            .trim()
+            .replace(/\s+/g, " ")
+            .toLowerCase();
+
+        return itemName !== wantedName;
+
+      });
+
+    const removed =
+      scurbServiceCart.length !== beforeLength;
+
+    if(!removed){
+      return false;
+    }
+
+    saveScurbServiceCart();
+    updateScurbServiceButtons();
+    updateScurbFloatingCartBar();
+    updateScurbPopupBookButtons();
+
+    if(typeof renderScurbCartPage === "function"){
+      renderScurbCartPage();
+    }
+
+    if(
+      scurbServiceCart.length === 0 &&
+      typeof closeScurbCartPage === "function"
+    ){
+      closeScurbCartPage();
+    }
+
+    console.log(
+      "🗑️ Unavailable service removed from cart:",
+      serviceName
+    );
+
+    return true;
+  };
+
+
+function scurbMateServiceIsUnavailable(serviceName){
+
+  const key =
+    String(serviceName || "")
+      .trim()
+      .replace(/\s+/g, " ")
+      .toLowerCase();
+
+  if(!key){
+    return false;
+  }
+
+  const serviceData =
+    window.scrubMateServicePrices?.[key];
+
+  if(!serviceData){
+    return false;
+  }
+
+  const rawStock =
+    serviceData.stock;
+
+  return (
+    rawStock === false ||
+    rawStock === 0 ||
+    String(rawStock).trim().toLowerCase() === "false" ||
+    String(rawStock).trim() === "0"
+  );
+}
 
 /* =========================================
    GET SHORT QUANTITY LABEL
