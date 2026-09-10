@@ -904,14 +904,61 @@ input{
   to{ transform:rotate(360deg); }
 }
 
-/* Invisible reCAPTCHA must not alter layout */
-#recaptcha-container{
+/* Visible Firebase reCAPTCHA - WebView friendly */
+#recaptchaOverlay{
   position:fixed;
-  width:1px;
-  height:1px;
-  left:-10000px;
-  bottom:-10000px;
-  overflow:hidden;
+  inset:0;
+  z-index:2147483646;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(0,0,0,.48);
+  backdrop-filter:blur(2px);
+  -webkit-backdrop-filter:blur(2px);
+}
+
+#recaptchaOverlay.show{
+  display:flex;
+}
+
+.recaptcha-card{
+  width:min(100%,360px);
+  background:#fff;
+  border-radius:18px;
+  padding:22px 16px 18px;
+  box-shadow:0 18px 55px rgba(0,0,0,.25);
+  text-align:center;
+}
+
+.recaptcha-title{
+  margin:0 0 6px;
+  font-size:18px;
+  font-weight:800;
+  color:#171717;
+}
+
+.recaptcha-subtitle{
+  margin:0 0 16px;
+  font-size:13px;
+  font-weight:600;
+  color:#777;
+}
+
+#recaptcha-container{
+  min-height:78px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:visible;
+}
+
+.recaptcha-status{
+  min-height:20px;
+  margin-top:12px;
+  font-size:13px;
+  font-weight:800;
+  color:var(--primary);
 }
 
 /* Small shake on wrong OTP */
@@ -4287,7 +4334,14 @@ input{
       <span class="verify-button-spinner" aria-hidden="true"></span>
     </button>
 
-    <div id="recaptcha-container"></div>
+    <div id="recaptchaOverlay" aria-hidden="true">
+      <div class="recaptcha-card">
+        <div class="recaptcha-title">Verify you’re human</div>
+        <div class="recaptcha-subtitle">Complete the check to receive your OTP</div>
+        <div id="recaptcha-container"></div>
+        <div class="recaptcha-status" id="recaptchaStatus"></div>
+      </div>
+    </div>
 
     <button
       type="button"
@@ -5403,6 +5457,25 @@ ensureScrubFirebaseOtpReady().catch(function(error){
   );
 });
 
+function showScrubRecaptcha(){
+  const overlay = document.getElementById("recaptchaOverlay");
+  const status = document.getElementById("recaptchaStatus");
+  if(status) status.textContent = "";
+  overlay?.classList.add("show");
+  overlay?.setAttribute("aria-hidden","false");
+}
+
+function setScrubRecaptchaVerified(){
+  const status = document.getElementById("recaptchaStatus");
+  if(status) status.textContent = "Verified ✓ — Sending OTP…";
+}
+
+function hideScrubRecaptcha(){
+  const overlay = document.getElementById("recaptchaOverlay");
+  overlay?.classList.remove("show");
+  overlay?.setAttribute("aria-hidden","true");
+}
+
 function resetScrubRecaptcha(){
   if(scrubRecaptchaVerifier){
     try{
@@ -5413,6 +5486,11 @@ function resetScrubRecaptcha(){
   }
 
   scrubRecaptchaVerifier = null;
+
+  hideScrubRecaptcha();
+
+  const status = document.getElementById("recaptchaStatus");
+  if(status) status.textContent = "";
 
   const container =
     document.getElementById("recaptcha-container");
@@ -5655,15 +5733,21 @@ continueButton.addEventListener("click", async function(){
       new firebase.auth.RecaptchaVerifier(
         "recaptcha-container",
         {
-          size:"invisible",
+          size:"normal",
           callback:function(){
             console.log("✅ reCAPTCHA verified");
+            setScrubRecaptchaVerified();
           },
           "expired-callback":function(){
             console.warn("reCAPTCHA expired");
+            const status = document.getElementById("recaptchaStatus");
+            if(status) status.textContent = "Verification expired. Please try again.";
           }
         }
       );
+
+    showScrubRecaptcha();
+    await scrubRecaptchaVerifier.render();
 
     scrubConfirmationResult =
       await scrubFirebaseAuth.signInWithPhoneNumber(
@@ -5675,6 +5759,7 @@ continueButton.addEventListener("click", async function(){
       "✅ Real OTP sent to +91" + mobile
     );
 
+    hideScrubRecaptcha();
     startOtpResendTimer();
 
     /*
@@ -5789,9 +5874,19 @@ otpResend.addEventListener("click", async function(){
       new firebase.auth.RecaptchaVerifier(
         "recaptcha-container",
         {
-          size:"invisible"
+          size:"normal",
+          callback:function(){
+            setScrubRecaptchaVerified();
+          },
+          "expired-callback":function(){
+            const status = document.getElementById("recaptchaStatus");
+            if(status) status.textContent = "Verification expired. Please try again.";
+          }
         }
       );
+
+    showScrubRecaptcha();
+    await scrubRecaptchaVerifier.render();
 
     scrubConfirmationResult =
       await scrubFirebaseAuth.signInWithPhoneNumber(
@@ -5799,6 +5894,7 @@ otpResend.addEventListener("click", async function(){
         scrubRecaptchaVerifier
       );
 
+    hideScrubRecaptcha();
     startOtpResendTimer();
     focusScrubOtpKeyboard();
 
