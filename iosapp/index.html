@@ -1091,8 +1091,7 @@ input{
 <style id="scrubmate-5km-service-area-style">
 
 /* =========================================================
-   SERVICE AREA BANNER
-   Full width - no card / no border / no shadow
+   FULL WIDTH COMING SOON BANNER
 ========================================================= */
 
 .scrubAreaComingSoonBanner{
@@ -1200,28 +1199,22 @@ input{
 
 
 /* =========================================================
-   OUTSIDE 5 KM
+   LOCATION STATE
 ========================================================= */
 
-/* Show banner only outside service area */
+/* More than 5 KM => show banner */
 html.scrubOutsideServiceArea
 .scrubAreaComingSoonBanner{
   display:flex !important;
 }
 
-/*
-  Hide every home + / quantity / Busy control outside 5 KM.
-  Busy uses the same .scurbServiceAddBtn element.
-*/
+/* More than 5 KM => hide + / quantity / Busy home buttons */
 html.scrubOutsideServiceArea
 .scurbServiceAddBtn{
   display:none !important;
 }
 
-/*
-  Hide popup Book / Busy control.
-  Popup Busy also uses .scurbServiceHeaderBookBtn.
-*/
+/* More than 5 KM => hide Book / Busy popup button */
 html.scrubOutsideServiceArea
 .scurbServiceHeaderBookBtn{
   display:none !important;
@@ -1277,7 +1270,6 @@ html.scrubOutsideServiceArea
     margin-top:8px;
     font-size:13px;
   }
-
 }
 
 </style>
@@ -2060,8 +2052,8 @@ html.scrubOutsideServiceArea
 
 
 <!-- =====================================================
-     5 KM SERVICE AREA MESSAGE
-     Shows only when selected/current location is > 5 KM
+     OUTSIDE 5 KM SERVICE AREA BANNER
+     EXACTLY ABOVE "Services" HEADING
 ====================================================== -->
 
 <section
@@ -7454,336 +7446,483 @@ window.addEventListener("pageshow", function(){
   "use strict";
 
   /* =========================================
-     SERVICE CENTER
+     SERVICE CENTER + RADIUS
   ========================================= */
 
-  const SCRUB_SERVICE_AREA_CENTER_LAT =
-    16.7460735;
+  const SERVICE_CENTER_LAT = 16.7460735;
+  const SERVICE_CENTER_LNG = 81.6978822;
+  const SERVICE_RADIUS_KM  = 5;
 
-  const SCRUB_SERVICE_AREA_CENTER_LNG =
-    81.6978822;
+  let scrubLastConfirmedLocation = null;
 
-  const SCRUB_SERVICE_AREA_RADIUS_KM =
-    5;
+  function scrubCoordinatesChanged(lat, lng){
+
+    const nextLat = Number(lat);
+    const nextLng = Number(lng);
+
+    if(
+      !Number.isFinite(nextLat) ||
+      !Number.isFinite(nextLng)
+    ){
+      return false;
+    }
+
+    if(!scrubLastConfirmedLocation){
+      scrubLastConfirmedLocation = {
+        latitude:nextLat,
+        longitude:nextLng
+      };
+
+      return false;
+    }
+
+    const changed =
+      Math.abs(
+        scrubLastConfirmedLocation.latitude -
+        nextLat
+      ) > 0.000001 ||
+      Math.abs(
+        scrubLastConfirmedLocation.longitude -
+        nextLng
+      ) > 0.000001;
+
+    scrubLastConfirmedLocation = {
+      latitude:nextLat,
+      longitude:nextLng
+    };
+
+    return changed;
+  }
+
+
+  function scrubClearCartAfterLocationChange(){
+
+    if(
+      typeof window.scrubMateClearCartForLocationChange ===
+      "function"
+    ){
+      window.scrubMateClearCartForLocationChange();
+      return;
+    }
+
+    /*
+      Fallback only if carbar.js has not loaded its helper yet.
+      The main helper will handle in-memory cart state when available.
+    */
+    localStorage.removeItem(
+      "scurbMateServiceCart"
+    );
+  }
+
 
 
   /* =========================================
-     DISTANCE
+     DISTANCE CALCULATION
   ========================================= */
 
-  function scrubAreaToRadians(value){
+  function toRadians(value){
     return Number(value) * Math.PI / 180;
   }
 
 
-  function scrubAreaDistanceKm(
-    lat1,
-    lng1,
-    lat2,
-    lng2
-  ){
+  function getDistanceKm(lat1, lng1, lat2, lng2){
 
-    const earthRadiusKm = 6371;
+    const R = 6371;
 
-    const dLat =
-      scrubAreaToRadians(lat2 - lat1);
-
-    const dLng =
-      scrubAreaToRadians(lng2 - lng1);
-
-    const firstLat =
-      scrubAreaToRadians(lat1);
-
-    const secondLat =
-      scrubAreaToRadians(lat2);
+    const dLat = toRadians(lat2 - lat1);
+    const dLng = toRadians(lng2 - lng1);
 
     const a =
-      Math.sin(dLat / 2) ** 2 +
-      Math.cos(firstLat) *
-      Math.cos(secondLat) *
-      Math.sin(dLng / 2) ** 2;
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRadians(lat1)) *
+      Math.cos(toRadians(lat2)) *
+      Math.sin(dLng / 2) * Math.sin(dLng / 2);
 
     const c =
-      2 *
-      Math.atan2(
+      2 * Math.atan2(
         Math.sqrt(a),
         Math.sqrt(1 - a)
       );
 
-    return earthRadiusKm * c;
+    return R * c;
   }
 
 
   /* =========================================
-     UI STATE
+     APPLY UI
   ========================================= */
 
-  function scrubSetServiceAreaState(
-    latitude,
-    longitude
-  ){
+  function applyServiceAreaByCoordinates(latitude, longitude){
 
     const lat = Number(latitude);
     const lng = Number(longitude);
 
-    /*
-      If valid location is unavailable,
-      keep services unavailable.
-    */
     if(
       !Number.isFinite(lat) ||
       !Number.isFinite(lng)
     ){
-      document.documentElement.classList.add(
-        "scrubOutsideServiceArea"
-      );
-
-      document.documentElement.classList.remove(
-        "scrubInsideServiceArea"
-      );
-
-      return null;
+      return false;
     }
 
-
-    const distanceKm =
-      scrubAreaDistanceKm(
-        SCRUB_SERVICE_AREA_CENTER_LAT,
-        SCRUB_SERVICE_AREA_CENTER_LNG,
+    const locationChanged =
+      scrubCoordinatesChanged(
         lat,
         lng
       );
 
+    const distanceKm =
+      getDistanceKm(
+        SERVICE_CENTER_LAT,
+        SERVICE_CENTER_LNG,
+        lat,
+        lng
+      );
 
-    const inside =
-      distanceKm <=
-      SCRUB_SERVICE_AREA_RADIUS_KM;
-
-
-    document.documentElement.classList.toggle(
-      "scrubOutsideServiceArea",
-      !inside
-    );
-
-    document.documentElement.classList.toggle(
-      "scrubInsideServiceArea",
-      inside
-    );
+    const isInside =
+      distanceKm <= SERVICE_RADIUS_KM;
 
 
     /*
-      Public values so other ScrubMate scripts
-      can safely know service-area status.
+      IMPORTANT:
+      If user changes from one serviceable location
+      to another serviceable location, KEEP SAME CART.
+
+      Clear cart only when the newly selected location
+      is outside the 5 KM service area.
     */
+
+    if(
+      locationChanged &&
+      !isInside
+    ){
+      scrubClearCartAfterLocationChange();
+    }
+
+
+    document.documentElement.classList.toggle(
+      "scrubInsideServiceArea",
+      isInside
+    );
+
+    document.documentElement.classList.toggle(
+      "scrubOutsideServiceArea",
+      !isInside
+    );
+
+
     window.scrubMateInsideServiceArea =
-      inside;
+      isInside;
 
     window.scrubMateServiceAreaDistanceKm =
       distanceKm;
 
 
     console.log(
-      "ScrubMate service area:",
-      distanceKm.toFixed(2) + " km",
-      inside ? "AVAILABLE" : "COMING SOON"
+      "ScrubMate selected location:",
+      lat,
+      lng,
+      "| Distance:",
+      distanceKm.toFixed(2) + " KM",
+      "|",
+      isInside ? "SERVICE AVAILABLE" : "COMING SOON"
     );
 
 
-    return inside;
+    return isInside;
   }
+
+
+  window.scrubSetServiceAreaState =
+    applyServiceAreaByCoordinates;
 
 
   /* =========================================
-     READ SAVED LOCATION
-     Supports the common keys used by app builds.
+     READ THE REAL LOCATION KEYS USED BY
+     loactions.js
   ========================================= */
 
-  function scrubReadNumber(keys){
+  function refreshFromSavedScrubLocation(){
 
-    for(const key of keys){
+    const lat =
+      Number(
+        localStorage.getItem(
+          "scurbMateLatitude"
+        )
+      );
 
-      const value =
-        localStorage.getItem(key);
-
-      if(
-        value === null ||
-        value === ""
-      ){
-        continue;
-      }
-
-      const number =
-        Number(value);
-
-      if(Number.isFinite(number)){
-        return number;
-      }
-    }
-
-    return null;
-  }
-
-
-  function scrubGetSavedCoordinates(){
-
-    const latitude =
-      scrubReadNumber([
-        "scurbMateLatitude",
-        "scurbMateLat",
-        "scrubMateLatitude",
-        "scrubMateLat",
-        "selectedLatitude",
-        "selectedLat",
-        "userLatitude",
-        "userLat",
-        "latitude",
-        "lat"
-      ]);
-
-
-    const longitude =
-      scrubReadNumber([
-        "scurbMateLongitude",
-        "scurbMateLng",
-        "scurbMateLon",
-        "scrubMateLongitude",
-        "scrubMateLng",
-        "scrubMateLon",
-        "selectedLongitude",
-        "selectedLng",
-        "selectedLon",
-        "userLongitude",
-        "userLng",
-        "userLon",
-        "longitude",
-        "lng",
-        "lon"
-      ]);
+    const lng =
+      Number(
+        localStorage.getItem(
+          "scurbMateLongitude"
+        )
+      );
 
 
     if(
-      !Number.isFinite(latitude) ||
-      !Number.isFinite(longitude)
+      Number.isFinite(lat) &&
+      Number.isFinite(lng) &&
+      !(lat === 0 && lng === 0)
     ){
-      return null;
+      applyServiceAreaByCoordinates(
+        lat,
+        lng
+      );
+
+      return true;
     }
 
 
-    return {
-      latitude,
-      longitude
-    };
+    /*
+      Fallback: actual loactions.js also saves
+      scurbMateCurrentLocation as JSON.
+    */
+
+    try{
+
+      const saved =
+        JSON.parse(
+          localStorage.getItem(
+            "scurbMateCurrentLocation"
+          ) || "null"
+        );
+
+      if(
+        saved &&
+        Number.isFinite(
+          Number(saved.latitude)
+        ) &&
+        Number.isFinite(
+          Number(saved.longitude)
+        )
+      ){
+        applyServiceAreaByCoordinates(
+          Number(saved.latitude),
+          Number(saved.longitude)
+        );
+
+        return true;
+      }
+
+    }catch(error){}
+
+
+    return false;
   }
 
 
+  window.scrubRefreshServiceArea =
+    refreshFromSavedScrubLocation;
+
+
   /* =========================================
-     CHECK SERVICE AREA
+     CRITICAL FIX:
+     Hook the SAME saveLocationToStorage()
+     that loactions.js uses for:
+       - Current location
+       - Search result location
+       - Map manual location
+       - Changed location
   ========================================= */
 
-  function scrubCheckSavedServiceArea(){
+  function connectToLocationSaveFunction(){
 
-    const saved =
-      scrubGetSavedCoordinates();
-
-    if(!saved){
+    if(
+      typeof window.saveLocationToStorage !==
+      "function"
+    ){
       return false;
     }
 
-    scrubSetServiceAreaState(
-      saved.latitude,
-      saved.longitude
-    );
+
+    /*
+      Do not wrap twice.
+    */
+
+    if(
+      window.saveLocationToStorage
+        .__scrubServiceAreaWrapped
+    ){
+      return true;
+    }
+
+
+    const originalSaveLocationToStorage =
+      window.saveLocationToStorage;
+
+
+    function wrappedSaveLocationToStorage(location){
+
+      const result =
+        originalSaveLocationToStorage
+          .apply(this, arguments);
+
+
+      if(location){
+
+        applyServiceAreaByCoordinates(
+          location.latitude,
+          location.longitude
+        );
+
+      }else{
+
+        refreshFromSavedScrubLocation();
+
+      }
+
+
+      return result;
+    }
+
+
+    wrappedSaveLocationToStorage
+      .__scrubServiceAreaWrapped = true;
+
+
+    window.saveLocationToStorage =
+      wrappedSaveLocationToStorage;
+
 
     return true;
   }
 
 
-  function scrubCheckCurrentGps(){
+  /* =========================================
+     MANUAL CONFIRM EXTRA SAFETY
+     loactions.js saves location on this click.
+     Our bubble listener runs after that handler
+     and immediately reads the new coordinates.
+  ========================================= */
 
-    if(!navigator.geolocation){
-      return;
-    }
+  const confirmLocationButton =
+    document.getElementById(
+      "confirmManualLocationButton"
+    );
 
-    navigator.geolocation.getCurrentPosition(
+  if(confirmLocationButton){
 
-      function(position){
+    confirmLocationButton.addEventListener(
+      "click",
+      function(){
 
-        if(
-          !position ||
-          !position.coords
-        ){
-          return;
-        }
-
-        scrubSetServiceAreaState(
-          position.coords.latitude,
-          position.coords.longitude
+        setTimeout(
+          refreshFromSavedScrubLocation,
+          0
         );
 
-      },
-
-      function(){
-        /*
-          Do not show services when a valid
-          location cannot be verified.
-        */
-      },
-
-      {
-        enableHighAccuracy:true,
-        timeout:10000,
-        maximumAge:30000
       }
-
     );
+
   }
 
 
   /* =========================================
-     INITIAL STATE
-     Outside by default for safety.
+     CURRENT LOCATION EXTRA SAFETY
   ========================================= */
 
-  document.documentElement.classList.add(
-    "scrubOutsideServiceArea"
-  );
+  function attachRefreshAfterClick(id){
 
+    const element =
+      document.getElementById(id);
 
-  function scrubRefreshServiceArea(){
-
-    /*
-      Selected/saved app location gets priority.
-    */
-    const hasSavedLocation =
-      scrubCheckSavedServiceArea();
-
-    /*
-      If app has not saved coordinates yet,
-      use current GPS.
-    */
-    if(!hasSavedLocation){
-      scrubCheckCurrentGps();
+    if(!element){
+      return;
     }
+
+    element.addEventListener(
+      "click",
+      function(){
+
+        /*
+          Current GPS is async, so this is only
+          a fallback. The wrapped save function
+          handles the actual completed result.
+        */
+
+        setTimeout(
+          refreshFromSavedScrubLocation,
+          1200
+        );
+
+      }
+    );
+
   }
 
 
-  /*
-    Expose refresh function.
-    Existing location code can call this
-    after a new location is confirmed.
-  */
-  window.scrubRefreshServiceArea =
-    scrubRefreshServiceArea;
+  attachRefreshAfterClick(
+    "currentLocationButton"
+  );
 
-  window.scrubSetServiceAreaState =
-    scrubSetServiceAreaState;
+  attachRefreshAfterClick(
+    "manualCurrentLocationButton"
+  );
+
+  attachRefreshAfterClick(
+    "goCurrentLocationButton"
+  );
+
+
+  /* =========================================
+     INITIAL LOAD
+  ========================================= */
+
+  function initServiceArea(){
+
+    /*
+      Connect to loactions.js save function.
+    */
+
+    connectToLocationSaveFunction();
+
+
+    /*
+      Seed current saved location first.
+      This prevents cart clearing just because
+      the user reopened/refreshed the app.
+    */
+
+    const savedLat =
+      Number(
+        localStorage.getItem(
+          "scurbMateLatitude"
+        )
+      );
+
+    const savedLng =
+      Number(
+        localStorage.getItem(
+          "scurbMateLongitude"
+        )
+      );
+
+    if(
+      Number.isFinite(savedLat) &&
+      Number.isFinite(savedLng) &&
+      !(savedLat === 0 && savedLng === 0)
+    ){
+      scrubLastConfirmedLocation = {
+        latitude:savedLat,
+        longitude:savedLng
+      };
+    }
+
+
+    /*
+      Existing selected location should work
+      immediately when user reopens the app.
+    */
+
+    refreshFromSavedScrubLocation();
+
+  }
 
 
   if(document.readyState === "loading"){
 
     document.addEventListener(
       "DOMContentLoaded",
-      scrubRefreshServiceArea,
+      initServiceArea,
       {
         once:true
       }
@@ -7791,39 +7930,21 @@ window.addEventListener("pageshow", function(){
 
   }else{
 
-    scrubRefreshServiceArea();
+    initServiceArea();
 
   }
 
 
   /*
-    When app/tab returns, re-check saved location.
+    Recheck when returning to app/page.
   */
+
   window.addEventListener(
     "pageshow",
-    scrubRefreshServiceArea
-  );
+    function(){
 
-
-  /*
-    If another script/tab changes saved coordinates,
-    refresh immediately.
-  */
-  window.addEventListener(
-    "storage",
-    function(event){
-
-      const key =
-        String(event.key || "")
-          .toLowerCase();
-
-      if(
-        key.includes("lat") ||
-        key.includes("lng") ||
-        key.includes("lon")
-      ){
-        scrubRefreshServiceArea();
-      }
+      connectToLocationSaveFunction();
+      refreshFromSavedScrubLocation();
 
     }
   );
