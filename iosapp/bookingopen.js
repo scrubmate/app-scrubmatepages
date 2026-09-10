@@ -1421,10 +1421,8 @@ function isScurbTrackingFinishedStatus(
 
 
 /* =========================================
-   CEZOO-STYLE STATUS UI MODE
-   Different booking status = different UI.
+   SCRUBMATE — CEZOO STYLE STATUS MODE
 ========================================= */
-
 function applyScurbOrderStatusMode(status){
 
   if(!scurbOrderTrackingPage){
@@ -1434,7 +1432,7 @@ function applyScurbOrderStatusMode(status){
   const normalized =
     normalizeScurbBookingStatus(status);
 
-  const modeClasses = [
+  scurbOrderTrackingPage.classList.remove(
     "scurbStatusPlaced",
     "scurbStatusAssigned",
     "scurbStatusOnWay",
@@ -1442,59 +1440,44 @@ function applyScurbOrderStatusMode(status){
     "scurbStatusProgress",
     "scurbStatusCompleted",
     "scurbStatusCancelled"
-  ];
-
-  scurbOrderTrackingPage.classList.remove(
-    ...modeClasses
   );
 
-  let modeClass =
-    "scurbStatusPlaced";
+  let mode = "scurbStatusPlaced";
 
-  if(
-    [
-      "confirmed",
-      "accepted",
-      "assigned",
-      "partner_assigned"
-    ].includes(normalized)
-  ){
-    modeClass =
-      "scurbStatusAssigned";
-  }else if(normalized === "on_the_way"){
-    modeClass =
-      "scurbStatusOnWay";
-  }else if(normalized === "arrived"){
-    modeClass =
-      "scurbStatusArrived";
-  }else if(normalized === "in_progress"){
-    modeClass =
-      "scurbStatusProgress";
-  }else if(
-    normalized === "completed" ||
-    normalized === "delivered"
-  ){
-    modeClass =
-      "scurbStatusCompleted";
-  }else if(
-    [
-      "cancelled",
-      "canceled",
-      "rejected",
-      "refunded"
-    ].includes(normalized)
-  ){
-    modeClass =
-      "scurbStatusCancelled";
+  if([
+    "confirmed",
+    "accepted",
+    "assigned",
+    "partner_assigned"
+  ].includes(normalized)){
+    mode = "scurbStatusAssigned";
+  }
+  else if(normalized === "on_the_way"){
+    mode = "scurbStatusOnWay";
+  }
+  else if(normalized === "arrived"){
+    mode = "scurbStatusArrived";
+  }
+  else if(normalized === "in_progress"){
+    mode = "scurbStatusProgress";
+  }
+  else if([
+    "completed",
+    "delivered"
+  ].includes(normalized)){
+    mode = "scurbStatusCompleted";
+  }
+  else if([
+    "cancelled",
+    "canceled",
+    "rejected",
+    "refunded"
+  ].includes(normalized)){
+    mode = "scurbStatusCancelled";
   }
 
-  scurbOrderTrackingPage.classList.add(
-    modeClass
-  );
-
-  scurbOrderTrackingPage.dataset.bookingStatus =
-    normalized;
-
+  scurbOrderTrackingPage.classList.add(mode);
+  scurbOrderTrackingPage.dataset.bookingStatus = normalized;
 }
 
 /* =========================================
@@ -2208,8 +2191,9 @@ async function renderScurbBookedLocationMap(
 
 
   /*
-    Get map section first.
-    Active statuses show it; finished statuses hide it.
+    CEZOO style:
+    Active booking = map visible.
+    Finished booking = no map.
   */
 
   const mapElement =
@@ -2275,20 +2259,15 @@ async function renderScurbBookedLocationMap(
 
 
   /*
-    COMPLETED / CANCELLED / REJECTED / REFUNDED:
-    CEZOO-style finished screen = NO MAP.
+    FINISHED BOOKING:
+    No map — same CEZOO pattern.
   */
 
   if(finishedBooking){
 
     if(mapSection){
-
-      mapSection.hidden =
-        true;
-
-      mapSection.style.display =
-        "none";
-
+      mapSection.hidden = true;
+      mapSection.style.display = "none";
     }
 
     scurbTrackingCustomerMarker?.remove();
@@ -2300,23 +2279,11 @@ async function renderScurbBookedLocationMap(
     scurbTrackingRouteLine = null;
 
     return;
-
   }
 
-
-  /*
-    ACTIVE BOOKING:
-    Keep the map visible.
-  */
-
   if(mapSection){
-
-    mapSection.hidden =
-      false;
-
-    mapSection.style.display =
-      "";
-
+    mapSection.hidden = false;
+    mapSection.style.display = "";
   }
 
 
