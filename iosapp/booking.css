@@ -1,0 +1,713 @@
+/* =========================================
+   BOOKINGS PAGE CONTENT
+========================================= */
+
+.scurb-bookings-content{
+  flex:1;
+  width:100%;
+  min-height:0;
+
+  display:none;
+  flex-direction:column;
+
+  background:#ffffff;
+
+  overflow:hidden;
+}
+
+.scurb-bookings-content.show{
+  display:flex;
+}
+
+
+/* =========================================
+   BOOKINGS HEADER
+========================================= */
+
+.scurb-bookings-header{
+  position:relative;
+  z-index:5;
+
+  flex:none;
+
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 34px)
+    20px
+    0;
+
+  background:#ffffff;
+
+  border-bottom:1px solid #eeeeee;
+}
+
+.scurb-bookings-header h1{
+  margin:35px 0 1px;
+
+  color:#202020;
+
+  font-size:22px;
+  font-weight:800;
+  line-height:1.2;
+}
+
+
+/* =========================================
+   UPCOMING / PAST TABS
+========================================= */
+
+.scurb-bookings-tabs{
+  position:relative;
+
+  width:100%;
+  height:56px;
+
+  display:grid;
+  grid-template-columns:1fr 1fr;
+}
+
+.scurb-bookings-tab{
+  height:56px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0;
+
+  border:none;
+  background:transparent;
+
+  color:#9a9a9a;
+
+  font-size:17px;
+  font-weight:700;
+
+  cursor:pointer;
+
+  -webkit-tap-highlight-color:transparent;
+}
+
+.scurb-bookings-tab.active{
+  color:#222222;
+}
+
+.scurb-bookings-indicator{
+  position:absolute;
+
+  left:0;
+  bottom:0;
+
+  width:50%;
+  height:3px;
+
+  border-radius:999px 999px 0 0;
+
+  background:var(--primary);
+
+  transform:translateX(0);
+
+  transition:transform .25s ease;
+}
+
+.scurb-bookings-tabs.past-active
+.scurb-bookings-indicator{
+  transform:translateX(100%);
+}
+
+
+/* =========================================
+   BOOKINGS LOADING
+========================================= */
+
+.scurb-bookings-loading{
+  flex:1;
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+
+  padding:20px;
+
+  color:#777777;
+
+  font-family:"Manrope",sans-serif;
+
+  overflow-y:auto;
+  overflow-x:hidden;
+
+  -webkit-overflow-scrolling:touch;
+}
+
+.scurb-bookings-loading[hidden]{
+  display:none;
+}
+
+.scurb-bookings-loading i{
+  color:var(--primary);
+
+  font-size:25px;
+}
+
+.scurb-bookings-loading p{
+  margin:0;
+
+  color:#777777;
+
+  font-size:14px;
+  font-weight:600;
+}
+
+
+/* =========================================
+   BOOKINGS LIST
+========================================= */
+
+.scurb-bookings-list{
+  flex:1;
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+
+  padding:
+    18px
+    16px
+    calc(25px + env(safe-area-inset-bottom, 0px));
+
+  background:#f7f8f8;
+
+  overflow-y:auto;
+  overflow-x:hidden;
+
+  overscroll-behavior-y:contain;
+  -webkit-overflow-scrolling:touch;
+
+  touch-action:pan-y;
+}
+
+.scurb-bookings-list:empty{
+  display:none;
+}
+
+
+/* =========================================
+   BOOKING CARD
+========================================= */
+
+.scurb-booking-card{
+  flex:none;
+
+  width:100%;
+
+  padding:16px;
+
+  border:1px solid #ebebeb;
+  border-radius:18px;
+
+  background:#ffffff;
+
+  box-shadow:
+    0 6px 20px rgba(0,0,0,.055);
+}
+
+.scurb-booking-card-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.scurb-booking-id-wrap{
+  flex:1;
+  min-width:0;
+}
+
+.scurb-booking-label{
+  display:block;
+
+  margin-bottom:4px;
+
+  color:#888888;
+
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.4px;
+  text-transform:uppercase;
+}
+
+.scurb-booking-id{
+  display:block;
+
+  color:#171717;
+
+  font-size:14px;
+  font-weight:800;
+
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.scurb-booking-status{
+  flex:none;
+
+  padding:7px 11px;
+
+  border-radius:999px;
+
+  background:#e9fafa;
+  color:#079fa2;
+
+  font-size:11px;
+  font-weight:800;
+
+  text-transform:capitalize;
+}
+
+.scurb-booking-status.completed{
+  background:#eaf8ee;
+  color:#218442;
+}
+
+.scurb-booking-status.cancelled{
+  background:#fff0f0;
+  color:#d33b3b;
+}
+
+
+/* =========================================
+   BOOKING SERVICES
+========================================= */
+
+.scurb-booking-services{
+  margin-top:15px;
+
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+
+.scurb-booking-service{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.scurb-booking-service-name{
+  flex:1;
+  min-width:0;
+
+  color:#333333;
+
+  font-size:13px;
+  font-weight:650;
+
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.scurb-booking-service-quantity{
+  flex:none;
+
+  color:#777777;
+
+  font-size:12px;
+  font-weight:700;
+}
+
+.scurb-booking-more-services{
+  color:#079fa2;
+
+  font-size:12px;
+  font-weight:750;
+}
+
+
+/* =========================================
+   BOOKING DIVIDER
+========================================= */
+
+.scurb-booking-divider{
+  width:100%;
+  height:1px;
+
+  margin:15px 0;
+
+  background:#eeeeee;
+}
+
+
+/* =========================================
+   BOOKING BOTTOM DETAILS
+========================================= */
+
+.scurb-booking-bottom{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:15px;
+}
+
+.scurb-booking-date{
+  flex:1;
+  min-width:0;
+
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+
+  color:#777777;
+
+  font-size:12px;
+  font-weight:600;
+}
+
+.scurb-booking-date span{
+  line-height:1.4;
+}
+
+.scurb-booking-date i{
+  margin-right:5px;
+
+  color:var(--primary);
+}
+
+
+
+
+/* =========================================
+   BOOKINGS EMPTY CONTENT
+========================================= */
+
+.scurb-bookings-empty{
+  flex:1;
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  padding:
+    20px
+    20px
+    90px;
+
+  text-align:center;
+
+  background:#ffffff;
+
+  overflow-y:auto;
+  overflow-x:hidden;
+
+  -webkit-overflow-scrolling:touch;
+}
+
+.scurb-bookings-empty.hide{
+  display:none;
+}
+
+.scurb-bookings-empty-icon{
+  flex:none;
+
+  width:112px;
+  height:112px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:26px;
+
+  background:rgba(20,185,187,.10);
+}
+
+.scurb-bookings-empty-icon i{
+  color:var(--primary);
+
+  font-size:58px;
+  line-height:1;
+}
+
+.scurb-bookings-empty p{
+  margin:24px 0 0;
+
+  color:#151515;
+
+  font-size:19px;
+  font-weight:600;
+  line-height:1.3;
+}
+/* =========================================
+   BOOKING CUSTOMER DETAILS
+========================================= */
+
+.scurb-booking-bottom{
+  align-items:flex-start;
+}
+
+.scurb-booking-date{
+  gap:11px;
+}
+
+.scurb-booking-created-date{
+  display:flex;
+  align-items:center;
+
+  color:#777777;
+
+  font-size:12px;
+  font-weight:650;
+}
+
+.scurb-booking-customer-details{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.scurb-booking-customer-row{
+  min-width:0;
+
+  display:grid;
+  grid-template-columns:18px minmax(0,1fr);
+  align-items:start;
+  gap:7px;
+
+  color:#4f4f4f;
+
+  font-size:12px;
+  font-weight:650;
+  line-height:1.4;
+}
+
+.scurb-booking-customer-row i{
+  width:18px;
+
+  margin-top:2px;
+
+  color:var(--primary);
+
+  font-size:12px;
+  text-align:center;
+}
+
+.scurb-booking-customer-row span{
+  min-width:0;
+
+  overflow-wrap:anywhere;
+}
+
+.scurb-booking-address-row{
+  max-width:230px;
+}
+/* =========================================
+   CANCEL BOOKING AREA
+========================================= */
+
+.scurbOrderCancelArea{
+  margin-top:14px;
+}
+
+.scurbOrderCancelArea[hidden]{
+  display:none;
+}
+
+.scurbOrderCancelButton{
+  width:100%;
+  min-height:48px;
+
+  padding:12px 18px;
+
+  border:1.5px solid #e34d4d;
+  border-radius:14px;
+
+  background:#ffffff;
+  color:#d93636;
+
+  font-family:"Manrope",sans-serif;
+  font-size:14px;
+  font-weight:800;
+
+  cursor:pointer;
+
+  -webkit-tap-highlight-color:transparent;
+}
+
+.scurbOrderCancelButton:active{
+  transform:scale(.985);
+}
+
+.scurbOrderCancelButton:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+
+/* =========================================
+   CANCEL BOTTOM SHEET OVERLAY
+========================================= */
+
+.scurbCancelSheetOverlay{
+  position:fixed;
+  inset:0;
+  z-index:30000;
+
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+
+  padding:0;
+
+  background:rgba(0,0,0,.36);
+
+  visibility:hidden;
+  opacity:0;
+  pointer-events:none;
+
+  transition:
+    opacity .22s ease,
+    visibility .22s ease;
+}
+
+.scurbCancelSheetOverlay.show{
+  visibility:visible;
+  opacity:1;
+  pointer-events:auto;
+}
+
+
+/* =========================================
+   CANCEL BOTTOM SHEET
+========================================= */
+
+.scurbCancelSheet{
+  position:relative;
+
+  width:min(100%, 760px);
+
+  padding:
+    22px
+    18px
+    calc(20px + env(safe-area-inset-bottom, 0px));
+
+  border-radius:22px 22px 0 0;
+
+  background:#ffffff;
+
+  transform:translate3d(0,100%,0);
+
+  transition:
+    transform .28s cubic-bezier(.22,.8,.25,1);
+}
+
+.scurbCancelSheetOverlay.show
+.scurbCancelSheet{
+  transform:translate3d(0,0,0);
+}
+
+
+/* SMALL PLAIN X */
+
+.scurbCancelSheetClose{
+  position:absolute;
+
+  top:13px;
+  right:15px;
+
+  padding:2px;
+
+  border:none;
+  background:transparent;
+  color:#777777;
+
+  font-size:17px;
+  line-height:1;
+
+  cursor:pointer;
+
+  -webkit-tap-highlight-color:transparent;
+}
+
+.scurbCancelSheetClose:active{
+  transform:scale(.9);
+}
+
+
+/* SMALLER TEXT */
+
+.scurbCancelSheet h2{
+  margin:0;
+  padding-right:30px;
+
+  color:#181818;
+
+  font-family:"Manrope",sans-serif;
+  font-size:17px;
+  font-weight:800;
+  line-height:1.3;
+}
+
+.scurbCancelSheet p{
+  margin:7px 0 0;
+
+  color:#747474;
+
+  font-family:"Manrope",sans-serif;
+  font-size:12px;
+  font-weight:600;
+  line-height:1.45;
+}
+
+
+/* ACTION BUTTONS */
+
+.scurbCancelSheetActions{
+  margin-top:20px;
+
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.scurbCancelSheetNo,
+.scurbCancelSheetYes{
+  min-height:45px;
+
+  padding:11px 12px;
+
+  border-radius:13px;
+
+  font-family:"Manrope",sans-serif;
+  font-size:13px;
+  font-weight:800;
+
+  cursor:pointer;
+
+  -webkit-tap-highlight-color:transparent;
+}
+
+.scurbCancelSheetNo{
+  border:1px solid #dddddd;
+
+  background:#ffffff;
+  color:#333333;
+}
+
+.scurbCancelSheetYes{
+  border:1px solid #df4444;
+
+  background:#df4444;
+  color:#ffffff;
+}
+
+.scurbCancelSheetYes:disabled{
+  opacity:.65;
+  cursor:not-allowed;
+}

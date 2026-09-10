@@ -1,0 +1,1543 @@
+/* =========================================
+   SAVED ADDRESSES POPUP
+========================================= */
+
+.scrubSavedAddressesPopup{
+  position:fixed;
+  inset:0;
+
+  width:100%;
+  height:100%;
+  height:100dvh;
+
+  background:#ffffff;
+
+  z-index:99999;
+
+  visibility:hidden;
+  opacity:0;
+  pointer-events:none;
+
+  transform:translate3d(100%, 0, 0);
+
+  transition:
+    transform .28s ease,
+    opacity .22s ease,
+    visibility .28s ease;
+}
+
+
+/* OPEN POPUP */
+
+.scrubSavedAddressesPopup.show{
+  visibility:visible;
+  opacity:1;
+  pointer-events:auto;
+
+  transform:translate3d(0, 0, 0);
+}
+
+
+/* =========================================
+   PAGE
+========================================= */
+
+.scrubSavedAddressesPage{
+  width:100%;
+  height:100%;
+  height:100dvh;
+
+  display:flex;
+  flex-direction:column;
+
+  background:#ffffff;
+
+  overflow:hidden;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.scrubSavedAddressesHeader{
+  width:100%;
+
+  min-height:
+    calc(
+      58px +
+      45px +
+      env(safe-area-inset-top)
+    );
+
+  flex-shrink:0;
+
+  padding:
+    calc(
+      45px +
+      env(safe-area-inset-top)
+    )
+    14px
+    0;
+
+  display:grid;
+  grid-template-columns:42px minmax(0, 1fr) 42px;
+  align-items:center;
+
+  background:#ffffff;
+
+  border-bottom:1px solid #eeeeee;
+
+  box-sizing:border-box;
+}
+
+
+.scrubSavedAddressesHeader h2{
+  margin:0;
+
+  text-align:center;
+
+  font-family:"Manrope", sans-serif;
+  font-size:18px;
+  font-weight:800;
+
+  line-height:1.2;
+
+  color:#171717;
+}
+
+
+/* =========================================
+   BACK BUTTON
+========================================= */
+
+.scrubSavedAddressesBackButton{
+  width:40px;
+  height:40px;
+
+  padding:0;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border:none;
+  border-radius:50%;
+
+  outline:none;
+
+  background:transparent;
+
+  color:#171717;
+
+  font-size:18px;
+
+  cursor:pointer;
+
+  -webkit-tap-highlight-color:transparent;
+
+  transition:
+    background .18s ease,
+    transform .15s ease;
+}
+
+
+.scrubSavedAddressesBackButton:active{
+  background:#f2f2f2;
+
+  transform:scale(.94);
+}
+
+
+.scrubSavedAddressesHeaderSpace{
+  width:40px;
+  height:40px;
+}
+
+
+/* =========================================
+   CONTENT
+========================================= */
+
+.scrubSavedAddressesContent{
+  flex:1;
+  min-height:0;
+
+  overflow-y:auto;
+  overscroll-behavior:contain;
+
+  padding:
+    22px
+    16px
+    calc(
+      30px +
+      env(safe-area-inset-bottom)
+    );
+
+  background:#f7f8f8;
+
+  box-sizing:border-box;
+
+  -webkit-overflow-scrolling:touch;
+}
+
+
+/* =========================================
+   ADDRESS LIST
+========================================= */
+
+.scrubSavedAddressesList{
+  width:100%;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:14px;
+}
+
+
+/* =========================================
+   ADDRESS CARD
+========================================= */
+
+.scrubSavedAddressCard{
+  position:relative;
+
+  width:100%;
+
+  padding:17px;
+
+  background:#ffffff;
+
+  border:1px solid #e9eeee;
+  border-radius:14px;
+
+  box-sizing:border-box;
+
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, .045);
+
+  overflow:hidden;
+}
+
+
+/* SMALL TOP LINE */
+
+.scrubSavedAddressCard::before{
+  content:"";
+
+  position:absolute;
+  top:0;
+  left:0;
+
+  width:100%;
+  height:3px;
+
+  background:#14b9bb;
+}
+
+
+/* ADDRESS TOP */
+
+.scrubSavedAddressTop{
+  width:100%;
+
+  display:flex;
+  align-items:center;
+
+  gap:12px;
+}
+
+
+/* =========================================
+   LOCATION ICON
+========================================= */
+
+.scrubSavedAddressIcon{
+  width:42px;
+  height:42px;
+
+  flex:0 0 42px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:12px;
+
+  background:#eafafa;
+
+  color:#14b9bb;
+
+  font-size:18px;
+}
+
+
+/* =========================================
+   ADDRESS INFORMATION
+========================================= */
+
+.scrubSavedAddressInfo{
+  flex:1;
+  min-width:0;
+}
+
+
+.scrubSavedAddressTitle{
+  margin:0;
+
+  font-family:"Manrope", sans-serif;
+  font-size:16px;
+  font-weight:800;
+
+  line-height:1.35;
+
+  color:#171717;
+
+  overflow-wrap:anywhere;
+}
+
+
+/* ADDRESS TEXT */
+
+.scrubSavedAddressText{
+  margin:
+    14px
+    0
+    0;
+
+  padding:
+    13px
+    0
+    0;
+
+  border-top:1px solid #eeeeee;
+
+  font-family:"Manrope", sans-serif;
+  font-size:14px;
+  font-weight:500;
+
+  line-height:1.65;
+
+  color:#626262;
+
+  overflow-wrap:anywhere;
+}
+
+
+/* =========================================
+   EMPTY STATE
+========================================= */
+
+.scrubSavedAddressesEmpty{
+  width:100%;
+
+  padding:
+    45px
+    20px;
+
+  text-align:center;
+
+  box-sizing:border-box;
+}
+
+
+.scrubSavedAddressesEmpty[hidden]{
+  display:none;
+}
+
+
+/* EMPTY ICON */
+
+.scrubSavedAddressesEmptyIcon{
+  width:68px;
+  height:68px;
+
+  margin:
+    0
+    auto
+    18px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:20px;
+
+  background:#eafafa;
+
+  color:#14b9bb;
+
+  font-size:27px;
+}
+
+
+/* EMPTY TITLE */
+
+.scrubSavedAddressesEmpty h3{
+  margin:
+    0
+    0
+    8px;
+
+  font-family:"Manrope", sans-serif;
+  font-size:18px;
+  font-weight:800;
+
+  line-height:1.3;
+
+  color:#181818;
+}
+
+
+/* EMPTY DESCRIPTION */
+
+.scrubSavedAddressesEmpty p{
+  max-width:260px;
+
+  margin:
+    0
+    auto;
+
+  font-family:"Manrope", sans-serif;
+  font-size:14px;
+  font-weight:500;
+
+  line-height:1.55;
+
+  color:#777777;
+}
+
+
+/* =========================================
+   HIDE SCROLLBAR
+========================================= */
+
+.scrubSavedAddressesContent{
+  scrollbar-width:none;
+}
+
+
+.scrubSavedAddressesContent::-webkit-scrollbar{
+  display:none;
+}
+
+/* =========================================
+   HOW IT WORKS POPUP
+========================================= */
+
+.scrubHowItWorksPopup{
+  position:fixed;
+  inset:0;
+
+  width:100%;
+  height:100%;
+  height:100dvh;
+
+  background:#ffffff;
+
+  z-index:99999;
+
+  visibility:hidden;
+  opacity:0;
+  pointer-events:none;
+
+  transform:translate3d(100%, 0, 0);
+
+  transition:
+    transform .28s ease,
+    opacity .22s ease,
+    visibility .28s ease;
+}
+
+
+/* OPEN */
+
+.scrubHowItWorksPopup.show{
+  visibility:visible;
+  opacity:1;
+  pointer-events:auto;
+
+  transform:translate3d(0, 0, 0);
+}
+
+
+/* =========================================
+   PAGE
+========================================= */
+
+.scrubHowItWorksPage{
+  width:100%;
+  height:100%;
+  height:100dvh;
+
+  display:flex;
+  flex-direction:column;
+
+  background:#ffffff;
+
+  overflow:hidden;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.scrubHowItWorksHeader{
+  width:100%;
+
+  min-height:
+    calc(
+      58px +
+      45px +
+      env(safe-area-inset-top)
+    );
+
+  flex-shrink:0;
+
+  padding:
+    calc(
+      45px +
+      env(safe-area-inset-top)
+    )
+    14px
+    0;
+
+  display:grid;
+  grid-template-columns:42px minmax(0, 1fr) 42px;
+  align-items:center;
+
+  background:#ffffff;
+
+  border-bottom:1px solid #eeeeee;
+
+  box-sizing:border-box;
+}
+
+
+.scrubHowItWorksHeader h2{
+  margin:0;
+
+  text-align:center;
+
+  font-family:"Manrope", sans-serif;
+  font-size:18px;
+  font-weight:800;
+
+  line-height:1.2;
+
+  color:#171717;
+}
+
+
+/* =========================================
+   BACK BUTTON
+========================================= */
+
+.scrubHowItWorksBackButton{
+  width:40px;
+  height:40px;
+
+  padding:0;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border:none;
+  border-radius:50%;
+
+  outline:none;
+
+  background:transparent;
+
+  color:#171717;
+
+  font-size:18px;
+
+  cursor:pointer;
+
+  -webkit-tap-highlight-color:transparent;
+
+  transition:
+    background .18s ease,
+    transform .15s ease;
+}
+
+
+.scrubHowItWorksBackButton:active{
+  background:#f1f1f1;
+
+  transform:scale(.94);
+}
+
+
+.scrubHowItWorksHeaderSpace{
+  width:40px;
+  height:40px;
+}
+
+
+/* =========================================
+   CONTENT
+========================================= */
+
+.scrubHowItWorksContent{
+  flex:1;
+  min-height:0;
+
+  padding:
+    22px
+    16px
+    calc(
+      38px +
+      env(safe-area-inset-bottom)
+    );
+
+  overflow-y:auto;
+  overscroll-behavior:contain;
+
+  background:#f7f8f8;
+
+  box-sizing:border-box;
+
+  scrollbar-width:none;
+
+  -webkit-overflow-scrolling:touch;
+}
+
+
+.scrubHowItWorksContent::-webkit-scrollbar{
+  display:none;
+}
+
+
+/* =========================================
+   INTRO
+========================================= */
+
+.scrubHowItWorksIntro{
+  width:100%;
+
+  margin-bottom:18px;
+
+  padding:0 3px;
+
+  box-sizing:border-box;
+}
+
+
+.scrubHowItWorksIntro h3{
+  margin:
+    0
+    0
+    7px;
+
+  font-family:"Manrope", sans-serif;
+  font-size:19px;
+  font-weight:800;
+
+  line-height:1.35;
+
+  color:#171717;
+}
+
+
+.scrubHowItWorksIntro p{
+  margin:0;
+
+  font-family:"Manrope", sans-serif;
+  font-size:14px;
+  font-weight:500;
+
+  line-height:1.6;
+
+  color:#6b6b6b;
+}
+
+
+/* =========================================
+   VIDEO CARD
+========================================= */
+
+.scrubHowItWorksCard{
+  width:100%;
+
+  margin:
+    0
+    0
+    18px;
+
+  background:#ffffff;
+
+  border:1px solid #e7ecec;
+  border-radius:18px;
+
+  box-sizing:border-box;
+
+  overflow:hidden;
+
+  box-shadow:
+    0 5px 18px rgba(0, 0, 0, .045);
+}
+
+
+/* =========================================
+   VIDEO AREA
+========================================= */
+
+.scrubHowItWorksVideoBox{
+  position:relative;
+
+  width:100%;
+
+  aspect-ratio:16 / 9;
+
+  background:#101010;
+
+  overflow:hidden;
+}
+
+
+/* VIDEO */
+
+.scrubHowItWorksVideo{
+  position:absolute;
+  inset:0;
+
+  width:100%;
+  height:100%;
+
+  display:block;
+
+  object-fit:contain;
+
+  background:#000000;
+
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+
+  transition:
+    opacity .2s ease,
+    visibility .2s ease;
+}
+
+
+.scrubHowItWorksVideo.is-visible{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+
+
+/* =========================================
+   PLAY BUTTON
+========================================= */
+
+.scrubHowItWorksPlayButton{
+  position:absolute;
+  inset:0;
+
+  width:100%;
+  height:100%;
+
+  padding:20px;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  gap:12px;
+
+  border:none;
+  outline:none;
+
+  background:
+    linear-gradient(
+      145deg,
+      #efffff,
+      #dff7f7
+    );
+
+  cursor:pointer;
+
+  z-index:3;
+
+  box-sizing:border-box;
+
+  -webkit-tap-highlight-color:transparent;
+
+  transition:
+    opacity .2s ease,
+    visibility .2s ease;
+}
+
+
+.scrubHowItWorksPlayButton.hide{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+
+
+/* PLAY CIRCLE */
+
+.scrubHowItWorksPlayCircle{
+  width:62px;
+  height:62px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:50%;
+
+  background:#14b9bb;
+
+  color:#ffffff;
+
+  font-size:22px;
+
+  box-shadow:
+    0 8px 22px rgba(20, 185, 187, .28);
+
+  transition:transform .18s ease;
+}
+
+
+.scrubHowItWorksPlayButton:active
+.scrubHowItWorksPlayCircle{
+  transform:scale(.92);
+}
+
+
+.scrubHowItWorksPlayCircle i{
+  margin-left:4px;
+}
+
+
+/* PLAY LABEL */
+
+.scrubHowItWorksPlayLabel{
+  font-family:"Manrope", sans-serif;
+  font-size:14px;
+  font-weight:800;
+
+  color:#252525;
+}
+
+
+/* =========================================
+   LOADER
+========================================= */
+
+.scrubHowItWorksLoader{
+  position:absolute;
+  inset:0;
+
+  width:100%;
+  height:100%;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  background:#101010;
+
+  color:#ffffff;
+
+  z-index:5;
+}
+
+
+.scrubHowItWorksLoader[hidden]{
+  display:none;
+}
+
+
+.scrubHowItWorksSpinner{
+  width:32px;
+  height:32px;
+
+  border:3px solid rgba(255, 255, 255, .25);
+  border-top-color:#ffffff;
+
+  border-radius:50%;
+
+  animation:
+    scrubHowItWorksSpin .75s linear infinite;
+}
+
+
+.scrubHowItWorksLoader p{
+  margin:
+    12px
+    0
+    0;
+
+  font-family:"Manrope", sans-serif;
+  font-size:13px;
+  font-weight:600;
+
+  color:#ffffff;
+}
+
+
+@keyframes scrubHowItWorksSpin{
+
+  to{
+    transform:rotate(360deg);
+  }
+
+}
+
+
+/* =========================================
+   CARD CONTENT
+========================================= */
+
+.scrubHowItWorksCardContent{
+  width:100%;
+
+  padding:18px;
+
+  box-sizing:border-box;
+}
+
+
+/* STEP LABEL */
+
+.scrubHowItWorksStep{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  min-height:28px;
+
+  margin-bottom:10px;
+
+  padding:
+    0
+    11px;
+
+  border-radius:8px;
+
+  background:#eafafa;
+
+  color:#14b9bb;
+
+  font-family:"Manrope", sans-serif;
+  font-size:12px;
+  font-weight:800;
+
+  line-height:1;
+}
+
+
+/* TITLE */
+
+.scrubHowItWorksCardContent h3{
+  margin:
+    0
+    0
+    8px;
+
+  font-family:"Manrope", sans-serif;
+  font-size:16px;
+  font-weight:800;
+
+  line-height:1.4;
+
+  color:#181818;
+}
+
+
+/* PARAGRAPH */
+
+.scrubHowItWorksCardContent p{
+  margin:0;
+
+  font-family:"Manrope", sans-serif;
+  font-size:13px;
+  font-weight:500;
+
+  line-height:1.7;
+
+  color:#666666;
+}
+
+
+/* =========================================
+   FOOTER
+========================================= */
+
+.scrubHowItWorksFooter{
+  max-width:310px;
+
+  margin:
+    24px
+    auto
+    0;
+
+  text-align:center;
+
+  font-family:"Manrope", sans-serif;
+  font-size:13px;
+  font-weight:600;
+
+  line-height:1.65;
+
+  color:#747474;
+}
+
+
+/* =========================================
+   DELETE ACCOUNT BOTTOM SHEET
+========================================= */
+
+.scrubDeleteAccountOverlay{
+  position:fixed;
+  inset:0;
+
+  width:100%;
+  height:100%;
+  height:100dvh;
+
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+
+  padding:0;
+
+  background:rgba(0, 0, 0, .48);
+
+  visibility:hidden;
+  opacity:0;
+  pointer-events:none;
+
+  z-index:100000;
+
+  transition:
+    opacity .22s ease,
+    visibility .22s ease;
+}
+
+
+.scrubDeleteAccountOverlay.show{
+  visibility:visible;
+  opacity:1;
+  pointer-events:auto;
+}
+
+
+/* =========================================
+   SHEET
+========================================= */
+
+.scrubDeleteAccountSheet{
+  position:relative;
+
+  width:min(100%, 520px);
+
+  padding:
+    25px
+    20px
+    calc(22px + env(safe-area-inset-bottom));
+
+  background:#ffffff;
+
+  border-radius:24px 24px 0 0;
+
+  box-sizing:border-box;
+
+  transform:translate3d(0, 105%, 0);
+
+  transition:transform .28s ease;
+
+  box-shadow:
+    0 -10px 35px rgba(0, 0, 0, .14);
+}
+
+
+.scrubDeleteAccountOverlay.show
+.scrubDeleteAccountSheet{
+  transform:translate3d(0, 0, 0);
+}
+
+
+/* =========================================
+   CLOSE BUTTON
+========================================= */
+
+.scrubDeleteAccountClose{
+  position:absolute;
+  top:15px;
+  right:15px;
+
+  width:38px;
+  height:38px;
+
+  padding:0;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border:none;
+  border-radius:50%;
+
+  background:#f3f3f3;
+  color:#242424;
+
+  font-size:18px;
+
+  cursor:pointer;
+
+  -webkit-tap-highlight-color:transparent;
+}
+
+
+.scrubDeleteAccountClose:active{
+  transform:scale(.93);
+}
+
+
+/* =========================================
+   ICON
+========================================= */
+
+.scrubDeleteAccountIcon{
+  width:60px;
+  height:60px;
+
+  margin:3px auto 16px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:50%;
+
+  background:#fff0f0;
+  color:#e53935;
+
+  font-size:25px;
+}
+
+
+/* =========================================
+   TEXT
+========================================= */
+
+.scrubDeleteAccountSheet h2{
+  margin:0 45px 9px;
+
+  text-align:center;
+
+  font-family:"Manrope", sans-serif;
+  font-size:20px;
+  font-weight:800;
+
+  line-height:1.35;
+
+  color:#191919;
+}
+
+
+.scrubDeleteAccountSheet > p{
+  max-width:410px;
+
+  margin:0 auto;
+
+  text-align:center;
+
+  font-family:"Manrope", sans-serif;
+  font-size:13px;
+  font-weight:500;
+
+  line-height:1.65;
+
+  color:#686868;
+}
+
+
+/* =========================================
+   ERROR
+========================================= */
+
+.scrubDeleteAccountError{
+  width:100%;
+
+  margin-top:15px;
+  padding:11px 12px;
+
+  border-radius:10px;
+
+  background:#fff0f0;
+  color:#d32f2f;
+
+  font-family:"Manrope", sans-serif;
+  font-size:12px;
+  font-weight:700;
+
+  line-height:1.5;
+
+  box-sizing:border-box;
+}
+
+
+.scrubDeleteAccountError[hidden]{
+  display:none;
+}
+
+
+/* =========================================
+   ACTION BUTTONS
+========================================= */
+
+.scrubDeleteAccountActions{
+  width:100%;
+
+  margin-top:22px;
+
+  display:grid;
+  grid-template-columns:1fr 1fr;
+
+  gap:11px;
+}
+
+
+.scrubDeleteAccountCancel,
+.scrubDeleteAccountConfirm{
+  position:relative;
+
+  min-width:0;
+  min-height:50px;
+
+  padding:0 14px;
+
+  border:none;
+  border-radius:12px;
+
+  overflow:hidden;
+
+  font-family:"Manrope", sans-serif;
+  font-size:13px;
+  font-weight:800;
+
+  cursor:pointer;
+
+  -webkit-tap-highlight-color:transparent;
+}
+
+
+.scrubDeleteAccountCancel{
+  background:#f1f2f2;
+  color:#242424;
+}
+
+
+.scrubDeleteAccountConfirm{
+  background:#e53935;
+  color:#ffffff;
+}
+
+
+.scrubDeleteAccountCancel:active,
+.scrubDeleteAccountConfirm:active{
+  transform:scale(.98);
+}
+
+
+.scrubDeleteAccountCancel:disabled,
+.scrubDeleteAccountConfirm:disabled,
+.scrubDeleteAccountClose:disabled{
+  cursor:not-allowed;
+}
+
+
+/* =========================================
+   DELETE PROGRESS INSIDE BUTTON
+========================================= */
+
+.scrubDeleteAccountProgress{
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:0;
+
+  width:0%;
+
+  background:rgba(90, 0, 0, .25);
+
+  transition:width .12s linear;
+
+  pointer-events:none;
+}
+
+
+.scrubDeleteAccountConfirmText{
+  position:relative;
+  z-index:2;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  width:100%;
+  height:100%;
+}
+
+
+.scrubDeleteAccountConfirm.is-deleting{
+  pointer-events:none;
+}
+
+/* =========================================
+   MY COUPONS POPUP
+========================================= */
+.scrubCouponsPopup{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+
+  display:flex;
+  flex-direction:column;
+
+  width:100%;
+  height:100dvh;
+
+  background:#f7f8fa;
+
+  /* ADD THIS */
+  padding-top:50px;
+
+  box-sizing:border-box;
+
+  visibility:hidden;
+  opacity:0;
+  pointer-events:none;
+
+  transform:translateX(100%);
+
+  transition:
+    transform .3s ease,
+    opacity .25s ease,
+    visibility .25s ease;
+}
+
+
+.scrubCouponsPopup.show{
+  visibility:visible;
+  opacity:1;
+  pointer-events:auto;
+
+  transform:translateX(0);
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.scrubCouponsHeader{
+  flex-shrink:0;
+
+  display:grid;
+  grid-template-columns:44px 1fr 44px;
+  align-items:center;
+
+  min-height:62px;
+
+  padding:
+    env(safe-area-inset-top)
+    14px
+    0;
+
+ 
+
+  border-bottom:1px solid #eeeeee;
+}
+
+
+.scrubCouponsHeader h2{
+  margin:0;
+
+  text-align:center;
+
+  font-family:"Manrope",sans-serif;
+  font-size:18px;
+  font-weight:800;
+
+  color:#181818;
+}
+
+
+.scrubCouponsBackButton{
+  width:40px;
+  height:40px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border:none;
+  outline:none;
+
+  background:transparent;
+
+  color:#171717;
+
+  font-size:18px;
+
+  cursor:pointer;
+
+  -webkit-tap-highlight-color:transparent;
+}
+
+
+.scrubCouponsHeaderSpace{
+  width:40px;
+  height:40px;
+}
+
+
+/* =========================================
+   CONTENT
+========================================= */
+
+.scrubCouponsContent{
+  flex:1;
+
+  padding:
+    22px
+    16px
+    calc(22px + env(safe-area-inset-bottom));
+
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+
+
+/* =========================================
+   COUPON CARD
+========================================= */
+
+.scrubCouponCard{
+  position:relative;
+
+  display:flex;
+  align-items:center;
+  gap:15px;
+
+  width:100%;
+  max-width:520px;
+
+  margin:0 auto;
+  padding:20px 18px;
+
+  background:#ffffff;
+
+  border:1px solid rgba(20,185,187,.25);
+  border-radius:18px;
+
+  box-shadow:
+    0 10px 30px
+    rgba(20,185,187,.10);
+
+  overflow:hidden;
+}
+
+
+.scrubCouponCard::before,
+.scrubCouponCard::after{
+  content:"";
+
+  position:absolute;
+  top:50%;
+
+  width:22px;
+  height:22px;
+
+  background:#f7f8fa;
+
+  border-radius:50%;
+
+  transform:translateY(-50%);
+}
+
+
+.scrubCouponCard::before{
+  left:-12px;
+
+  border-right:
+    1px solid rgba(20,185,187,.25);
+}
+
+
+.scrubCouponCard::after{
+  right:-12px;
+
+  border-left:
+    1px solid rgba(20,185,187,.25);
+}
+
+
+.scrubCouponIcon{
+  flex-shrink:0;
+
+  width:54px;
+  height:54px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:16px;
+
+  background:rgba(20,185,187,.12);
+
+  color:#14b9bb;
+
+  font-size:24px;
+}
+
+
+.scrubCouponDetails{
+  min-width:0;
+}
+
+
+.scrubCouponDetails h3{
+  margin:0 0 7px;
+
+  font-family:"Manrope",sans-serif;
+  font-size:18px;
+  font-weight:900;
+  letter-spacing:.4px;
+
+  color:#14b9bb;
+}
+
+
+.scrubCouponDetails p{
+  margin:0;
+
+  font-family:"Manrope",sans-serif;
+  font-size:14px;
+  font-weight:500;
+  line-height:1.6;
+
+  color:#444444;
+}
+
+
+.scrubCouponDetails strong{
+  font-weight:900;
+
+  color:#171717;
+}
