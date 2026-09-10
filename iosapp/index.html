@@ -938,6 +938,57 @@ input{
     padding-top:calc(env(safe-area-inset-top, 0px) + 54px) !important;
   }
 }
+
+/* Continue button: spinner only while real OTP is being requested */
+.continue-button{
+  position:relative;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+
+.continue-button.loading{
+  pointer-events:none !important;
+  opacity:1 !important;
+}
+
+.continue-button.loading .continue-button-text{
+  display:none !important;
+}
+
+.continue-button-spinner{
+  display:none;
+  width:20px;
+  height:20px;
+  border:2.5px solid rgba(255,255,255,.42);
+  border-top-color:#fff;
+  border-radius:50%;
+  animation:scrubOtpSpin .7s linear infinite;
+}
+
+.continue-button.loading .continue-button-spinner{
+  display:block;
+}
+
+/* Resend: spinner only; no "Sending OTP..." label */
+.otp-resend.sending{
+  display:flex !important;
+  justify-content:center !important;
+  align-items:center !important;
+  min-height:22px;
+  pointer-events:none !important;
+}
+
+.otp-resend-spinner{
+  display:inline-block;
+  width:16px;
+  height:16px;
+  border:2px solid rgba(0,0,0,.16);
+  border-top-color:currentColor;
+  border-radius:50%;
+  animation:scrubOtpSpin .7s linear infinite;
+}
+
 </style>
 
 </head>
@@ -1244,7 +1295,8 @@ input{
       id="continueButton"
       disabled
     >
-      Continue
+      <span class="continue-button-text">Continue</span>
+      <span class="continue-button-spinner" aria-hidden="true"></span>
     </button>
 
    <div class="terms">
@@ -5474,11 +5526,23 @@ function getScrubOtpErrorMessage(error){
     return "OTP expired. Please resend OTP.";
   }
 
+  if(code.includes("network-request-failed")){
+    return "Network issue. Please check internet and try again.";
+  }
+
+  if(code.includes("operation-not-allowed")){
+    return "Phone sign-in is not enabled in Firebase.";
+  }
+
+  if(code.includes("app-not-authorized")){
+    return "This app is not authorized for Firebase phone verification.";
+  }
+
   if(error?.name === "AbortError"){
     return "OTP service took too long. Please retry.";
   }
 
-  return "Something went wrong. Please try again.";
+  return "OTP could not be sent. Please try again.";
 }
 
 function focusScrubOtpKeyboard(){
@@ -5657,10 +5721,7 @@ continueButton.addEventListener("click", async function(){
   scrubOtpSending = true;
   continueButton.disabled = true;
 
-  const originalContinueText =
-    continueButton.textContent;
-
-  continueButton.textContent = "Sending OTP...";
+  continueButton.classList.add("loading");
 
   try{
 
@@ -5727,8 +5788,7 @@ continueButton.addEventListener("click", async function(){
       isValid
     );
 
-    continueButton.textContent =
-      originalContinueText || "Continue";
+    continueButton.classList.remove("loading");
   }
 });
 
@@ -5848,7 +5908,8 @@ otpResend.addEventListener("click", async function(){
   clearScrubOtpError();
 
   otpResend.classList.remove("active");
-  otpResend.textContent = "Sending OTP...";
+  otpResend.classList.add("sending");
+  otpResend.innerHTML = '<span class="otp-resend-spinner" aria-hidden="true"></span>';
 
   clearScrubOtpAndRefocus();
 
@@ -5878,6 +5939,7 @@ otpResend.addEventListener("click", async function(){
         scrubRecaptchaVerifier
       );
 
+    otpResend.classList.remove("sending");
     startOtpResendTimer();
     focusScrubOtpKeyboard();
 
@@ -5888,6 +5950,7 @@ otpResend.addEventListener("click", async function(){
     scrubConfirmationResult = null;
     resetScrubRecaptcha();
 
+    otpResend.classList.remove("sending");
     otpResend.textContent = "Resend SMS";
     otpResend.classList.add("active");
 
@@ -5897,6 +5960,7 @@ otpResend.addEventListener("click", async function(){
 
   }finally{
     scrubOtpSending = false;
+    otpResend.classList.remove("sending");
   }
 });
 
