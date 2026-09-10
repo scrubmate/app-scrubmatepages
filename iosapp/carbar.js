@@ -505,6 +505,85 @@ function scurbMateServiceIsUnavailable(serviceName){
   );
 }
 
+
+/* =========================================
+   CLEAR CART ONLY WHEN NEW LOCATION
+   IS OUTSIDE THE SERVICEABLE AREA
+========================================= */
+
+window.scrubMateClearCartForLocationChange =
+  function(){
+
+    if(!Array.isArray(scurbServiceCart)){
+      scurbServiceCart = [];
+    }
+
+    if(scurbServiceCart.length === 0){
+
+      localStorage.removeItem(
+        "scurbMateServiceCart"
+      );
+
+      if(typeof updateScurbServiceButtons === "function"){
+        updateScurbServiceButtons();
+      }
+
+      if(typeof updateScurbFloatingCartBar === "function"){
+        updateScurbFloatingCartBar();
+      }
+
+      if(typeof updateScurbPopupBookButtons === "function"){
+        updateScurbPopupBookButtons();
+      }
+
+      if(typeof renderScurbCartPage === "function"){
+        renderScurbCartPage();
+      }
+
+      return false;
+    }
+
+
+    scurbServiceCart = [];
+
+    localStorage.removeItem(
+      "scurbMateServiceCart"
+    );
+
+
+    if(typeof saveScurbServiceCart === "function"){
+      saveScurbServiceCart();
+    }
+
+    if(typeof updateScurbServiceButtons === "function"){
+      updateScurbServiceButtons();
+    }
+
+    if(typeof updateScurbFloatingCartBar === "function"){
+      updateScurbFloatingCartBar();
+    }
+
+    if(typeof updateScurbPopupBookButtons === "function"){
+      updateScurbPopupBookButtons();
+    }
+
+    if(typeof renderScurbCartPage === "function"){
+      renderScurbCartPage();
+    }
+
+    if(typeof closeScurbCartPage === "function"){
+      closeScurbCartPage();
+    }
+
+
+    console.log(
+      "🛒 Cart cleared: selected location is outside service area."
+    );
+
+    return true;
+  };
+
+
 /* =========================================
    GET SHORT QUANTITY LABEL
 ========================================= */
