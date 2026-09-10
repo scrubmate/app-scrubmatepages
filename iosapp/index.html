@@ -6547,7 +6547,163 @@ window.addEventListener("DOMContentLoaded", function(){
 });
 
 
-</script>
 
+
+
+/* =========================================================
+   ROBUST LOGOUT + FRESH RE-LOGIN RESET
+   Fixes: first login works, logout, second login fails.
+========================================================= */
+
+async function resetScrubOtpSessionForFreshLogin(){
+  clearTimeout(typeof scrubAutoVerifyTimer !== "undefined" ? scrubAutoVerifyTimer : 0);
+
+  scrubOtpSending = false;
+  scrubOtpVerifying = false;
+  scrubConfirmationResult = null;
+
+  if(typeof setVerifyLoading === "function"){
+    setVerifyLoading(false);
+  }
+
+  if(typeof resetScrubRecaptcha === "function"){
+    resetScrubRecaptcha();
+  }
+
+  if(typeof clearScrubOtpError === "function"){
+    clearScrubOtpError();
+  }
+
+  if(typeof otpInput !== "undefined" && otpInput){
+    otpInput.value = "";
+    otpInput.blur();
+  }
+
+  if(typeof updateOtpUI === "function"){
+    updateOtpUI();
+  }
+
+  if(typeof otpResendTimer !== "undefined"){
+    clearInterval(otpResendTimer);
+  }
+
+  const resend = document.getElementById("otpResend");
+  if(resend){
+    resend.classList.remove("sending");
+    resend.classList.add("active");
+    resend.textContent = "Resend SMS";
+  }
+
+  const overlay = document.getElementById("otpOverlay");
+  if(overlay){
+    overlay.classList.remove("show");
+  }
+}
+
+async function scrubMateLogoutCompletely(){
+  try{
+    await resetScrubOtpSessionForFreshLogin();
+
+    /* IMPORTANT: sign out Firebase user too. */
+    try{
+      await ensureScrubFirebaseOtpReady();
+      if(scrubFirebaseAuth && scrubFirebaseAuth.currentUser){
+        await scrubFirebaseAuth.signOut();
+      }
+    }catch(error){
+      console.warn("Firebase sign out warning:", error);
+      /* Logout UI must still continue even if network/config is unavailable. */
+    }
+
+    /* Clear only login/profile session values. */
+    [
+      "scrubMateLoggedIn",
+      "scrubMateUser",
+      "scrubMateMobile",
+      "scrubMateName",
+      "scrubMateFirstName",
+      "scrubMateLastName",
+      "scrubMateEmail",
+      "scrubMateOtp",
+      "scrubMateGuestMode",
+      "scrubMateLoginFromGuestProfile"
+    ].forEach(function(key){
+      localStorage.removeItem(key);
+    });
+
+    /* Fresh login form state. */
+    if(typeof mobileInput !== "undefined" && mobileInput){
+      mobileInput.value = "";
+    }
+
+    if(typeof errorText !== "undefined" && errorText){
+      errorText.textContent = "";
+    }
+
+    if(typeof continueButton !== "undefined" && continueButton){
+      continueButton.disabled = true;
+      continueButton.classList.remove("enabled", "loading");
+    }
+
+    const login = document.getElementById("loginPage");
+    if(login){
+      login.style.display = "";
+    }
+
+    [
+      "scrubProfilePage",
+      "scrubDetailsPage",
+      "locationPage",
+      "manualSearchPage",
+      "confirmLocationPage",
+      "autoLocationPage",
+      "scurbHomePage"
+    ].forEach(function(id){
+      const el = document.getElementById(id);
+      if(el){
+        el.classList.remove("show", "home-slide-up");
+      }
+    });
+
+    /* Give Firebase/reCAPTCHA a truly clean verifier next login. */
+    scrubConfirmationResult = null;
+    resetScrubRecaptcha();
+
+    setTimeout(function(){
+      if(typeof mobileInput !== "undefined" && mobileInput){
+        try{
+          mobileInput.focus({preventScroll:true});
+        }catch(error){
+          mobileInput.focus();
+        }
+      }
+    },120);
+
+  }catch(error){
+    console.error("Logout reset error:", error);
+  }
+}
+
+const scrubLogoutButtonElement = document.getElementById("scrubLogoutButton");
+if(scrubLogoutButtonElement){
+  scrubLogoutButtonElement.addEventListener("click", function(event){
+    event.preventDefault();
+    scrubMateLogoutCompletely();
+  });
+}
+
+/* Extra protection: when login page becomes active again after logout,
+   never reuse an old confirmationResult or old reCAPTCHA verifier. */
+window.addEventListener("pageshow", function(){
+  const loggedIn = localStorage.getItem("scrubMateLoggedIn") === "true";
+  if(!loggedIn){
+    scrubConfirmationResult = null;
+    if(typeof resetScrubRecaptcha === "function"){
+      resetScrubRecaptcha();
+    }
+  }
+});
+
+</script>
 </body>
 </html>
