@@ -1872,12 +1872,25 @@ async function reverseGeocode(latitude, longitude){
     "&zoom=18" +
     "&addressdetails=1";
 
-  const response = await fetch(url, {
-    headers:{
-      "Accept":"application/json",
-      "Accept-Language":"en"
-    }
-  });
+  const controller = new AbortController();
+
+  const reverseGeocodeTimeout = setTimeout(function(){
+    controller.abort();
+  }, 4500);
+
+  let response;
+
+  try{
+    response = await fetch(url, {
+      headers:{
+        "Accept":"application/json",
+        "Accept-Language":"en"
+      },
+      signal:controller.signal
+    });
+  }finally{
+    clearTimeout(reverseGeocodeTimeout);
+  }
 
   if(!response.ok){
     throw new Error("Address request failed.");
