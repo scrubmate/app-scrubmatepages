@@ -613,7 +613,7 @@ function showAutomaticLocationResult(locationData){
 
   openHomeWithSlideUp();
 
-}, 450);
+}, 1400);
 }
 
 
