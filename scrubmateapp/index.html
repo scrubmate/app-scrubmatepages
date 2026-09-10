@@ -515,146 +515,232 @@ input{
 }
 
 /* =========================
-   OTP POPUP
+   OTP VERIFICATION
 ========================= */
 
 .otp-overlay{
   position:fixed;
   inset:0;
-  z-index:9999;
-
+  z-index:99999;
   display:flex;
-  align-items:flex-end;
+  align-items:flex-start;
   justify-content:center;
-
-  padding-top:env(safe-area-inset-top, 0px);
-
-  background:rgba(0,0,0,.42);
-
-  backdrop-filter:blur(5px);
-  -webkit-backdrop-filter:blur(5px);
-
+  background:#fff;
   opacity:0;
   visibility:hidden;
-
   overflow:hidden;
-
-  transition:
-    opacity .25s ease,
-    visibility .25s ease;
+  transition:opacity .2s ease,visibility .2s ease;
 }
 
 .otp-overlay.show{
   opacity:1;
   visibility:visible;
 }
+
 .otp-sheet{
-  width:min(94%, 520px);
-  max-height:calc(100% - env(safe-area-inset-top, 0px));
-
+  position:relative;
+  width:100%;
+  max-width:760px;
+  height:100vh;
+  height:100dvh;
   padding:
-    18px
-    20px
-    calc(
-      env(safe-area-inset-bottom, 0px) +
-      20px
-    );
-
-  border-radius:
-    24px
-    24px
-    0 0;
-
-  background:#ffffff;
+    calc(env(safe-area-inset-top,0px) + 40px)
+    22px
+    calc(env(safe-area-inset-bottom,0px) + 20px);
+  background:#fff;
   overflow:hidden;
-
-  transform:translateY(100%);
-
-  transition:
-    transform .3s cubic-bezier(.2,.8,.2,1);
 }
 
-.otp-overlay.show .otp-sheet{
-  transform:translateY(0);
-}
-
-.otp-handle{
-  width:44px;
-  height:4px;
-  margin:0 auto 16px;
-
-  border-radius:999px;
-  background:#dddddd;
+.otp-handle,
+.close-button{
+  display:none !important;
 }
 
 .otp-sheet h2{
-  font-size:22px;
+  position:relative;
+  margin:0 0 64px;
+  padding-left:38px;
+  color:#222;
+  font-size:19px;
   font-weight:800;
-  text-align:center;
+  line-height:1.2;
+  text-align:left;
+  cursor:pointer;
+}
+
+.otp-sheet h2::before{
+  content:"←";
+  position:absolute;
+  left:0;
+  top:-6px;
+  color:#111;
+  font-size:29px;
+  font-weight:400;
+  line-height:1;
 }
 
 .otp-sheet p{
-  margin-top:8px;
-
-  color:#777777;
-  font-size:14px;
+  margin:0;
+  color:#333;
+  font-size:18px;
   line-height:1.4;
+  font-weight:600;
   text-align:center;
 }
 
-.otp-sheet strong{
-  color:#222222;
+.otp-sheet p strong{
+  display:block;
+  margin-top:4px;
+  color:#222;
+  font-size:22px;
+  font-weight:800;
 }
 
 .otp-input{
-  width:100%;
-  min-height:52px;
-  margin-top:16px;
-
-  border:2px solid var(--border);
-  border-radius:14px;
-  outline:none;
-
-  text-align:center;
-  font-size:22px;
-  font-weight:800;
-  letter-spacing:8px;
-
-  transition:
-    border-color .2s ease,
-    box-shadow .2s ease;
+  position:absolute;
+  left:22px;
+  top:282px;
+  width:calc(100% - 44px);
+  height:65px;
+  opacity:0;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:transparent;
+  caret-color:transparent;
+  z-index:10;
 }
 
-.otp-input:focus{
+.otp-boxes{
+  position:relative;
+  z-index:3;
+  display:flex;
+  width:calc(100% - 44px);
+  max-width:560px;
+  margin:38px auto 0;
+  gap:10px;
+  pointer-events:none;
+}
+
+.otp-box{
+  flex:1;
+  min-width:0;
+  height:60px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1.8px solid #bdbdbd;
+  border-radius:13px;
+  background:#fff;
+  color:#222;
+  font-size:21px;
+  font-weight:800;
+}
+
+.otp-box.active{
   border-color:var(--primary);
-  box-shadow:0 0 0 4px rgba(20,185,187,.11);
+  box-shadow:0 0 0 3px rgba(20,185,187,.09);
 }
 
-.verify-button,
-.close-button{
-  width:100%;
-  min-height:48px;
+.otp-resend{
+  margin-top:30px;
+  color:#999;
+  font-size:14px;
+  font-weight:600;
+  text-align:center;
+}
 
-  border:none;
-  border-radius:14px;
-
-  font-size:16px;
-  font-weight:800;
-
+.otp-resend.active{
+  color:#222;
   cursor:pointer;
 }
 
 .verify-button{
-  margin-top:14px;
-  color:#ffffff;
+  position:absolute;
+  left:22px;
+  right:22px;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 20px);
+  width:calc(100% - 44px);
+  height:50px;
+  margin:0;
+  border:0;
+  border-radius:12px;
   background:var(--primary);
+  color:#fff;
+  font-size:14px;
+  font-weight:800;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transform:translateY(8px);
+  transition:opacity .18s ease,transform .18s ease,visibility .18s ease;
 }
 
-.close-button{
-  margin-top:8px;
-  color:#333333;
-  background:#eeeeee;
+.verify-button.ready{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transform:translateY(0);
 }
+
+@media(max-width:600px){
+  .otp-sheet{
+    padding:
+      calc(env(safe-area-inset-top,0px) + 40px)
+      18px
+      calc(env(safe-area-inset-bottom,0px) + 18px);
+  }
+
+  .otp-sheet h2{
+    margin-bottom:62px;
+    padding-left:37px;
+    font-size:18px;
+  }
+
+  .otp-sheet h2::before{
+    font-size:28px;
+  }
+
+  .otp-sheet p{
+    font-size:17px;
+  }
+
+  .otp-sheet p strong{
+    font-size:21px;
+  }
+
+  .otp-input{
+    left:18px;
+    top:270px;
+    width:calc(100% - 36px);
+    height:62px;
+  }
+
+  .otp-boxes{
+    width:calc(100% - 36px);
+    margin-top:35px;
+    gap:7px;
+  }
+
+  .otp-box{
+    height:56px;
+    border-radius:12px;
+    font-size:20px;
+  }
+
+  .otp-resend{
+    margin-top:27px;
+    font-size:14px;
+  }
+
+  .verify-button{
+    left:18px;
+    right:18px;
+    width:calc(100% - 36px);
+    bottom:calc(env(safe-area-inset-bottom,0px) + 18px);
+  }
+}
+
 /* Pause only while pressing a moving row */
 
 .marquee-row:active .marquee-track{
@@ -677,6 +763,64 @@ input{
 <link rel="stylesheet" href="popup.css">
 
 <link rel="stylesheet" href="help.css">
+
+<style id="otp-fa-back-final">
+.otp-sheet h2{
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+  padding-left:0 !important;
+  cursor:default !important;
+}
+
+.otp-sheet h2::before{
+  content:none !important;
+}
+
+.otp-back-fa{
+  width:34px !important;
+  height:34px !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  color:#111 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex:none !important;
+  cursor:pointer !important;
+  font-size:20px !important;
+}
+
+.otp-back-fa i{
+  display:block !important;
+  font-family:"Font Awesome 6 Free" !important;
+  font-weight:900 !important;
+}
+
+.otp-back-fa:active{
+  transform:scale(.94);
+}
+
+.otp-sheet h2 span{
+  display:block !important;
+}
+
+@media(max-width:600px){
+  .otp-sheet h2{
+    gap:10px !important;
+    font-size:19px !important;
+  }
+
+  .otp-back-fa{
+    width:32px !important;
+    height:32px !important;
+    font-size:18px !important;
+  }
+}
+</style>
+
 </head>
 
 <body>
@@ -3978,18 +4122,22 @@ input{
   </div>
 </div>
 <!-- =========================
-     OTP POPUP
-========================== -->
+     OTP VERIFICATION
+========================= -->
 <div class="otp-overlay" id="otpOverlay">
-
   <div class="otp-sheet">
 
     <div class="otp-handle"></div>
 
-    <h2>Verify mobile number</h2>
+    <h2 id="otpBackButton">
+      <button type="button" class="otp-back-fa" aria-label="Back">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+      <span>OTP verification</span>
+    </h2>
 
     <p>
-      We sent a 6-digit OTP to
+      Enter the OTP sent to
       <strong id="displayMobile"></strong>
     </p>
 
@@ -3998,31 +4146,39 @@ input{
       id="otpInput"
       class="otp-input"
       inputmode="numeric"
+      autocomplete="one-time-code"
       maxlength="6"
-      placeholder="000000"
       aria-label="Enter OTP"
     >
+
+    <div class="otp-boxes" id="otpBoxes">
+      <span class="otp-box"></span>
+      <span class="otp-box"></span>
+      <span class="otp-box"></span>
+      <span class="otp-box"></span>
+      <span class="otp-box"></span>
+      <span class="otp-box"></span>
+    </div>
+
+    <div class="otp-resend" id="otpResend">
+      Resend SMS in <span id="otpSeconds">43</span>s
+    </div>
 
     <button
       type="button"
       class="verify-button"
       id="verifyButton"
-    >
-      Verify OTP
-    </button>
+    >Verify OTP</button>
 
     <button
       type="button"
       class="close-button"
       id="closeOtpButton"
-    >
-      Close
-    </button>
+    >Close</button>
 
   </div>
-
 </div>
-<!-- COUPON POPUP -->
+
 
 <section
   class="scurbCouponPopup"
@@ -5029,9 +5185,82 @@ mobileInput.addEventListener("input", function(){
 });
 
 
-/* Open OTP popup */
+/* =========================
+   OTP VERIFICATION
+========================= */
 
-continueButton.addEventListener("click", function(){
+const otpBoxes = document.querySelectorAll("#otpBoxes .otp-box");
+const otpResend = document.getElementById("otpResend");
+const otpSeconds = document.getElementById("otpSeconds");
+const otpBackButton = document.getElementById("otpBackButton");
+
+let otpResendTimer = null;
+
+function updateOtpUI(){
+
+  const digits = otpInput.value
+    .replace(/\D/g,"")
+    .slice(0,6);
+
+  otpInput.value = digits;
+
+  otpBoxes.forEach(function(box,index){
+
+    box.textContent = digits[index] || "";
+
+    box.classList.toggle(
+      "active",
+      index === digits.length && digits.length < 6
+    );
+
+  });
+
+  verifyButton.classList.toggle(
+    "ready",
+    digits.length === 6
+  );
+}
+
+function startOtpResendTimer(){
+
+  clearInterval(otpResendTimer);
+
+  let seconds = 43;
+
+  otpResend.classList.remove("active");
+
+  otpResend.innerHTML =
+    'Resend SMS in <span id="otpSeconds">' +
+    seconds +
+    '</span>s';
+
+  otpResendTimer = setInterval(function(){
+
+    seconds--;
+
+    const secondsElement =
+      document.getElementById("otpSeconds");
+
+    if(secondsElement){
+      secondsElement.textContent = seconds;
+    }
+
+    if(seconds <= 0){
+
+      clearInterval(otpResendTimer);
+
+      otpResend.textContent = "Resend SMS";
+      otpResend.classList.add("active");
+
+    }
+
+  },1000);
+}
+
+
+/* Open OTP */
+
+continueButton.addEventListener("click",function(){
 
   const mobile = mobileInput.value.trim();
 
@@ -5041,89 +5270,134 @@ continueButton.addEventListener("click", function(){
 
   displayMobile.textContent = "+91 " + mobile;
 
+  otpInput.value = "";
+
+  updateOtpUI();
+
   otpOverlay.classList.add("show");
 
-  setTimeout(() => {
+  startOtpResendTimer();
+
+  setTimeout(function(){
     otpInput.focus();
-  }, 320);
+  },150);
 
 });
 
 
-/* OTP numbers only */
+/* OTP input */
 
-otpInput.addEventListener("input", function(){
+otpInput.addEventListener("input",function(){
 
-  this.value = this.value.replace(/\D/g, "").slice(0, 6);
+  updateOtpUI();
 
 });
 
 
-/* Verify OTP */
+/* Clicking anywhere around boxes focuses real input */
 
-/* Verify OTP */
+document.getElementById("otpBoxes").addEventListener(
+  "click",
+  function(){
+    otpInput.focus();
+  }
+);
 
-verifyButton.addEventListener("click", function(){
+
+/* Back */
+
+otpBackButton.addEventListener("click",function(){
+
+  closeOtpPopup();
+
+});
+
+
+/* Resend */
+
+otpResend.addEventListener("click",function(){
+
+  if(!otpResend.classList.contains("active")){
+    return;
+  }
+
+  otpInput.value = "";
+
+  updateOtpUI();
+
+  startOtpResendTimer();
+
+  otpInput.focus();
+
+});
+
+
+/* Verify */
+
+verifyButton.addEventListener("click",function(){
 
   const mobile = mobileInput.value.trim();
   const otp = otpInput.value.trim();
 
-  /* Reset error style */
   otpInput.style.borderColor = "";
   otpInput.style.boxShadow = "";
 
   if(otp.length !== 6){
-    otpInput.style.borderColor = "#e53935";
-    otpInput.style.boxShadow = "0 0 0 4px rgba(229,57,53,.12)";
     otpInput.focus();
     return;
   }
 
-  /* Temporary OTP */
+  /* Existing test OTP */
   if(otp !== "123456"){
-    otpInput.style.borderColor = "#e53935";
-    otpInput.style.boxShadow = "0 0 0 4px rgba(229,57,53,.12)";
+    otpBoxes.forEach(function(box){
+      box.style.borderColor = "#e53935";
+    });
+
     otpInput.focus();
+
+    setTimeout(function(){
+      otpBoxes.forEach(function(box){
+        box.style.borderColor = "";
+      });
+    },1200);
+
     return;
   }
 
-  /* Save login */
-  /* Save verified mobile temporarily */
+  const scrubMateUser = {
+    firstName:"",
+    lastName:"",
+    email:"",
+    mobile:mobile,
+    phoneNumber:"+91" + mobile,
+    otp:otp,
+    login:false,
+    verified:true,
+    profileCompleted:false,
+    loginTime:new Date().toISOString()
+  };
 
-const scrubMateUser = {
-  firstName:"",
-  lastName:"",
-  email:"",
-  mobile:mobile,
-  phoneNumber:"+91" + mobile,
-  otp:otp,
-  login:false,
-  verified:true,
-  profileCompleted:false,
-  loginTime:new Date().toISOString()
-};
+  localStorage.setItem(
+    "scrubMateUser",
+    JSON.stringify(scrubMateUser)
+  );
 
-localStorage.setItem(
-  "scrubMateUser",
-  JSON.stringify(scrubMateUser)
-);
+  localStorage.setItem(
+    "scrubMateMobile",
+    mobile
+  );
 
-localStorage.setItem(
-  "scrubMateMobile",
-  mobile
-);
+  localStorage.setItem(
+    "scrubMateOtp",
+    otp
+  );
 
-localStorage.setItem(
-  "scrubMateOtp",
-  otp
-);
+  closeOtpPopup();
 
-otpOverlay.classList.remove("show");
-otpInput.value = "";
-
-openScrubDetailsPage();
+  openScrubDetailsPage();
 
 });
+
 
 scrubConfirmDetailsButton.addEventListener(
   "click",
@@ -5321,24 +5595,19 @@ startAutomaticLoginLocation();
 function closeOtpPopup(){
 
   otpOverlay.classList.remove("show");
+
   otpInput.value = "";
+
+  clearInterval(otpResendTimer);
+
+  updateOtpUI();
 
 }
 
-closeOtpButton.addEventListener("click", closeOtpPopup);
-
-otpOverlay.addEventListener("click", function(event){
-
-  if(event.target === otpOverlay){
-    closeOtpPopup();
-  }
-
-});
-
-
-
-
-
+closeOtpButton.addEventListener(
+  "click",
+  closeOtpPopup
+);
 
 
 /* Pause animations when app is hidden */
