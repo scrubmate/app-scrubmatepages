@@ -1411,3 +1411,396 @@
 
   z-index:200;
 }
+
+
+/* =========================================================
+   SCRUB MATE — CEZOO-STYLE STATUS BASED ORDER UI
+   Each booking status gets a visibly different screen.
+   Finished statuses have NO MAP.
+========================================================= */
+
+.scurbOrderTrackingPage{
+  --scurb-status-accent:#14b9bb;
+  --scurb-status-soft:#eafafa;
+  --scurb-status-text:#173638;
+  --scurb-status-page:#f5f7f7;
+}
+
+.scurbOrderTrackingPage .scurbOrderTrackingContent{
+  background:
+    linear-gradient(
+      180deg,
+      var(--scurb-status-soft) 0,
+      var(--scurb-status-page) 180px,
+      #f5f6f7 420px
+    );
+}
+
+.scurbOrderTrackingPage .scurbOrderMainStatusCard{
+  position:relative;
+  overflow:hidden;
+  border-color:rgba(0,0,0,.055);
+  background:#fff;
+  transition:
+    background .22s ease,
+    border-color .22s ease;
+}
+
+.scurbOrderTrackingPage .scurbOrderMainStatusCard::after{
+  content:"";
+  position:absolute;
+  width:120px;
+  height:120px;
+  right:-62px;
+  top:-65px;
+  border-radius:50%;
+  background:var(--scurb-status-soft);
+  opacity:.95;
+  pointer-events:none;
+}
+
+.scurbOrderTrackingPage .scurbOrderMainStatusIcon{
+  position:relative;
+  z-index:2;
+  background:var(--scurb-status-soft);
+  color:var(--scurb-status-accent);
+}
+
+.scurbOrderTrackingPage .scurbOrderMainStatusText{
+  position:relative;
+  z-index:2;
+}
+
+.scurbOrderTrackingPage .scurbOrderMainStatusText h1{
+  color:var(--scurb-status-text);
+}
+
+.scurbOrderTrackingPage .scurbOrderStatusBadge{
+  background:var(--scurb-status-soft);
+  color:var(--scurb-status-accent);
+}
+
+.scurbOrderTrackingPage .scurbOrderCleanerAvatar,
+.scurbOrderTrackingPage .scurbOrderDetailsIcon{
+  background:var(--scurb-status-soft);
+  color:var(--scurb-status-accent);
+}
+
+.scurbOrderTrackingPage .scurbOrderCleanerCall{
+  background:var(--scurb-status-accent);
+}
+
+.scurbOrderTrackingPage .scurbOrderReadyMessage{
+  background:var(--scurb-status-soft);
+}
+
+.scurbOrderTrackingPage .scurbOrderReadyMessage i{
+  color:var(--scurb-status-accent);
+}
+
+
+/* -------------------------
+   PLACED
+-------------------------- */
+
+.scurbOrderTrackingPage.scurbStatusPlaced{
+  --scurb-status-accent:#64748b;
+  --scurb-status-soft:#f1f5f9;
+  --scurb-status-text:#263342;
+  --scurb-status-page:#f7f9fb;
+}
+
+.scurbOrderTrackingPage.scurbStatusPlaced
+.scurbOrderMainStatusCard{
+  min-height:128px;
+}
+
+.scurbOrderTrackingPage.scurbStatusPlaced
+.scurbOrderMapSection{
+  filter:saturate(.88);
+}
+
+
+/* -------------------------
+   PARTNER ASSIGNED
+-------------------------- */
+
+.scurbOrderTrackingPage.scurbStatusAssigned{
+  --scurb-status-accent:#0f9e8f;
+  --scurb-status-soft:#e7f8f5;
+  --scurb-status-text:#15443f;
+  --scurb-status-page:#f1fbf9;
+}
+
+.scurbOrderTrackingPage.scurbStatusAssigned
+.scurbOrderCleanerCard{
+  border-color:rgba(15,158,143,.16);
+}
+
+
+/* -------------------------
+   ON THE WAY
+-------------------------- */
+
+.scurbOrderTrackingPage.scurbStatusOnWay{
+  --scurb-status-accent:#2563eb;
+  --scurb-status-soft:#eaf1ff;
+  --scurb-status-text:#163b88;
+  --scurb-status-page:#f3f7ff;
+}
+
+.scurbOrderTrackingPage.scurbStatusOnWay
+.scurbOrderMapSection{
+  height:clamp(320px,46vh,440px);
+}
+
+.scurbOrderTrackingPage.scurbStatusOnWay
+.scurbOrderMainStatusCard{
+  border-color:rgba(37,99,235,.13);
+}
+
+
+/* -------------------------
+   ARRIVED
+-------------------------- */
+
+.scurbOrderTrackingPage.scurbStatusArrived{
+  --scurb-status-accent:#7c3aed;
+  --scurb-status-soft:#f2ebff;
+  --scurb-status-text:#4b2585;
+  --scurb-status-page:#faf7ff;
+}
+
+.scurbOrderTrackingPage.scurbStatusArrived
+.scurbOrderMapSection{
+  height:clamp(285px,40vh,390px);
+}
+
+
+/* -------------------------
+   IN PROGRESS
+-------------------------- */
+
+.scurbOrderTrackingPage.scurbStatusProgress{
+  --scurb-status-accent:#0891b2;
+  --scurb-status-soft:#e6f8fc;
+  --scurb-status-text:#155266;
+  --scurb-status-page:#f1fbfd;
+}
+
+.scurbOrderTrackingPage.scurbStatusProgress
+.scurbOrderMainStatusCard{
+  border-color:rgba(8,145,178,.15);
+}
+
+
+/* -------------------------
+   COMPLETED — NO MAP
+-------------------------- */
+
+.scurbOrderTrackingPage.scurbStatusCompleted{
+  --scurb-status-accent:#16a34a;
+  --scurb-status-soft:#eaf8ef;
+  --scurb-status-text:#185c31;
+  --scurb-status-page:#f4fbf6;
+}
+
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderMapSection{
+  display:none !important;
+}
+
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderTrackingContent{
+  padding-top:
+    calc(
+      62px +
+      env(safe-area-inset-top,0px)
+    );
+
+  background:
+    radial-gradient(
+      circle at 92% 8%,
+      rgba(22,163,74,.09),
+      transparent 25%
+    ),
+    linear-gradient(
+      180deg,
+      #effaf2 0,
+      #f8fcf9 260px,
+      #f5f6f7 520px
+    );
+}
+
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderMainStatusCard{
+  min-height:190px;
+  padding:30px 20px;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  border-color:rgba(22,163,74,.13);
+}
+
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderMainStatusIcon{
+  width:66px;
+  height:66px;
+  border-radius:50%;
+  font-size:27px;
+}
+
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderMainStatusIcon i{
+  font-size:28px;
+}
+
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderMainStatusText h1{
+  margin-top:3px;
+  font-size:21px;
+}
+
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderCleanerCall{
+  display:none !important;
+}
+
+
+/* -------------------------
+   CANCELLED / REJECTED / REFUNDED — NO MAP
+-------------------------- */
+
+.scurbOrderTrackingPage.scurbStatusCancelled{
+  --scurb-status-accent:#dc2626;
+  --scurb-status-soft:#fff0f0;
+  --scurb-status-text:#7f1d1d;
+  --scurb-status-page:#fff7f7;
+}
+
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbOrderMapSection{
+  display:none !important;
+}
+
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbOrderTrackingContent{
+  padding-top:
+    calc(
+      62px +
+      env(safe-area-inset-top,0px)
+    );
+
+  background:
+    radial-gradient(
+      circle at 92% 8%,
+      rgba(220,38,38,.07),
+      transparent 25%
+    ),
+    linear-gradient(
+      180deg,
+      #fff3f3 0,
+      #fffafa 260px,
+      #f5f6f7 520px
+    );
+}
+
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbOrderMainStatusCard{
+  min-height:180px;
+  padding:30px 20px;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  border-color:rgba(220,38,38,.12);
+}
+
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbOrderMainStatusIcon{
+  width:64px;
+  height:64px;
+  border-radius:50%;
+}
+
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbOrderMainStatusIcon i{
+  font-size:27px;
+}
+
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbOrderMainStatusText h1{
+  margin-top:3px;
+  font-size:21px;
+}
+
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbOrderCleanerCard,
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbOrderReadyMessage{
+  display:none !important;
+}
+
+
+/* =========================================================
+   BACK BUTTON FOR NO-MAP FINISHED SCREENS
+========================================================= */
+
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderBackButton,
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbOrderBackButton{
+  position:fixed;
+  top:calc(env(safe-area-inset-top,0px) + 16px);
+  left:16px;
+  z-index:17020;
+  background:#fff;
+}
+
+
+/* =========================================================
+   ACTIVE STATUSES ALWAYS KEEP MAP
+========================================================= */
+
+.scurbOrderTrackingPage.scurbStatusPlaced
+.scurbOrderMapSection,
+.scurbOrderTrackingPage.scurbStatusAssigned
+.scurbOrderMapSection,
+.scurbOrderTrackingPage.scurbStatusOnWay
+.scurbOrderMapSection,
+.scurbOrderTrackingPage.scurbStatusArrived
+.scurbOrderMapSection,
+.scurbOrderTrackingPage.scurbStatusProgress
+.scurbOrderMapSection{
+  display:block;
+}
+
+
+/* =========================================================
+   MOBILE TUNING
+========================================================= */
+
+@media(max-width:600px){
+
+  .scurbOrderTrackingPage.scurbStatusCompleted
+  .scurbOrderTrackingContent,
+  .scurbOrderTrackingPage.scurbStatusCancelled
+  .scurbOrderTrackingContent{
+    padding-top:
+      calc(
+        74px +
+        env(safe-area-inset-top,0px)
+      );
+  }
+
+  .scurbOrderTrackingPage.scurbStatusCompleted
+  .scurbOrderMainStatusCard,
+  .scurbOrderTrackingPage.scurbStatusCancelled
+  .scurbOrderMainStatusCard{
+    min-height:175px;
+  }
+
+}
+
+
