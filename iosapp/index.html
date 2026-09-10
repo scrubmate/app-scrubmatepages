@@ -1087,6 +1087,201 @@ input{
 }
 </style>
 
+
+<style id="scrubmate-5km-service-area-style">
+
+/* =========================================================
+   SERVICE AREA BANNER
+   Full width - no card / no border / no shadow
+========================================================= */
+
+.scrubAreaComingSoonBanner{
+  position:relative;
+  width:100%;
+  min-height:210px;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  background:#ffffff;
+}
+
+.scrubAreaDots{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:180px;
+  height:170px;
+
+  background-image:
+    radial-gradient(
+      circle,
+      rgba(0,0,0,.28) 2.5px,
+      transparent 3px
+    );
+
+  background-size:19px 19px;
+  opacity:.75;
+}
+
+.scrubAreaDotsLeft{
+  left:-22px;
+
+  -webkit-mask-image:
+    linear-gradient(
+      to right,
+      #000 25%,
+      transparent 100%
+    );
+
+  mask-image:
+    linear-gradient(
+      to right,
+      #000 25%,
+      transparent 100%
+    );
+}
+
+.scrubAreaDotsRight{
+  right:-22px;
+
+  -webkit-mask-image:
+    linear-gradient(
+      to left,
+      #000 25%,
+      transparent 100%
+    );
+
+  mask-image:
+    linear-gradient(
+      to left,
+      #000 25%,
+      transparent 100%
+    );
+}
+
+.scrubAreaBannerContent{
+  position:relative;
+  z-index:5;
+  width:100%;
+  max-width:720px;
+  padding:38px 30px;
+  text-align:center;
+}
+
+.scrubAreaComingLabel{
+  margin-bottom:11px;
+  color:#777777;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:2.5px;
+  text-transform:uppercase;
+}
+
+.scrubAreaBannerContent h1{
+  margin:0;
+  color:#111111;
+  font-size:clamp(27px,4vw,45px);
+  font-weight:800;
+  line-height:1.12;
+}
+
+.scrubAreaBannerContent h1 span{
+  color:#14b9bb;
+}
+
+.scrubAreaBannerContent p{
+  margin-top:11px;
+  color:#666666;
+  font-size:15px;
+  font-weight:500;
+  line-height:1.4;
+}
+
+
+/* =========================================================
+   OUTSIDE 5 KM
+========================================================= */
+
+/* Show banner only outside service area */
+html.scrubOutsideServiceArea
+.scrubAreaComingSoonBanner{
+  display:flex !important;
+}
+
+/*
+  Hide every home + / quantity / Busy control outside 5 KM.
+  Busy uses the same .scurbServiceAddBtn element.
+*/
+html.scrubOutsideServiceArea
+.scurbServiceAddBtn{
+  display:none !important;
+}
+
+/*
+  Hide popup Book / Busy control.
+  Popup Busy also uses .scurbServiceHeaderBookBtn.
+*/
+html.scrubOutsideServiceArea
+.scurbServiceHeaderBookBtn{
+  display:none !important;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:600px){
+
+  .scrubAreaComingSoonBanner{
+    min-height:175px;
+  }
+
+  .scrubAreaDots{
+    width:90px;
+    height:130px;
+    background-size:14px 14px;
+
+    background-image:
+      radial-gradient(
+        circle,
+        rgba(0,0,0,.30) 2px,
+        transparent 2.5px
+      );
+  }
+
+  .scrubAreaDotsLeft{
+    left:-38px;
+  }
+
+  .scrubAreaDotsRight{
+    right:-38px;
+  }
+
+  .scrubAreaBannerContent{
+    padding:28px 40px;
+  }
+
+  .scrubAreaComingLabel{
+    margin-bottom:8px;
+    font-size:9px;
+    letter-spacing:2px;
+  }
+
+  .scrubAreaBannerContent h1{
+    font-size:24px;
+  }
+
+  .scrubAreaBannerContent p{
+    margin-top:8px;
+    font-size:13px;
+  }
+
+}
+
+</style>
+
 </head>
 
 <body>
@@ -1860,6 +2055,40 @@ input{
     >
 
   </div>
+
+</section>
+
+
+<!-- =====================================================
+     5 KM SERVICE AREA MESSAGE
+     Shows only when selected/current location is > 5 KM
+====================================================== -->
+
+<section
+  class="scrubAreaComingSoonBanner"
+  id="scrubAreaComingSoonBanner"
+  aria-live="polite"
+>
+
+  <div class="scrubAreaDots scrubAreaDotsLeft"></div>
+
+  <div class="scrubAreaBannerContent">
+
+    <div class="scrubAreaComingLabel">
+      COMING SOON
+    </div>
+
+    <h1>
+      Service Not Available <span>Yet</span>
+    </h1>
+
+    <p>
+      Coming soon to your doorstep.
+    </p>
+
+  </div>
+
+  <div class="scrubAreaDots scrubAreaDotsRight"></div>
 
 </section>
 
@@ -7216,6 +7445,390 @@ window.addEventListener("pageshow", function(){
     }
   }
 });
+</script>
+
+
+<script id="scrubmate-5km-service-area-script">
+(function(){
+
+  "use strict";
+
+  /* =========================================
+     SERVICE CENTER
+  ========================================= */
+
+  const SCRUB_SERVICE_AREA_CENTER_LAT =
+    16.7460735;
+
+  const SCRUB_SERVICE_AREA_CENTER_LNG =
+    81.6978822;
+
+  const SCRUB_SERVICE_AREA_RADIUS_KM =
+    5;
+
+
+  /* =========================================
+     DISTANCE
+  ========================================= */
+
+  function scrubAreaToRadians(value){
+    return Number(value) * Math.PI / 180;
+  }
+
+
+  function scrubAreaDistanceKm(
+    lat1,
+    lng1,
+    lat2,
+    lng2
+  ){
+
+    const earthRadiusKm = 6371;
+
+    const dLat =
+      scrubAreaToRadians(lat2 - lat1);
+
+    const dLng =
+      scrubAreaToRadians(lng2 - lng1);
+
+    const firstLat =
+      scrubAreaToRadians(lat1);
+
+    const secondLat =
+      scrubAreaToRadians(lat2);
+
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(firstLat) *
+      Math.cos(secondLat) *
+      Math.sin(dLng / 2) ** 2;
+
+    const c =
+      2 *
+      Math.atan2(
+        Math.sqrt(a),
+        Math.sqrt(1 - a)
+      );
+
+    return earthRadiusKm * c;
+  }
+
+
+  /* =========================================
+     UI STATE
+  ========================================= */
+
+  function scrubSetServiceAreaState(
+    latitude,
+    longitude
+  ){
+
+    const lat = Number(latitude);
+    const lng = Number(longitude);
+
+    /*
+      If valid location is unavailable,
+      keep services unavailable.
+    */
+    if(
+      !Number.isFinite(lat) ||
+      !Number.isFinite(lng)
+    ){
+      document.documentElement.classList.add(
+        "scrubOutsideServiceArea"
+      );
+
+      document.documentElement.classList.remove(
+        "scrubInsideServiceArea"
+      );
+
+      return null;
+    }
+
+
+    const distanceKm =
+      scrubAreaDistanceKm(
+        SCRUB_SERVICE_AREA_CENTER_LAT,
+        SCRUB_SERVICE_AREA_CENTER_LNG,
+        lat,
+        lng
+      );
+
+
+    const inside =
+      distanceKm <=
+      SCRUB_SERVICE_AREA_RADIUS_KM;
+
+
+    document.documentElement.classList.toggle(
+      "scrubOutsideServiceArea",
+      !inside
+    );
+
+    document.documentElement.classList.toggle(
+      "scrubInsideServiceArea",
+      inside
+    );
+
+
+    /*
+      Public values so other ScrubMate scripts
+      can safely know service-area status.
+    */
+    window.scrubMateInsideServiceArea =
+      inside;
+
+    window.scrubMateServiceAreaDistanceKm =
+      distanceKm;
+
+
+    console.log(
+      "ScrubMate service area:",
+      distanceKm.toFixed(2) + " km",
+      inside ? "AVAILABLE" : "COMING SOON"
+    );
+
+
+    return inside;
+  }
+
+
+  /* =========================================
+     READ SAVED LOCATION
+     Supports the common keys used by app builds.
+  ========================================= */
+
+  function scrubReadNumber(keys){
+
+    for(const key of keys){
+
+      const value =
+        localStorage.getItem(key);
+
+      if(
+        value === null ||
+        value === ""
+      ){
+        continue;
+      }
+
+      const number =
+        Number(value);
+
+      if(Number.isFinite(number)){
+        return number;
+      }
+    }
+
+    return null;
+  }
+
+
+  function scrubGetSavedCoordinates(){
+
+    const latitude =
+      scrubReadNumber([
+        "scurbMateLatitude",
+        "scurbMateLat",
+        "scrubMateLatitude",
+        "scrubMateLat",
+        "selectedLatitude",
+        "selectedLat",
+        "userLatitude",
+        "userLat",
+        "latitude",
+        "lat"
+      ]);
+
+
+    const longitude =
+      scrubReadNumber([
+        "scurbMateLongitude",
+        "scurbMateLng",
+        "scurbMateLon",
+        "scrubMateLongitude",
+        "scrubMateLng",
+        "scrubMateLon",
+        "selectedLongitude",
+        "selectedLng",
+        "selectedLon",
+        "userLongitude",
+        "userLng",
+        "userLon",
+        "longitude",
+        "lng",
+        "lon"
+      ]);
+
+
+    if(
+      !Number.isFinite(latitude) ||
+      !Number.isFinite(longitude)
+    ){
+      return null;
+    }
+
+
+    return {
+      latitude,
+      longitude
+    };
+  }
+
+
+  /* =========================================
+     CHECK SERVICE AREA
+  ========================================= */
+
+  function scrubCheckSavedServiceArea(){
+
+    const saved =
+      scrubGetSavedCoordinates();
+
+    if(!saved){
+      return false;
+    }
+
+    scrubSetServiceAreaState(
+      saved.latitude,
+      saved.longitude
+    );
+
+    return true;
+  }
+
+
+  function scrubCheckCurrentGps(){
+
+    if(!navigator.geolocation){
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+
+      function(position){
+
+        if(
+          !position ||
+          !position.coords
+        ){
+          return;
+        }
+
+        scrubSetServiceAreaState(
+          position.coords.latitude,
+          position.coords.longitude
+        );
+
+      },
+
+      function(){
+        /*
+          Do not show services when a valid
+          location cannot be verified.
+        */
+      },
+
+      {
+        enableHighAccuracy:true,
+        timeout:10000,
+        maximumAge:30000
+      }
+
+    );
+  }
+
+
+  /* =========================================
+     INITIAL STATE
+     Outside by default for safety.
+  ========================================= */
+
+  document.documentElement.classList.add(
+    "scrubOutsideServiceArea"
+  );
+
+
+  function scrubRefreshServiceArea(){
+
+    /*
+      Selected/saved app location gets priority.
+    */
+    const hasSavedLocation =
+      scrubCheckSavedServiceArea();
+
+    /*
+      If app has not saved coordinates yet,
+      use current GPS.
+    */
+    if(!hasSavedLocation){
+      scrubCheckCurrentGps();
+    }
+  }
+
+
+  /*
+    Expose refresh function.
+    Existing location code can call this
+    after a new location is confirmed.
+  */
+  window.scrubRefreshServiceArea =
+    scrubRefreshServiceArea;
+
+  window.scrubSetServiceAreaState =
+    scrubSetServiceAreaState;
+
+
+  if(document.readyState === "loading"){
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      scrubRefreshServiceArea,
+      {
+        once:true
+      }
+    );
+
+  }else{
+
+    scrubRefreshServiceArea();
+
+  }
+
+
+  /*
+    When app/tab returns, re-check saved location.
+  */
+  window.addEventListener(
+    "pageshow",
+    scrubRefreshServiceArea
+  );
+
+
+  /*
+    If another script/tab changes saved coordinates,
+    refresh immediately.
+  */
+  window.addEventListener(
+    "storage",
+    function(event){
+
+      const key =
+        String(event.key || "")
+          .toLowerCase();
+
+      if(
+        key.includes("lat") ||
+        key.includes("lng") ||
+        key.includes("lon")
+      ){
+        scrubRefreshServiceArea();
+      }
+
+    }
+  );
+
+})();
 </script>
 
 </body>
