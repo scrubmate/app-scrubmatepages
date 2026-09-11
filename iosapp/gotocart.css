@@ -2675,3 +2675,57 @@ has(.scurbOrderServiceImageWrap.imageUnavailable){
 
 }
 
+
+
+/* ============================================================
+   CLEANER ROW FINAL FIX
+============================================================ */
+
+/* Remove "Your professional cleaner" label.
+   Keep only:
+   Cleaner Name
+   Arriving in ... */
+.scurbOrderTrackingPage
+.scurbOrderCleanerInformation > span{
+  display:none !important;
+}
+
+/* cleaner name */
+.scurbOrderTrackingPage
+.scurbOrderCleanerInformation strong{
+  display:block !important;
+  margin:0 !important;
+}
+
+/* arriving text directly below name */
+.scurbOrderTrackingPage
+.scurbOrderCleanerInformation p{
+  display:block !important;
+  margin:4px 0 0 !important;
+}
+
+/* ============================================================
+   REMOVE DOUBLE DIVIDER
+   Last row + section border were creating two lines.
+   Keep only ONE section divider.
+============================================================ */
+
+.scurbOrderTrackingPage
+.scurbOrderCard
+.scurbOrderDetailsRow:last-child{
+  border-bottom:none !important;
+}
+
+/* Selected services already have section bottom divider,
+   so last service row should not add another line */
+.scurbOrderTrackingPage
+.scurbOrderServiceRow:last-child{
+  border-bottom:none !important;
+}
+
+/* Bill also: only one bottom divider */
+.scurbOrderTrackingPage
+.scurbOrderBillRow:last-of-type{
+  border-bottom:none !important;
+}
+
