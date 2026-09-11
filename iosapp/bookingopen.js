@@ -1728,8 +1728,7 @@ scurbOrderReadyMessage.hidden =
 scurbOrderReadyIcon.className =
   "fa-regular fa-clock";
 
-scurbOrderReadyText.textContent =
-  "Please stay available and get ready at your doorstep.";
+scurbOrderReadyText.textContent = "";
 
     return;
   }
@@ -1761,8 +1760,7 @@ scurbOrderReadyText.textContent =
 scurbOrderReadyIcon.className =
   "fa-regular fa-clock";
 
-scurbOrderReadyText.textContent =
-  "Please stay available and get ready at your doorstep.";
+scurbOrderReadyText.textContent = "";
 
     return;
   }
@@ -1797,8 +1795,7 @@ scurbOrderReadyText.textContent =
 scurbOrderReadyIcon.className =
   "fa-solid fa-location-dot";
 
-scurbOrderReadyText.textContent =
-  "Please meet your professional cleaner at the doorstep.";
+scurbOrderReadyText.textContent = "";
     return;
   }
 
@@ -1831,8 +1828,7 @@ scurbOrderReadyMessage.hidden =
 scurbOrderReadyIcon.className =
   "fa-solid fa-broom";
 
-scurbOrderReadyText.textContent =
-  "Your selected cleaning services are being completed.";
+scurbOrderReadyText.textContent = "";
 
 
     return;
@@ -1872,8 +1868,7 @@ scurbOrderReadyMessage.hidden =
 scurbOrderReadyIcon.className =
   "fa-solid fa-circle-check";
 
-scurbOrderReadyText.textContent =
-  "";
+scurbOrderReadyText.textContent = "";
     }else{
 
       scurbOrderCleanerCard.hidden =
@@ -2106,6 +2101,87 @@ scurbOrderCleanerCall?.addEventListener(
 );
 
 
+
+/* =========================================
+   ORDER SERVICE IMAGE
+   Reuse the same image paths already present
+   on the main service cards in index.html.
+========================================= */
+function getScurbOrderServiceImage(service){
+
+  const serviceName =
+    String(
+      service?.name ||
+      service?.service_name ||
+      ""
+    ).trim();
+
+  const directImage =
+    String(
+      service?.cartImage ||
+      service?.cart_image ||
+      service?.image ||
+      service?.image_url ||
+      service?.imageUrl ||
+      ""
+    ).trim();
+
+  if(directImage){
+    return directImage;
+  }
+
+  if(!serviceName){
+    return "";
+  }
+
+  const normalized =
+    serviceName
+      .toLowerCase()
+      .replace(/\s+/g," ")
+      .trim();
+
+  const cards =
+    document.querySelectorAll(
+      ".scurbServiceCard[data-service]"
+    );
+
+  for(const card of cards){
+
+    const cardName =
+      String(
+        card.getAttribute("data-service") ||
+        ""
+      )
+        .toLowerCase()
+        .replace(/\s+/g," ")
+        .trim();
+
+    if(cardName !== normalized){
+      continue;
+    }
+
+    const image =
+      card.querySelector(
+        ".scurbServiceImg"
+      );
+
+    if(!image){
+      return "";
+    }
+
+    return String(
+      image.getAttribute("data-cart-img") ||
+      image.getAttribute("data-src") ||
+      image.currentSrc ||
+      image.src ||
+      ""
+    ).trim();
+  }
+
+  return "";
+}
+
+
 /* =========================================
    RENDER SERVICES
 ========================================= */
@@ -2146,6 +2222,122 @@ function renderScurbOrderTrackingServices(
 
     row.className =
       "scurbOrderServiceRow";
+
+
+    /* SERVICE IMAGE */
+
+    const imageWrap =
+      document.createElement("div");
+
+    imageWrap.className =
+      "scurbOrderServiceImageWrap";
+
+
+    const image =
+      document.createElement("img");
+
+    image.className =
+      "scurbOrderServiceImage";
+
+    image.alt =
+      service.name ||
+      service.service_name ||
+      "Selected service";
+
+    image.loading =
+      "lazy";
+
+    image.decoding =
+      "async";
+
+    image.draggable =
+      false;
+
+
+    const imagePath =
+      getScurbOrderServiceImage(
+        service
+      );
+
+
+    if(imagePath){
+
+      image.src =
+        imagePath;
+
+      image.addEventListener(
+        "error",
+        function(){
+
+          /*
+            If cart image failed, retry with
+            the main service image from index.html.
+          */
+
+          const serviceName =
+            String(
+              service?.name ||
+              service?.service_name ||
+              ""
+            )
+              .toLowerCase()
+              .replace(/\s+/g," ")
+              .trim();
+
+          const card =
+            Array.from(
+              document.querySelectorAll(
+                ".scurbServiceCard[data-service]"
+              )
+            ).find(function(item){
+
+              return String(
+                item.getAttribute("data-service") ||
+                ""
+              )
+                .toLowerCase()
+                .replace(/\s+/g," ")
+                .trim() === serviceName;
+
+            });
+
+          const fallback =
+            card
+              ?.querySelector(".scurbServiceImg")
+              ?.getAttribute("data-src") ||
+            "";
+
+          if(
+            fallback &&
+            image.src.indexOf(fallback) === -1
+          ){
+            image.src =
+              fallback;
+            return;
+          }
+
+          imageWrap.classList.add(
+            "imageUnavailable"
+          );
+
+        },
+        {
+          once:true
+        }
+      );
+
+    }else{
+
+      imageWrap.classList.add(
+        "imageUnavailable"
+      );
+
+    }
+
+
+    imageWrap.appendChild(
+      image
+    );
 
 
     const information =
@@ -2212,6 +2404,7 @@ function renderScurbOrderTrackingServices(
 
 
     row.append(
+      imageWrap,
       information,
       quantityText
     );
@@ -2224,7 +2417,6 @@ function renderScurbOrderTrackingServices(
   });
 
 }
-
 
 /* =========================================
    RENDER BOOKED LOCATION MAP
