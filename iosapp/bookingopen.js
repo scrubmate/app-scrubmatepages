@@ -1428,34 +1428,63 @@ function isScurbTrackingFinishedStatus(
 
 
 function applyScurbOrderStatusMode(status){
-  if(!scurbOrderTrackingPage) return;
 
-  const s = normalizeScurbBookingStatus(status);
+  if(!scurbOrderTrackingPage){
+    return;
+  }
+
+  const s =
+    normalizeScurbBookingStatus(status);
 
   scurbOrderTrackingPage.classList.remove(
-    "scurbStatusPlaced","scurbStatusAssigned","scurbStatusOnWay",
-    "scurbStatusArrived","scurbStatusProgress",
-    "scurbStatusCompleted","scurbStatusCancelled"
+    "scurbStatusPlaced",
+    "scurbStatusAssigned",
+    "scurbStatusOnWay",
+    "scurbStatusArrived",
+    "scurbStatusProgress",
+    "scurbStatusCompleted",
+    "scurbStatusCancelled"
   );
 
-  let mode = "scurbStatusPlaced";
+  let mode =
+    "scurbStatusPlaced";
 
-  if(["confirmed","accepted","assigned","partner_assigned"].includes(s)){
+  if([
+    "confirmed",
+    "accepted",
+    "assigned",
+    "partner_assigned"
+  ].includes(s)){
     mode = "scurbStatusAssigned";
-  }else if(s === "on_the_way"){
+  }
+  else if(s === "on_the_way"){
     mode = "scurbStatusOnWay";
-  }else if(s === "arrived"){
+  }
+  else if(s === "arrived"){
     mode = "scurbStatusArrived";
-  }else if(s === "in_progress"){
+  }
+  else if(s === "in_progress"){
     mode = "scurbStatusProgress";
-  }else if(["completed","delivered"].includes(s)){
+  }
+  else if([
+    "completed",
+    "delivered"
+  ].includes(s)){
     mode = "scurbStatusCompleted";
-  }else if(["cancelled","canceled","rejected","refunded"].includes(s)){
+  }
+  else if([
+    "cancelled",
+    "canceled",
+    "rejected",
+    "refunded"
+  ].includes(s)){
     mode = "scurbStatusCancelled";
   }
 
   scurbOrderTrackingPage.classList.add(mode);
-  scurbOrderTrackingPage.dataset.bookingStatus = s;
+
+  scurbOrderTrackingPage.dataset.bookingStatus =
+    s;
 }
 
 /* =========================================
@@ -1471,7 +1500,9 @@ function updateScurbOrderTrackingStatus(
       booking.booking_status
     );
 
-  applyScurbOrderStatusMode(status);
+  applyScurbOrderStatusMode(
+    status
+  );
 
   const cleanerAccepted =
     hasScurbCleanerAccepted(
@@ -1728,7 +1759,6 @@ scurbOrderReadyText.textContent =
 
   /*
     CANCELLED / REJECTED / REFUNDED
-    Keep booking details below.
   */
 
   if(
@@ -2170,7 +2200,7 @@ async function renderScurbBookedLocationMap(
 
   /*
     Active booking = map visible.
-    Finished booking = no map.
+    Completed / Cancelled = no map.
   */
 
   const mapElement =
@@ -2236,7 +2266,8 @@ async function renderScurbBookedLocationMap(
 
 
   /*
-    Finished booking = NO MAP, details remain visible.
+    COMPLETED / CANCELLED / REJECTED / REFUNDED:
+    No map. Keep booking details/services/bill visible.
   */
 
   if(finishedBooking){
