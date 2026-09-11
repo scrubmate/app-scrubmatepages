@@ -2840,3 +2840,190 @@ has(.scurbOrderServiceImageWrap.imageUnavailable){
   font-size:19px !important;
 }
 
+
+
+/* ============================================================
+   CEZOO STYLE MINIMAL BOOKING LIST CARD
+============================================================ */
+
+.scurb-booking-card{
+  width:100% !important;
+  min-height:118px !important;
+
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+
+  padding:17px 16px !important;
+  margin:0 !important;
+
+  background:#ffffff !important;
+
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+
+  border-bottom:1px solid #eeeeee !important;
+
+  cursor:pointer !important;
+  -webkit-tap-highlight-color:transparent;
+}
+
+.scurb-booking-card:active{
+  background:#fafafa !important;
+}
+
+.scurb-booking-card-content{
+  min-width:0 !important;
+  flex:1 !important;
+}
+
+.scurb-booking-card-top{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:10px !important;
+
+  margin:0 0 10px !important;
+}
+
+.scurb-booking-id{
+  min-width:0 !important;
+
+  color:#8a8f98 !important;
+  font-size:11px !important;
+  font-weight:700 !important;
+  line-height:1.2 !important;
+
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+
+.scurb-booking-status{
+  flex:none !important;
+
+  padding:5px 9px !important;
+
+  border:0 !important;
+  border-radius:999px !important;
+
+  background:#f3f4f6 !important;
+  color:#61656d !important;
+
+  font-size:10px !important;
+  font-weight:800 !important;
+  line-height:1 !important;
+}
+
+.scurb-booking-status.completed{
+  background:#ecf9f0 !important;
+  color:#169447 !important;
+}
+
+.scurb-booking-status.cancelled{
+  background:#fff0f0 !important;
+  color:#e53935 !important;
+}
+
+.scurb-booking-primary-service{
+  display:block !important;
+
+  color:#202124 !important;
+  font-size:15px !important;
+  font-weight:750 !important;
+  line-height:1.35 !important;
+
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+
+.scurb-booking-card-bottom{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:12px !important;
+
+  margin-top:10px !important;
+}
+
+.scurb-booking-date{
+  min-width:0 !important;
+
+  display:flex !important;
+  align-items:center !important;
+  gap:6px !important;
+
+  color:#7b8088 !important;
+  font-size:12px !important;
+  font-weight:500 !important;
+
+  white-space:nowrap !important;
+}
+
+.scurb-booking-date i{
+  color:#9ba0a8 !important;
+  font-size:12px !important;
+}
+
+.scurb-booking-amount{
+  flex:none !important;
+
+  color:#202124 !important;
+  font-size:14px !important;
+  font-weight:800 !important;
+}
+
+.scurb-booking-arrow{
+  width:28px !important;
+  height:28px !important;
+
+  flex:none !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  color:#a0a4aa !important;
+  font-size:12px !important;
+}
+
+/* Completely remove old booking-card detail layouts */
+.scurb-booking-card
+.scurb-booking-services,
+.scurb-booking-card
+.scurb-booking-divider,
+.scurb-booking-card
+.scurb-booking-customer-details,
+.scurb-booking-card
+.scurb-booking-label,
+.scurb-booking-card
+.scurb-booking-service,
+.scurb-booking-card
+.scurb-booking-more-services,
+.scurb-booking-card
+.scurb-booking-bottom{
+  display:none !important;
+}
+
+@media(max-width:420px){
+
+  .scurb-booking-card{
+    min-height:110px !important;
+    padding:15px 14px !important;
+  }
+
+  .scurb-booking-primary-service{
+    font-size:14px !important;
+  }
+
+  .scurb-booking-card-top{
+    margin-bottom:8px !important;
+  }
+
+  .scurb-booking-card-bottom{
+    margin-top:8px !important;
+  }
+}
+
