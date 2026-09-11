@@ -1120,33 +1120,11 @@ const scurbOrderBackButton =
   );
 
 
-/* SCRUBMATE FA BACK ICON - ROBUST */
-function ensureScurbOrderFaBackIcon(){
-
-  const button =
-    document.getElementById(
-      "scurbOrderBackButton"
-    );
-
-  if(!button){
-    return;
-  }
-
-  button.innerHTML =
-    '<i class="fa-solid fa-chevron-left" aria-hidden="true"></i>';
-
-  button.setAttribute(
-    "aria-label",
-    "Back"
-  );
+/* SCRUBMATE FA BACK ICON */
+if(scurbOrderBackButton){
+  scurbOrderBackButton.innerHTML =
+    '<i class="fa-solid fa-chevron-left"></i>';
 }
-
-ensureScurbOrderFaBackIcon();
-
-document.addEventListener(
-  "DOMContentLoaded",
-  ensureScurbOrderFaBackIcon
-);
 
 
 const scurbOrderStatusIcon =
@@ -1556,10 +1534,24 @@ function updateScurbFinishedTopActions(status){
     actions.innerHTML = `
       <button
         type="button"
+        class="scurbFinishedBackButton"
+        aria-label="Back"
+      >
+        <i
+          class="fa-solid fa-chevron-left"
+          aria-hidden="true"
+        ></i>
+      </button>
+
+      <button
+        type="button"
         class="scurbFinishedHelpButton"
         aria-label="Help"
       >
-        <i class="fa-regular fa-message"></i>
+        <i
+          class="fa-regular fa-message"
+          aria-hidden="true"
+        ></i>
         <span>Help</span>
       </button>
     `;
@@ -1567,6 +1559,26 @@ function updateScurbFinishedTopActions(status){
     scurbOrderTrackingPage.appendChild(
       actions
     );
+
+    const backButton =
+      actions.querySelector(
+        ".scurbFinishedBackButton"
+      );
+
+    backButton?.addEventListener(
+      "click",
+      function(){
+
+        /*
+          Use the SAME existing back-button behavior.
+          Original button may be hidden with map,
+          but .click() still runs its listener.
+        */
+        scurbOrderBackButton?.click();
+
+      }
+    );
+
 
     const helpButton =
       actions.querySelector(
@@ -1608,9 +1620,6 @@ function updateScurbFinishedTopActions(status){
 function updateScurbOrderTrackingStatus(
   booking
 ){
-
-  ensureScurbOrderFaBackIcon();
-
 
   const status =
     normalizeScurbBookingStatus(
@@ -1846,7 +1855,7 @@ scurbOrderReadyText.textContent =
       "Service Completed";
 
     scurbOrderStatusDescription.textContent =
-      "";
+      "Your booking has been completed successfully.";
 
     if(cleanerAccepted){
 
@@ -1856,7 +1865,7 @@ scurbOrderReadyText.textContent =
       );
 
       scurbOrderCleanerArrival.textContent =
-        "Service Completed";
+        "Service completed successfully";
 scurbOrderReadyMessage.hidden =
   false;
 
@@ -2640,9 +2649,6 @@ async function renderScurbBookedLocationMap(
 function openScurbBookingDetails(
   booking
 ){
-
-  ensureScurbOrderFaBackIcon();
-
 
   if(!scurbOrderTrackingPage){
     return;
