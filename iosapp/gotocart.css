@@ -2124,3 +2124,167 @@
   }
 }
 
+
+
+/* ============================================================
+   FINISHED BOOKING TOP NAV — ONLY COMPLETED / CANCELLED
+   Fixed 40px top gap + FA back + Help button
+============================================================ */
+
+.scurbOrderTrackingPage.scurbStatusCompleted,
+.scurbOrderTrackingPage.scurbStatusCancelled{
+  position:fixed !important;
+}
+
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderTrackingContent,
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbOrderTrackingContent{
+  padding-top:
+    calc(
+      40px +
+      env(safe-area-inset-top,0px) +
+      58px
+    )
+    !important;
+}
+
+/* left FA back button */
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderBackButton,
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbOrderBackButton{
+  position:fixed !important;
+  z-index:17030 !important;
+
+  top:
+    calc(
+      40px +
+      env(safe-area-inset-top,0px)
+    )
+    !important;
+
+  left:16px !important;
+
+  width:44px !important;
+  height:44px !important;
+  min-width:44px !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  border:1px solid #e3e6eb !important;
+  border-radius:50% !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  background:#fff !important;
+  color:#252932 !important;
+
+  box-shadow:0 1px 4px rgba(0,0,0,.04) !important;
+}
+
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderBackButton i,
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbOrderBackButton i{
+  font-size:17px !important;
+}
+
+/* right Help button */
+.scurbFinishedTopActions{
+  display:none;
+}
+
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbFinishedTopActions,
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbFinishedTopActions{
+  position:fixed !important;
+  z-index:17030 !important;
+
+  top:
+    calc(
+      40px +
+      env(safe-area-inset-top,0px)
+    )
+    !important;
+
+  right:16px !important;
+
+  display:block !important;
+}
+
+.scurbFinishedHelpButton{
+  height:44px;
+
+  padding:0 14px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+
+  border:1px solid #e3e6eb;
+  border-radius:22px;
+
+  background:#fff;
+  color:#252932;
+
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:13px;
+  line-height:1;
+  font-weight:700;
+
+  box-shadow:0 1px 4px rgba(0,0,0,.04);
+
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+
+.scurbFinishedHelpButton i{
+  font-size:14px;
+}
+
+/* No extra subtitle under completed/cancelled heading */
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderMainStatusText p,
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbOrderMainStatusText p{
+  display:none !important;
+}
+
+/* keep same finished layout, no status visual image */
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderMainStatusIcon,
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbOrderMainStatusIcon{
+  display:none !important;
+}
+
+/* mobile still same fixed 40px gap */
+@media(max-width:380px){
+
+  .scurbOrderTrackingPage.scurbStatusCompleted
+  .scurbOrderBackButton,
+  .scurbOrderTrackingPage.scurbStatusCancelled
+  .scurbOrderBackButton{
+    left:14px !important;
+  }
+
+  .scurbOrderTrackingPage.scurbStatusCompleted
+  .scurbFinishedTopActions,
+  .scurbOrderTrackingPage.scurbStatusCancelled
+  .scurbFinishedTopActions{
+    right:14px !important;
+  }
+
+  .scurbFinishedHelpButton{
+    height:40px;
+    padding:0 12px;
+    font-size:12px;
+  }
+}
+
