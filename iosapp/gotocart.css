@@ -2791,3 +2791,52 @@ has(.scurbOrderServiceImageWrap.imageUnavailable){
 #scurbOrderFinalAmount{
   font-size:19px !important;
 }
+
+
+
+/* ============================================================
+   DEFINITIVE BILL END FIX
+============================================================ */
+
+/* Payment wording */
+#scurbOrderPaymentTypeValue{
+  text-transform:none !important;
+}
+
+/* Remove the old divider before Total/Final Amount */
+.scurbOrderTrackingPage
+.scurbOrderCard:has(#scurbOrderFinalAmount)
+.scurbOrderBillDivider{
+  display:none !important;
+}
+
+/* Remove row line under Final Amount */
+.scurbOrderTrackingPage
+.scurbOrderCard:has(#scurbOrderFinalAmount)
+.scurbOrderFinalRow{
+  border-top:none !important;
+  border-bottom:none !important;
+}
+
+/* THIS is the line that was appearing AFTER Total Amount:
+   it comes from the Bill Details section/card bottom border. */
+.scurbOrderTrackingPage
+.scurbOrderCard:has(#scurbOrderFinalAmount){
+  border-bottom:none !important;
+  padding-bottom:20px !important;
+}
+
+/* Final amount stays green and bold */
+.scurbOrderTrackingPage
+#scurbOrderFinalAmount,
+.scurbOrderTrackingPage
+.scurbOrderFinalRow span{
+  color:#118a47 !important;
+  font-weight:900 !important;
+}
+
+.scurbOrderTrackingPage
+#scurbOrderFinalAmount{
+  font-size:19px !important;
+}
+
