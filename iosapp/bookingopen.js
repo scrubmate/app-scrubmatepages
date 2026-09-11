@@ -3060,7 +3060,7 @@ updateScurbCancelButton(
     if(rawPaymentMethod === "cash"){
 
       paymentLabel =
-        "Cash";
+        "Cash on Service";
 
     }else if(rawPaymentMethod === "upi"){
 
