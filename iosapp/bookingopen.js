@@ -318,25 +318,13 @@ function createScurbBookingCard(booking){
       ""
     );
 
-  card.setAttribute(
-    "role",
-    "button"
-  );
-
-  card.setAttribute(
-    "tabindex",
-    "0"
-  );
+  card.setAttribute("role","button");
+  card.setAttribute("tabindex","0");
 
 
-  const openDetails =
-    function(){
-
-      openScurbBookingDetails(
-        booking
-      );
-
-    };
+  const openDetails = function(){
+    openScurbBookingDetails(booking);
+  };
 
 
   card.addEventListener(
@@ -353,11 +341,8 @@ function createScurbBookingCard(booking){
         event.key === "Enter" ||
         event.key === " "
       ){
-
         event.preventDefault();
-
         openDetails();
-
       }
 
     }
@@ -370,36 +355,31 @@ function createScurbBookingCard(booking){
     );
 
 
-  const formattedStatus =
-    formatScurbBookingStatus(
-      status
-    );
+  const isCancelled =
+    [
+      "cancelled",
+      "canceled",
+      "rejected",
+      "refunded"
+    ].includes(status);
 
 
-  const statusClass =
-    getScurbBookingStatusClass(
-      status
-    );
+  const isCompleted =
+    [
+      "completed",
+      "delivered"
+    ].includes(status);
 
 
-  const services =
-    getScurbBookingServices(
-      booking
-    );
+  let title =
+    formatScurbBookingStatus(status);
 
 
-  const primaryService =
-    services[0];
-
-
-  const serviceName =
-    primaryService?.name ||
-    primaryService?.service_name ||
-    "Cleaning Service";
-
-
-  const serviceCount =
-    services.length;
+  if(isCancelled){
+    title = "Booking Cancelled";
+  }else if(isCompleted){
+    title = "Service Completed";
+  }
 
 
   const finalAmount =
@@ -411,144 +391,267 @@ function createScurbBookingCard(booking){
     );
 
 
-  /* LEFT CONTENT */
-
-  const content =
-    document.createElement("div");
-
-  content.className =
-    "scurb-booking-card-content";
+  const services =
+    getScurbBookingServices(
+      booking
+    );
 
 
-  /* TOP META */
+  /* TOP ROW */
 
   const top =
     document.createElement("div");
 
   top.className =
-    "scurb-booking-card-top";
+    "scurb-booking-reference-top";
 
 
-  const bookingId =
-    document.createElement("span");
-
-  bookingId.className =
-    "scurb-booking-id";
-
-  bookingId.textContent =
-    booking.order_id ||
-    booking.id ||
-    "Booking";
-
-
-  const statusElement =
-    document.createElement("span");
-
-  statusElement.className =
-    [
-      "scurb-booking-status",
-      statusClass
-    ]
-      .filter(Boolean)
-      .join(" ");
-
-  statusElement.textContent =
-    formattedStatus;
-
-
-  top.append(
-    bookingId,
-    statusElement
-  );
-
-
-  /* MAIN SERVICE */
-
-  const serviceTitle =
-    document.createElement("strong");
-
-  serviceTitle.className =
-    "scurb-booking-primary-service";
-
-  serviceTitle.textContent =
-    serviceCount > 1
-      ? `${serviceName} +${serviceCount - 1} more`
-      : serviceName;
-
-
-  /* BOTTOM META */
-
-  const bottom =
+  const titleWrap =
     document.createElement("div");
 
-  bottom.className =
-    "scurb-booking-card-bottom";
+  titleWrap.className =
+    "scurb-booking-reference-title-wrap";
 
 
-  const date =
+  const titleElement =
+    document.createElement("strong");
+
+  titleElement.className =
+    "scurb-booking-reference-title";
+
+  titleElement.textContent =
+    title;
+
+
+  const statusIcon =
     document.createElement("span");
 
-  date.className =
-    "scurb-booking-date";
+  statusIcon.className =
+    "scurb-booking-reference-status-icon";
 
-  date.innerHTML = `
-    <i class="fa-regular fa-calendar"></i>
-    <span></span>
-  `;
 
-  date.querySelector("span").textContent =
-    formatScurbBookingDate(
-      getScurbBookingDateValue(
-        booking
-      )
+  if(isCancelled){
+
+    statusIcon.classList.add(
+      "is-cancelled"
     );
+
+    statusIcon.innerHTML =
+      '<i class="fa-solid fa-xmark"></i>';
+
+  }else if(isCompleted){
+
+    statusIcon.classList.add(
+      "is-completed"
+    );
+
+    statusIcon.innerHTML =
+      '<i class="fa-solid fa-check"></i>';
+
+  }else{
+
+    statusIcon.classList.add(
+      "is-active"
+    );
+
+    statusIcon.innerHTML =
+      '<i class="fa-solid fa-check"></i>';
+
+  }
+
+
+  titleWrap.append(
+    titleElement,
+    statusIcon
+  );
 
 
   const amount =
     document.createElement("strong");
 
   amount.className =
-    "scurb-booking-amount";
+    "scurb-booking-reference-amount";
 
   amount.textContent =
-    finalAmount > 0
-      ? `₹${finalAmount}`
-      : "";
+    `₹${finalAmount.toFixed(2)}`;
 
 
-  bottom.append(
-    date,
+  top.append(
+    titleWrap,
     amount
   );
 
 
-  content.append(
-    top,
-    serviceTitle,
-    bottom
-  );
+  /* PLACED DATE */
+
+  const placed =
+    document.createElement("p");
+
+  placed.className =
+    "scurb-booking-reference-date";
 
 
-  /* RIGHT CHEVRON */
+  const dateValue =
+    getScurbBookingDateValue(
+      booking
+    );
 
-  const arrow =
-    document.createElement("span");
 
-  arrow.className =
-    "scurb-booking-arrow";
+  const dateObject =
+    dateValue
+      ? new Date(dateValue)
+      : null;
 
-  arrow.setAttribute(
-    "aria-hidden",
-    "true"
-  );
 
-  arrow.innerHTML =
-    '<i class="fa-solid fa-chevron-right"></i>';
+  if(
+    dateObject &&
+    !Number.isNaN(
+      dateObject.getTime()
+    )
+  ){
+
+    const day =
+      String(
+        dateObject.getDate()
+      ).padStart(2,"0");
+
+    const month =
+      dateObject.toLocaleString(
+        "en-IN",
+        {
+          month:"short"
+        }
+      );
+
+    const year =
+      dateObject.getFullYear();
+
+    const time =
+      dateObject.toLocaleTimeString(
+        "en-IN",
+        {
+          hour:"2-digit",
+          minute:"2-digit",
+          hour12:true
+        }
+      );
+
+
+    placed.textContent =
+      `Placed at ${day} ${month} ${year} at ${time}`;
+
+  }else{
+
+    placed.textContent =
+      formatScurbBookingDate(
+        dateValue
+      );
+
+  }
+
+
+  /* SERVICE IMAGE STRIP */
+
+  const serviceImages =
+    document.createElement("div");
+
+  serviceImages.className =
+    "scurb-booking-reference-services";
+
+
+  services
+    .slice(0,3)
+    .forEach(
+      function(service){
+
+        const imageWrap =
+          document.createElement("div");
+
+        imageWrap.className =
+          "scurb-booking-reference-image-wrap";
+
+
+        const image =
+          document.createElement("img");
+
+        image.className =
+          "scurb-booking-reference-image";
+
+        image.alt =
+          service.name ||
+          service.service_name ||
+          "Service";
+
+        image.loading =
+          "lazy";
+
+        image.decoding =
+          "async";
+
+
+        const imagePath =
+          typeof getScurbOrderServiceImage === "function"
+            ? getScurbOrderServiceImage(service)
+            : "";
+
+
+        if(imagePath){
+
+          image.src =
+            imagePath;
+
+        }else{
+
+          imageWrap.classList.add(
+            "image-unavailable"
+          );
+
+        }
+
+
+        image.addEventListener(
+          "error",
+          function(){
+
+            imageWrap.classList.add(
+              "image-unavailable"
+            );
+
+          },
+          {
+            once:true
+          }
+        );
+
+
+        const quantity =
+          document.createElement("span");
+
+        quantity.className =
+          "scurb-booking-reference-qty";
+
+        quantity.textContent =
+          `×${Number(service.quantity || 1)}`;
+
+
+        imageWrap.append(
+          image,
+          quantity
+        );
+
+
+        serviceImages.appendChild(
+          imageWrap
+        );
+
+      }
+    );
 
 
   card.append(
-    content,
-    arrow
+    top,
+    placed,
+    serviceImages
   );
 
 
