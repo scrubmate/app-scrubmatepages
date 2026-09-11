@@ -2291,33 +2291,95 @@
 
 
 /* ============================================================
-   FINAL BACK ICON FIX
-   Font Awesome is already loaded in index.html.
-   This gives both real <i> icon + CSS fallback.
+   FINAL FINISHED NAV FIX
+   Completed / Cancelled only
+   40px top gap -> Back left / Help right
 ============================================================ */
 
-.scurbOrderBackButton{
-  position:relative !important;
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbFinishedTopActions,
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbFinishedTopActions{
+  position:fixed !important;
+  z-index:20050 !important;
+
+  top:
+    calc(
+      env(safe-area-inset-top,0px) +
+      40px
+    )
+    !important;
+
+  left:16px !important;
+  right:16px !important;
+
+  height:44px !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  pointer-events:none !important;
 }
 
-.scurbOrderBackButton > i.fa-chevron-left{
+/* hide nav for active statuses */
+.scurbOrderTrackingPage:not(.scurbStatusCompleted):not(.scurbStatusCancelled)
+.scurbFinishedTopActions{
+  display:none !important;
+}
+
+/* REAL FINISHED BACK BUTTON */
+.scurbFinishedBackButton{
+  width:44px !important;
+  height:44px !important;
+  min-width:44px !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  border:1px solid #e3e6eb !important;
+  border-radius:50% !important;
+
+  background:#ffffff !important;
+  color:#252932 !important;
+
+  box-shadow:0 1px 4px rgba(0,0,0,.05) !important;
+
+  cursor:pointer !important;
+  pointer-events:auto !important;
+
+  -webkit-tap-highlight-color:transparent !important;
+}
+
+.scurbFinishedBackButton i{
   display:block !important;
   visibility:visible !important;
   opacity:1 !important;
+
   width:auto !important;
   height:auto !important;
+
   color:#252932 !important;
+
   font-family:"Font Awesome 6 Free" !important;
   font-style:normal !important;
   font-weight:900 !important;
+
   font-size:17px !important;
   line-height:1 !important;
 }
 
-/* fallback only when the real <i> is missing */
-.scurbOrderBackButton:not(:has(i.fa-chevron-left))::before{
+/* Hard fallback if Font Awesome glyph inside <i> is overridden */
+.scurbFinishedBackButton::before{
   content:"\f053";
-  display:block;
+  display:none;
   color:#252932;
   font-family:"Font Awesome 6 Free";
   font-weight:900;
@@ -2325,28 +2387,106 @@
   line-height:1;
 }
 
-/* ============================================================
-   FINISHED TITLES
-============================================================ */
+.scurbFinishedBackButton:not(:has(i.fa-chevron-left))::before{
+  display:block;
+}
+
+/* HELP RIGHT */
+.scurbFinishedHelpButton{
+  height:44px !important;
+
+  margin:0 !important;
+  padding:0 14px !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:7px !important;
+
+  border:1px solid #e3e6eb !important;
+  border-radius:22px !important;
+
+  background:#ffffff !important;
+  color:#252932 !important;
+
+  font-family:Arial,Helvetica,sans-serif !important;
+  font-size:13px !important;
+  line-height:1 !important;
+  font-weight:700 !important;
+
+  box-shadow:0 1px 4px rgba(0,0,0,.05) !important;
+
+  pointer-events:auto !important;
+  cursor:pointer !important;
+}
+
+.scurbFinishedHelpButton i{
+  display:block !important;
+  font-size:14px !important;
+}
+
+/* Finished screen content starts BELOW the nav */
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderTrackingContent,
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbOrderTrackingContent{
+  padding-top:
+    calc(
+      env(safe-area-inset-top,0px) +
+      40px +
+      62px
+    )
+    !important;
+}
+
+/*
+  Original back button lives inside map section.
+  Map is hidden on finished screens, so don't depend on it visually.
+*/
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderBackButton,
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbOrderBackButton{
+  display:none !important;
+}
+
+/* Completed = only title, no unnecessary description */
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderMainStatusText p{
+  display:none !important;
+}
 
 .scurbOrderTrackingPage.scurbStatusCompleted
 .scurbOrderMainStatusText h1{
   color:#16a34a !important;
 }
 
+/* Cancelled stays red */
 .scurbOrderTrackingPage.scurbStatusCancelled
 .scurbOrderMainStatusText h1{
   color:#e53935 !important;
 }
 
-.scurbOrderTrackingPage.scurbStatusCompleted
-.scurbOrderMainStatusText p,
-.scurbOrderTrackingPage.scurbStatusCancelled
-.scurbOrderMainStatusText p,
-.scurbOrderTrackingPage.scurbStatusCompleted
-.scurbOrderReadyMessage,
-.scurbOrderTrackingPage.scurbStatusCancelled
-.scurbOrderReadyMessage{
-  display:none !important;
+@media(max-width:380px){
+
+  .scurbOrderTrackingPage.scurbStatusCompleted
+  .scurbFinishedTopActions,
+  .scurbOrderTrackingPage.scurbStatusCancelled
+  .scurbFinishedTopActions{
+    left:14px !important;
+    right:14px !important;
+  }
+
+  .scurbFinishedBackButton{
+    width:42px !important;
+    height:42px !important;
+    min-width:42px !important;
+  }
+
+  .scurbFinishedHelpButton{
+    height:42px !important;
+    padding:0 12px !important;
+    font-size:12px !important;
+  }
 }
 
