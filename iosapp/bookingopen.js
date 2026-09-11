@@ -1120,6 +1120,13 @@ const scurbOrderBackButton =
   );
 
 
+/* SCRUBMATE FA BACK ICON */
+if(scurbOrderBackButton){
+  scurbOrderBackButton.innerHTML =
+    '<i class="fa-solid fa-chevron-left"></i>';
+}
+
+
 const scurbOrderStatusIcon =
   document.getElementById(
     "scurbOrderStatusIcon"
@@ -1751,32 +1758,35 @@ scurbOrderReadyText.textContent =
 
 
   /*
-    CANCELLED
+    CANCELLED / REJECTED / REFUNDED
+    User requested minimal CEZOO-style finished screen:
+    only red "Booking Cancelled" text + FA back button.
   */
 
   if(
-  status === "cancelled" ||
-  status === "canceled" ||
-  status === "rejected"
-){
+    status === "cancelled" ||
+    status === "canceled" ||
+    status === "rejected" ||
+    status === "refunded"
+  ){
 
-  scurbOrderStatusIcon.className =
-    "fa-solid fa-circle-xmark";
+    scurbOrderStatusIcon.className =
+      "fa-solid fa-circle-xmark";
 
-  scurbOrderStatusTitle.textContent =
-    "Booking cancelled";
+    scurbOrderStatusTitle.textContent =
+      "Booking Cancelled";
 
-  scurbOrderStatusDescription.textContent =
-    "This booking is no longer active.";
+    scurbOrderStatusDescription.textContent =
+      "";
 
-  scurbOrderCleanerCard.hidden =
-    true;
+    scurbOrderCleanerCard.hidden =
+      true;
 
-  scurbOrderReadyMessage.hidden =
-    true;
+    scurbOrderReadyMessage.hidden =
+      true;
 
-  return;
-}
+    return;
+  }
 
 
   /*
@@ -2191,9 +2201,9 @@ async function renderScurbBookedLocationMap(
 
 
   /*
-    CEZOO style:
-    Active booking = map visible.
-    Finished booking = no map.
+    CEZOO pattern:
+    active booking = map visible
+    finished booking = no map
   */
 
   const mapElement =
@@ -2259,8 +2269,8 @@ async function renderScurbBookedLocationMap(
 
 
   /*
-    FINISHED BOOKING:
-    No map — same CEZOO pattern.
+    COMPLETED / CANCELLED / REJECTED / REFUNDED:
+    NO MAP.
   */
 
   if(finishedBooking){
