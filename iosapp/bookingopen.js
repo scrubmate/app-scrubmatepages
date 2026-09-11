@@ -1487,6 +1487,98 @@ function applyScurbOrderStatusMode(status){
     s;
 }
 
+
+/* =========================================
+   FINISHED BOOKING TOP ACTIONS
+   Only Completed / Cancelled
+========================================= */
+function updateScurbFinishedTopActions(status){
+
+  if(!scurbOrderTrackingPage){
+    return;
+  }
+
+  const normalized =
+    normalizeScurbBookingStatus(status);
+
+  const isFinished =
+    [
+      "completed",
+      "delivered",
+      "cancelled",
+      "canceled",
+      "rejected",
+      "refunded"
+    ].includes(normalized);
+
+  let actions =
+    scurbOrderTrackingPage.querySelector(
+      ".scurbFinishedTopActions"
+    );
+
+  if(!isFinished){
+
+    actions?.remove();
+
+    return;
+  }
+
+  if(!actions){
+
+    actions =
+      document.createElement("div");
+
+    actions.className =
+      "scurbFinishedTopActions";
+
+    actions.innerHTML = `
+      <button
+        type="button"
+        class="scurbFinishedHelpButton"
+        aria-label="Help"
+      >
+        <i class="fa-regular fa-message"></i>
+        <span>Help</span>
+      </button>
+    `;
+
+    scurbOrderTrackingPage.appendChild(
+      actions
+    );
+
+    const helpButton =
+      actions.querySelector(
+        ".scurbFinishedHelpButton"
+      );
+
+    helpButton?.addEventListener(
+      "click",
+      function(){
+
+        const profileHelp =
+          document.getElementById(
+            "profileHelpBtn"
+          );
+
+        if(profileHelp){
+          profileHelp.click();
+          return;
+        }
+
+        if(typeof window.openHelpPopup === "function"){
+          window.openHelpPopup();
+          return;
+        }
+
+        if(typeof window.openSupportPopup === "function"){
+          window.openSupportPopup();
+        }
+
+      }
+    );
+  }
+}
+
 /* =========================================
    UPDATE STATUS
 ========================================= */
@@ -1501,6 +1593,10 @@ function updateScurbOrderTrackingStatus(
     );
 
   applyScurbOrderStatusMode(
+    status
+  );
+
+  updateScurbFinishedTopActions(
     status
   );
 
