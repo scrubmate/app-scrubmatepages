@@ -1091,35 +1091,144 @@
      CREATE ORDER CARD HTML
   ===================================================== */
 
+  
+function getScrubSupportServices(order){
+
+    let services = order?.services;
+
+    if(typeof services === "string"){
+      try{
+        services = JSON.parse(services);
+      }catch(_){
+        services = [];
+      }
+    }
+
+    if(!Array.isArray(services)){
+      services = [];
+    }
+
+    return services;
+  }
+
+
+  function getScrubSupportServiceName(order){
+
+    const services = getScrubSupportServices(order);
+
+    if(services.length){
+
+      return services
+        .slice(0,2)
+        .map(service =>
+          service?.service_name ||
+          service?.name ||
+          service?.title ||
+          service?.service ||
+          ""
+        )
+        .filter(Boolean)
+        .join(", ");
+    }
+
+    return (
+      order?.service_name ||
+      order?.service ||
+      order?.item_name ||
+      order?.booking_service ||
+      "ScrubMate Service"
+    );
+  }
+
+
+  function getScrubSupportRealAmount(order){
+
+    const candidates = [
+      order?.final_amount,
+      order?.payment_amount,
+      order?.service_total,
+      order?.original_service_total,
+      order?.total_amount,
+      order?.amount,
+      order?.to_pay,
+      order?.total
+    ];
+
+    for(const value of candidates){
+
+      if(
+        value !== null &&
+        value !== undefined &&
+        value !== ""
+      ){
+
+        const amount = Number(value);
+
+        if(Number.isFinite(amount)){
+          return amount;
+        }
+      }
+    }
+
+    return 0;
+  }
+
+
+  function getScrubSupportRealStatus(order){
+
+    return (
+      order?.booking_status ||
+      order?.order_status ||
+      order?.status ||
+      "placed"
+    );
+  }
+
+
+  function getScrubSupportQuantity(order){
+
+    const direct = Number(order?.total_quantity);
+
+    if(Number.isFinite(direct) && direct > 0){
+      return direct;
+    }
+
+    const services = getScrubSupportServices(order);
+
+    const total = services.reduce(
+      (sum,service) => {
+        const qty = Number(
+          service?.quantity ||
+          service?.qty ||
+          1
+        );
+
+        return sum + (
+          Number.isFinite(qty) && qty > 0
+            ? qty
+            : 1
+        );
+      },
+      0
+    );
+
+    return total || 1;
+  }
+
+
   function createSupportOrderHTML(order){
 
     const orderId =
       order.order_id ||
-      order.id ||
       order.booking_id ||
+      order.id ||
       "Order";
 
-    const serviceName =
-      order.service_name ||
-      order.service ||
-      order.item_name ||
-      order.booking_service ||
-      getOrderItemsText(order.items) ||
-      "Scrub Mate Service";
+    const serviceName = getScrubSupportServiceName(order);
 
-    const status =
-      order.order_status ||
-      order.status ||
-      "placed";
+    const status = getScrubSupportRealStatus(order);
 
-    const amount =
-      Number(
-        order.total_amount ||
-        order.amount ||
-        order.to_pay ||
-        order.total ||
-        0
-      );
+    const amount = getScrubSupportRealAmount(order);
 
     const createdAt =
       order.created_at ||
@@ -1132,7 +1241,8 @@
       service_name:String(serviceName),
       order_status:String(status),
       amount:amount,
-      created_at:createdAt
+      created_at:createdAt,
+      quantity:getScrubSupportQuantity(order)
     };
 
 
@@ -1172,7 +1282,7 @@
           </span>
 
           <span class="scrubSupportOrderAmount">
-            ₹${amount.toLocaleString("en-IN")}
+            ₹${amount.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2})}
           </span>
 
         </div>
