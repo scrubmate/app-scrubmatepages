@@ -900,3 +900,593 @@
     transform:translateY(0);
   }
 }
+
+
+
+/* ============================================================
+   SCRUBMATE HELP — CEZOO-STYLE UI OVERRIDE
+   Same clean structure, different CORAL / PEACH theme.
+============================================================ */
+
+:root{
+  --scrub-support-primary:#ff7358;
+  --scrub-support-primary-dark:#e95b43;
+  --scrub-support-primary-soft:#fff0ec;
+  --scrub-support-primary-user:#ffe8e1;
+  --scrub-support-bg:#fbfaf9;
+  --scrub-support-card:#ffffff;
+  --scrub-support-text:#24262d;
+  --scrub-support-muted:#9196a1;
+  --scrub-support-border:#e5e6ec;
+}
+
+/* full-screen popup */
+.scrubSupportPopup{
+  background:
+    linear-gradient(180deg,#fffdfc 0%,#faf9fb 100%) !important;
+  font-family:"Manrope",sans-serif !important;
+}
+
+/* CEZOO-style: safe top gap becomes part of header */
+.scrubSupportSafeGap{
+  display:none !important;
+}
+
+.scrubSupportHeader{
+  min-height:
+    calc(
+      62px +
+      40px +
+      env(safe-area-inset-top,0px)
+    ) !important;
+
+  padding:
+    calc(
+      40px +
+      env(safe-area-inset-top,0px)
+    )
+    14px
+    10px
+    !important;
+
+  display:grid !important;
+  grid-template-columns:
+    40px
+    minmax(0,1fr)
+    40px
+    !important;
+
+  align-items:center !important;
+  gap:10px !important;
+
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+
+/* back */
+.scrubSupportBackButton{
+  width:39px !important;
+  height:39px !important;
+
+  border:0 !important;
+  border-radius:50% !important;
+
+  background:rgba(255,255,255,.92) !important;
+  color:#252a35 !important;
+
+  font-size:15px !important;
+
+  box-shadow:
+    0 3px 12px rgba(30,35,55,.08)
+    !important;
+}
+
+.scrubSupportBackButton:active{
+  transform:scale(.92) !important;
+  background:#f2f2f5 !important;
+}
+
+/* header profile */
+.scrubSupportHeaderProfile{
+  min-width:0 !important;
+  gap:9px !important;
+}
+
+.scrubSupportAvatar{
+  width:36px !important;
+  height:36px !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      #ffd9d0,
+      #ffc5b7
+    )
+    !important;
+
+  color:#e95b43 !important;
+
+  box-shadow:
+    0 3px 10px rgba(233,91,67,.10)
+    !important;
+}
+
+.scrubSupportHeaderText h2{
+  font-size:14px !important;
+  font-weight:800 !important;
+  color:#20242d !important;
+}
+
+.scrubSupportHeaderText span{
+  margin-top:2px !important;
+
+  font-size:10px !important;
+  font-weight:650 !important;
+
+  color:#e36a54 !important;
+}
+
+/* chat */
+.scrubSupportChatArea{
+  padding:15px 14px 18px !important;
+  gap:0 !important;
+
+  background:transparent !important;
+}
+
+/* rows */
+.scrubSupportMessageRow{
+  gap:9px !important;
+  margin-bottom:15px !important;
+  align-items:flex-end !important;
+}
+
+.scrubSupportMessageAvatar,
+.scrubSupportLoadingAvatar{
+  width:34px !important;
+  height:34px !important;
+  flex:0 0 34px !important;
+
+  margin:0 !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      #fff0ec,
+      #ffe1d9
+    )
+    !important;
+
+  color:#e95b43 !important;
+
+  font-size:13px !important;
+
+  box-shadow:
+    0 3px 10px rgba(30,35,55,.08)
+    !important;
+}
+
+/* bubbles */
+.scrubSupportMessageBubble{
+  width:auto !important;
+  max-width:77% !important;
+
+  padding:11px 13px 9px !important;
+
+  border-radius:17px !important;
+
+  font-size:13.5px !important;
+  line-height:1.5 !important;
+
+  box-shadow:
+    0 3px 12px rgba(35,40,60,.035)
+    !important;
+}
+
+.scrubSupportMessageRow.support
+.scrubSupportMessageBubble,
+.scrubSupportMessageRow.system
+.scrubSupportMessageBubble{
+  background:#ffffff !important;
+
+  border:
+    1px solid #e2e4ec
+    !important;
+
+  border-radius:
+    17px 17px 17px 6px
+    !important;
+
+  color:#292e38 !important;
+}
+
+.scrubSupportMessageRow.user
+.scrubSupportMessageBubble{
+  background:#ffe9e3 !important;
+
+  border:
+    1px solid #ffd9cf
+    !important;
+
+  border-radius:
+    17px 17px 6px 17px
+    !important;
+
+  color:#292e38 !important;
+}
+
+.scrubSupportMessageText{
+  font-size:13.5px !important;
+  font-weight:500 !important;
+  line-height:1.5 !important;
+  color:#292e38 !important;
+}
+
+.scrubSupportMessageMeta{
+  min-height:0 !important;
+
+  margin-top:5px !important;
+
+  font-size:9.5px !important;
+  font-weight:500 !important;
+
+  color:#9aa0ad !important;
+}
+
+.scrubSupportMessageMeta i{
+  font-size:9px !important;
+  color:#e95b43 !important;
+}
+
+/* system notice */
+.scrubSupportSystemNotice{
+  max-width:88% !important;
+
+  margin:8px auto 14px !important;
+  padding:9px 12px !important;
+
+  border:
+    1px solid #f1ddd8
+    !important;
+
+  border-radius:12px !important;
+
+  background:#fff1ed !important;
+  color:#78645f !important;
+
+  font-size:10.5px !important;
+  font-weight:650 !important;
+  line-height:1.45 !important;
+}
+
+/* issue options — vertical like CEZOO */
+.scrubSupportOptionsArea{
+  width:calc(100% - 57px) !important;
+
+  margin:
+    0
+    14px
+    18px
+    43px
+    !important;
+
+  padding:0 !important;
+
+  display:flex !important;
+  flex-direction:column !important;
+
+  gap:8px !important;
+
+  overflow:visible !important;
+
+  background:transparent !important;
+  border:0 !important;
+}
+
+.scrubSupportIssueOption{
+  width:100% !important;
+  min-height:45px !important;
+
+  justify-content:flex-start !important;
+
+  padding:0 13px !important;
+
+  border:
+    1px solid #e8dcd8
+    !important;
+
+  border-radius:13px !important;
+
+  background:#fffdfc !important;
+
+  color:#3b3432 !important;
+
+  text-align:left !important;
+
+  font-size:13px !important;
+  font-weight:650 !important;
+}
+
+.scrubSupportIssueOption.selected{
+  border-color:#ff7358 !important;
+  background:#fff0ec !important;
+  color:#d9513b !important;
+}
+
+/* typing */
+.scrubSupportLoading{
+  gap:9px !important;
+  margin:0 14px 10px !important;
+}
+
+.scrubSupportLoadingBubble{
+  min-width:70px !important;
+  min-height:40px !important;
+
+  padding:10px 13px !important;
+
+  border:
+    1px solid #e2e4ec
+    !important;
+
+  border-radius:
+    17px 17px 17px 6px
+    !important;
+
+  background:#ffffff !important;
+}
+
+.scrubSupportLoadingBubble span{
+  width:6px !important;
+  height:6px !important;
+  background:#ff7358 !important;
+}
+
+/* order sheet/cards */
+.scrubSupportOrdersArea{
+  bottom:0 !important;
+
+  max-height:min(58dvh,540px) !important;
+
+  padding:
+    14px
+    12px
+    calc(
+      18px +
+      env(safe-area-inset-bottom,0px)
+    )
+    !important;
+
+  border:
+    1px solid #e6e6ec
+    !important;
+
+  border-bottom:0 !important;
+
+  border-radius:
+    22px 22px 0 0
+    !important;
+
+  background:#ffffff !important;
+
+  box-shadow:
+    0 -12px 36px rgba(35,40,60,.10)
+    !important;
+}
+
+.scrubSupportOrdersHeader h3{
+  font-size:15px !important;
+  font-weight:850 !important;
+  color:#20242d !important;
+}
+
+.scrubSupportOrdersHeader p{
+  font-size:10px !important;
+  color:#9a9fac !important;
+}
+
+.scrubSupportOrdersHeader button{
+  background:#fff0ec !important;
+  color:#e95b43 !important;
+}
+
+.scrubSupportOrdersList{
+  gap:10px !important;
+}
+
+.scrubSupportOrderCard{
+  padding:
+    12px
+    38px
+    12px
+    12px
+    !important;
+
+  border:
+    1px solid #e5e6ed
+    !important;
+
+  border-radius:16px !important;
+
+  background:#ffffff !important;
+
+  box-shadow:
+    0 3px 10px rgba(35,40,60,.035)
+    !important;
+}
+
+.scrubSupportOrderCard::after{
+  color:#ff7358 !important;
+}
+
+.scrubSupportOrderStatus{
+  background:#fff0ec !important;
+  color:#e95b43 !important;
+}
+
+.scrubSupportOrderAmount{
+  color:#e95b43 !important;
+}
+
+/* solved */
+.scrubSupportSolvedBanner{
+  margin:0 12px 8px !important;
+  padding:8px 10px !important;
+
+  border:
+    1px solid #f1d9d3
+    !important;
+
+  border-radius:10px !important;
+
+  background:#fff0ec !important;
+  color:#df5a44 !important;
+
+  font-size:10px !important;
+  font-weight:800 !important;
+}
+
+/* bottom composer */
+.scrubSupportComposer{
+  width:100% !important;
+
+  grid-template-columns:
+    minmax(0,1fr)
+    48px
+    !important;
+
+  align-items:center !important;
+
+  gap:9px !important;
+
+  padding:
+    8px
+    12px
+    calc(
+      40px +
+      env(safe-area-inset-bottom,0px)
+    )
+    !important;
+
+  border:0 !important;
+  background:transparent !important;
+}
+
+.scrubSupportInputWrap{
+  min-height:48px !important;
+
+  padding:0 16px !important;
+
+  border:
+    1px solid #e4e6ed
+    !important;
+
+  border-radius:24px !important;
+
+  background:#ffffff !important;
+
+  box-shadow:
+    0 5px 18px rgba(35,40,60,.07)
+    !important;
+}
+
+.scrubSupportInputWrap:focus-within{
+  border-color:#f4c9bf !important;
+  background:#ffffff !important;
+}
+
+.scrubSupportInputWrap textarea{
+  max-height:110px !important;
+
+  padding:12px 0 !important;
+
+  font-size:14px !important;
+  font-weight:500 !important;
+  line-height:1.35 !important;
+
+  color:#242934 !important;
+}
+
+.scrubSupportInputWrap textarea::placeholder{
+  color:#9ca2ae !important;
+}
+
+.scrubSupportSendButton{
+  width:48px !important;
+  height:48px !important;
+
+  border-radius:50% !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      #ff7d64,
+      #ed6048
+    )
+    !important;
+
+  color:#ffffff !important;
+
+  font-size:15px !important;
+
+  box-shadow:
+    0 5px 15px rgba(237,96,72,.24)
+    !important;
+}
+
+.scrubSupportSendButton:active:not(:disabled){
+  transform:scale(.92) !important;
+}
+
+.scrubSupportSendButton:disabled{
+  opacity:.42 !important;
+  box-shadow:none !important;
+}
+
+/* keyboard mode */
+.scrubSupportPopup.scrubSupportKeyboardOpen
+.scrubSupportHeader{
+  min-height:
+    calc(
+      62px +
+      env(safe-area-inset-top,0px)
+    )
+    !important;
+
+  padding-top:
+    calc(
+      8px +
+      env(safe-area-inset-top,0px)
+    )
+    !important;
+}
+
+.scrubSupportPopup.scrubSupportKeyboardOpen
+.scrubSupportComposer{
+  padding-bottom:
+    calc(
+      8px +
+      env(safe-area-inset-bottom,0px)
+    )
+    !important;
+}
+
+@media(max-width:380px){
+
+  .scrubSupportMessageBubble{
+    max-width:80% !important;
+  }
+
+  .scrubSupportChatArea{
+    padding-left:12px !important;
+    padding-right:12px !important;
+  }
+
+  .scrubSupportComposer{
+    padding-left:10px !important;
+    padding-right:10px !important;
+  }
+
+}
+
