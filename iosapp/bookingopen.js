@@ -1712,7 +1712,7 @@ scurbOrderReadyMessage.hidden =
       "fa-solid fa-circle-check";
 
     scurbOrderStatusTitle.textContent =
-      "Professional cleaner assigned";
+      "Cleaner assigned";
 
     scurbOrderStatusDescription.textContent =
       `${cleanerName || "Your cleaner"} accepted your booking and will arrive soon.`;
@@ -2032,13 +2032,13 @@ function showScurbAcceptedCleaner(
 
   scurbOrderCleanerName.textContent =
     cleanerName ||
-    "Assigned professional";
+    "Cleaner";
 
 
   scurbOrderCleanerArrival.textContent =
     arrivalMinutes > 0
       ? `Arriving in approximately ${arrivalMinutes} minutes`
-      : "Professional cleaner assigned";
+      : "Cleaner assigned";
 
 
   if(
