@@ -2580,3 +2580,98 @@
 
 }
 
+
+
+/* ============================================================
+   ORDER TRACKING FINAL CLEANUP
+============================================================ */
+
+/* Remove "Please stay available / get ready..." block completely */
+.scurbOrderReadyMessage{
+  display:none !important;
+}
+
+/* Selected services with image */
+.scurbOrderServiceRow{
+  grid-template-columns:
+    54px
+    minmax(0,1fr)
+    auto
+    !important;
+
+  align-items:center !important;
+  gap:11px !important;
+}
+
+.scurbOrderServiceImageWrap{
+  width:54px;
+  height:54px;
+
+  flex:none;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  overflow:hidden;
+
+  border-radius:12px;
+
+  background:#f1f8f8;
+}
+
+.scurbOrderServiceImage{
+  width:100%;
+  height:100%;
+
+  display:block;
+
+  object-fit:cover;
+
+  background:#f1f8f8;
+}
+
+.scurbOrderServiceImageWrap.imageUnavailable{
+  display:none;
+}
+
+.scurbOrderServiceRow:
+has(.scurbOrderServiceImageWrap.imageUnavailable){
+  grid-template-columns:
+    minmax(0,1fr)
+    auto
+    !important;
+}
+
+/* Bill Details -> final / total amount emphasis */
+.scurbOrderFinalRow{
+  color:#118a47 !important;
+  font-weight:800 !important;
+}
+
+.scurbOrderFinalRow strong,
+#scurbOrderFinalAmount{
+  color:#118a47 !important;
+  font-weight:900 !important;
+  font-size:19px !important;
+}
+
+@media(max-width:380px){
+
+  .scurbOrderServiceRow{
+    grid-template-columns:
+      48px
+      minmax(0,1fr)
+      auto
+      !important;
+    gap:9px !important;
+  }
+
+  .scurbOrderServiceImageWrap{
+    width:48px;
+    height:48px;
+    border-radius:11px;
+  }
+
+}
+
