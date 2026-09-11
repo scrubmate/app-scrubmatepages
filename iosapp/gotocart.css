@@ -2490,3 +2490,93 @@
   }
 }
 
+
+
+/* ============================================================
+   FINISHED NAV — SOLID SEPARATE HEADER
+   Prevent scrolling content from showing behind Back / Help
+============================================================ */
+
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbFinishedTopActions,
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbFinishedTopActions{
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+
+  height:
+    calc(
+      env(safe-area-inset-top,0px) +
+      100px
+    )
+    !important;
+
+  padding:
+    calc(
+      env(safe-area-inset-top,0px) +
+      40px
+    )
+    16px
+    16px
+    !important;
+
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:space-between !important;
+
+  background:#ffffff !important;
+
+  border-bottom:
+    1px solid #eeeeee !important;
+
+  box-shadow:
+    0 2px 8px rgba(0,0,0,.035)
+    !important;
+
+  overflow:hidden !important;
+}
+
+/* Keep buttons exactly in their own solid nav */
+.scurbFinishedBackButton,
+.scurbFinishedHelpButton{
+  flex:none !important;
+  position:relative !important;
+  z-index:2 !important;
+}
+
+/* Content starts AFTER the fixed header */
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderTrackingContent,
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbOrderTrackingContent{
+  padding-top:
+    calc(
+      env(safe-area-inset-top,0px) +
+      122px
+    )
+    !important;
+
+  position:relative !important;
+  z-index:1 !important;
+}
+
+/* no content should visually bleed into header */
+.scurbOrderTrackingPage.scurbStatusCompleted,
+.scurbOrderTrackingPage.scurbStatusCancelled{
+  background:#ffffff !important;
+  overflow:hidden !important;
+}
+
+@media(max-width:380px){
+
+  .scurbOrderTrackingPage.scurbStatusCompleted
+  .scurbFinishedTopActions,
+  .scurbOrderTrackingPage.scurbStatusCancelled
+  .scurbFinishedTopActions{
+    padding-left:14px !important;
+    padding-right:14px !important;
+  }
+
+}
+
