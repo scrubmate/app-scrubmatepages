@@ -3057,20 +3057,26 @@ updateScurbCancelButton(
       "—";
 
 
-    if(rawPaymentMethod === "cash"){
+    if(
+      rawPaymentMethod === "cash" ||
+      rawPaymentMethod === "cod" ||
+      rawPaymentMethod === "cash_on_delivery" ||
+      rawPaymentMethod === "cash on delivery" ||
+      rawPaymentMethod === "cash_on_service" ||
+      rawPaymentMethod === "cash on service" ||
+      rawPaymentMethod.includes("cash")
+    ){
 
       paymentLabel =
         "Cash on Service";
 
-    }else if(rawPaymentMethod === "upi"){
+    }else if(
+      rawPaymentMethod === "upi" ||
+      rawPaymentMethod.includes("upi")
+    ){
 
       paymentLabel =
         "UPI";
-
-    }else if(rawPaymentMethod === "online"){
-
-      paymentLabel =
-        "Online";
 
     }else if(rawPaymentMethod){
 
