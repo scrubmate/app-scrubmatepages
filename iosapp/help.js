@@ -291,12 +291,12 @@
     return [
       createSupportMessage(
         "support",
-        "Hello 👋 How can we help you?"
+        "Hi 👋 How can we help you today?"
       ),
 
       createSupportMessage(
         "support",
-        "Choose an issue below to continue."
+        "Choose an option below or tell us what you need help with."
       )
     ];
 
@@ -440,7 +440,7 @@
     supportSolvedBanner.hidden = true;
 
     supportOnlineText.textContent =
-      "Scrub Mate Helper";
+      "ScrubMate Support";
 
   }
 
