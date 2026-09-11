@@ -2288,3 +2288,65 @@
   }
 }
 
+
+
+/* ============================================================
+   FINAL BACK ICON FIX
+   Font Awesome is already loaded in index.html.
+   This gives both real <i> icon + CSS fallback.
+============================================================ */
+
+.scurbOrderBackButton{
+  position:relative !important;
+}
+
+.scurbOrderBackButton > i.fa-chevron-left{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  width:auto !important;
+  height:auto !important;
+  color:#252932 !important;
+  font-family:"Font Awesome 6 Free" !important;
+  font-style:normal !important;
+  font-weight:900 !important;
+  font-size:17px !important;
+  line-height:1 !important;
+}
+
+/* fallback only when the real <i> is missing */
+.scurbOrderBackButton:not(:has(i.fa-chevron-left))::before{
+  content:"\f053";
+  display:block;
+  color:#252932;
+  font-family:"Font Awesome 6 Free";
+  font-weight:900;
+  font-size:17px;
+  line-height:1;
+}
+
+/* ============================================================
+   FINISHED TITLES
+============================================================ */
+
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderMainStatusText h1{
+  color:#16a34a !important;
+}
+
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbOrderMainStatusText h1{
+  color:#e53935 !important;
+}
+
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderMainStatusText p,
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbOrderMainStatusText p,
+.scurbOrderTrackingPage.scurbStatusCompleted
+.scurbOrderReadyMessage,
+.scurbOrderTrackingPage.scurbStatusCancelled
+.scurbOrderReadyMessage{
+  display:none !important;
+}
+
