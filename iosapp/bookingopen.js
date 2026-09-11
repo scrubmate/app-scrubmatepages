@@ -1120,11 +1120,33 @@ const scurbOrderBackButton =
   );
 
 
-/* SCRUBMATE FA BACK ICON */
-if(scurbOrderBackButton){
-  scurbOrderBackButton.innerHTML =
-    '<i class="fa-solid fa-chevron-left"></i>';
+/* SCRUBMATE FA BACK ICON - ROBUST */
+function ensureScurbOrderFaBackIcon(){
+
+  const button =
+    document.getElementById(
+      "scurbOrderBackButton"
+    );
+
+  if(!button){
+    return;
+  }
+
+  button.innerHTML =
+    '<i class="fa-solid fa-chevron-left" aria-hidden="true"></i>';
+
+  button.setAttribute(
+    "aria-label",
+    "Back"
+  );
 }
+
+ensureScurbOrderFaBackIcon();
+
+document.addEventListener(
+  "DOMContentLoaded",
+  ensureScurbOrderFaBackIcon
+);
 
 
 const scurbOrderStatusIcon =
@@ -1587,6 +1609,9 @@ function updateScurbOrderTrackingStatus(
   booking
 ){
 
+  ensureScurbOrderFaBackIcon();
+
+
   const status =
     normalizeScurbBookingStatus(
       booking.booking_status
@@ -1818,10 +1843,10 @@ scurbOrderReadyText.textContent =
       "fa-solid fa-circle-check";
 
     scurbOrderStatusTitle.textContent =
-      "Cleaning service completed";
+      "Service Completed";
 
     scurbOrderStatusDescription.textContent =
-      "Your booking has been completed successfully.";
+      "";
 
     if(cleanerAccepted){
 
@@ -1831,7 +1856,7 @@ scurbOrderReadyText.textContent =
       );
 
       scurbOrderCleanerArrival.textContent =
-        "Service completed successfully";
+        "Service Completed";
 scurbOrderReadyMessage.hidden =
   false;
 
@@ -1839,7 +1864,7 @@ scurbOrderReadyIcon.className =
   "fa-solid fa-circle-check";
 
 scurbOrderReadyText.textContent =
-  "Thank you for choosing Scrub Mate.";
+  "";
     }else{
 
       scurbOrderCleanerCard.hidden =
@@ -2615,6 +2640,9 @@ async function renderScurbBookedLocationMap(
 function openScurbBookingDetails(
   booking
 ){
+
+  ensureScurbOrderFaBackIcon();
+
 
   if(!scurbOrderTrackingPage){
     return;
