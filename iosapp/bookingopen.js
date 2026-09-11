@@ -2984,6 +2984,115 @@ updateScurbCancelButton(
   }
 
 
+  /*
+    PAYMENT TYPE
+    Add only once, directly above Final Amount.
+  */
+
+  let scurbOrderPaymentTypeRow =
+    document.getElementById(
+      "scurbOrderPaymentTypeRow"
+    );
+
+  if(!scurbOrderPaymentTypeRow){
+
+    const finalAmountElement =
+      document.getElementById(
+        "scurbOrderFinalAmount"
+      );
+
+    const finalAmountRow =
+      finalAmountElement?.closest(
+        ".scurbOrderBillRow"
+      );
+
+    if(finalAmountRow){
+
+      scurbOrderPaymentTypeRow =
+        document.createElement(
+          "div"
+        );
+
+      scurbOrderPaymentTypeRow.id =
+        "scurbOrderPaymentTypeRow";
+
+      scurbOrderPaymentTypeRow.className =
+        "scurbOrderBillRow scurbOrderPaymentTypeRow";
+
+      scurbOrderPaymentTypeRow.innerHTML = `
+        <span>Payment Type</span>
+        <strong id="scurbOrderPaymentTypeValue">—</strong>
+      `;
+
+      finalAmountRow.parentNode.insertBefore(
+        scurbOrderPaymentTypeRow,
+        finalAmountRow
+      );
+
+    }
+
+  }
+
+
+  const paymentTypeValue =
+    document.getElementById(
+      "scurbOrderPaymentTypeValue"
+    );
+
+
+  if(paymentTypeValue){
+
+    const rawPaymentMethod =
+      String(
+        booking.payment_method ||
+        booking.payment_type ||
+        booking.metadata?.payment_method ||
+        ""
+      )
+        .trim()
+        .toLowerCase();
+
+
+    let paymentLabel =
+      "—";
+
+
+    if(rawPaymentMethod === "cash"){
+
+      paymentLabel =
+        "Cash";
+
+    }else if(rawPaymentMethod === "upi"){
+
+      paymentLabel =
+        "UPI";
+
+    }else if(rawPaymentMethod === "online"){
+
+      paymentLabel =
+        "Online";
+
+    }else if(rawPaymentMethod){
+
+      paymentLabel =
+        rawPaymentMethod
+          .replace(/_/g," ")
+          .replace(
+            /\b\w/g,
+            function(letter){
+              return letter.toUpperCase();
+            }
+          );
+
+    }
+
+
+    paymentTypeValue.textContent =
+      paymentLabel;
+
+  }
+
+
   scurbOrderFinalAmount.textContent =
     `₹${finalAmount}`;
 
