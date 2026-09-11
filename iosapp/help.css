@@ -1490,3 +1490,85 @@
 
 }
 
+
+
+/* ============================================================
+   SCRUBMATE HELP — INDIGO / SKY THEME
+============================================================ */
+:root{
+  --scrub-support-primary:#5b6cff !important;
+  --scrub-support-primary-dark:#4656df !important;
+  --scrub-support-primary-soft:#eef0ff !important;
+  --scrub-support-primary-user:#e9efff !important;
+  --scrub-support-bg:#f8f9fd !important;
+  --scrub-support-card:#ffffff !important;
+  --scrub-support-text:#242833 !important;
+  --scrub-support-muted:#9096a4 !important;
+  --scrub-support-border:#e3e6ef !important;
+}
+
+.scrubSupportAvatar,
+.scrubSupportMessageAvatar,
+.scrubSupportLoadingAvatar{
+  background:linear-gradient(145deg,#eef0ff,#dfe4ff) !important;
+  color:#5363ed !important;
+  box-shadow:0 3px 10px rgba(70,86,223,.10) !important;
+}
+
+.scrubSupportHeaderText span,
+.scrubSupportMessageMeta i{
+  color:#5363ed !important;
+}
+
+.scrubSupportSystemNotice{
+  border-color:#dfe3ff !important;
+  background:#f0f2ff !important;
+  color:#666d8b !important;
+}
+
+.scrubSupportIssueOption{
+  border-color:#dfe2ee !important;
+  background:#ffffff !important;
+  color:#303541 !important;
+}
+.scrubSupportIssueOption.selected{
+  border-color:#5b6cff !important;
+  background:#eef0ff !important;
+  color:#4656df !important;
+}
+
+.scrubSupportMessageRow.user .scrubSupportMessageBubble{
+  background:#e9efff !important;
+  border-color:#d9e2ff !important;
+}
+
+.scrubSupportLoadingBubble span{
+  background:#5b6cff !important;
+}
+
+.scrubSupportOrdersHeader button,
+.scrubSupportOrderStatus{
+  background:#eef0ff !important;
+  color:#4656df !important;
+}
+
+.scrubSupportOrderCard::after,
+.scrubSupportOrderAmount{
+  color:#4656df !important;
+}
+
+.scrubSupportSolvedBanner{
+  border-color:#dce1ff !important;
+  background:#eef0ff !important;
+  color:#4656df !important;
+}
+
+.scrubSupportInputWrap:focus-within{
+  border-color:#cbd2ff !important;
+}
+
+.scrubSupportSendButton{
+  background:linear-gradient(145deg,#6677ff,#4d5ee8) !important;
+  box-shadow:0 5px 15px rgba(77,94,232,.23) !important;
+}
+
