@@ -414,7 +414,7 @@ currentLocationButton.innerHTML;
 
 currentLocationButton.disabled = true;
 
-currentLocationButton.innerHTML =     <span class="scrub-location-spinner" aria-hidden="true">
+currentLocationButton.innerHTML = `<span class="scrub-location-spinner" aria-hidden="true">
       <svg viewBox="0 0 24 24">
         <circle
           cx="12"
@@ -427,8 +427,8 @@ currentLocationButton.innerHTML =     <span class="scrub-location-spinner" aria-
           stroke-dasharray="42 16"
         ></circle>
       </svg>
-    </span>
- ;
+    </span>`
+;
 }
 
 function hideCurrentLocationSpinner() {
@@ -517,8 +517,9 @@ getAndSaveCurrentLocation
 
 /* =========================
 SAVE CURRENT LOCATION
-========================= /
-/ =========================
+========================= */
+
+/* =========================
 AUTOMATIC LOGIN LOCATION
 ========================= */
 
@@ -720,11 +721,12 @@ return;
 
 }
 
-/* Existing manual button flow /
+/* Existing manual button flow */
 updateScurbHomeLocation();
 openScurbHomePage();
 }
-/ =========================
+
+/* =========================
 MANUAL LOCATION ELEMENTS
 ========================= */
 
@@ -1259,10 +1261,10 @@ return;
 
 }
 
-locationSearchResults.innerHTML =     <p class="location-search-message">
+locationSearchResults.innerHTML = `<p class="location-search-message">
       Searching...
-    </p>
- ;
+    </p>`
+;
 
 searchTimer = setTimeout(function(){
 searchLocations(query);
@@ -1853,7 +1855,7 @@ headers:{
 "Accept":"application/json",
 "Accept-Language":"en"
 },
-signal.signal
+signal: controller.signal
 });
 }finally{
 clearTimeout(reverseGeocodeTimeout);
@@ -1915,6 +1917,8 @@ address.country || "";
 const countryCode =
 address.country_code || "";
 
+const streetName = road;
+
 const streetAddress = [
 houseNumber,
 road
@@ -1970,7 +1974,7 @@ const savedLocation = {
 ...location,
 latitude,
 longitude,
-locationSavedAt Date().toISOString()
+locationSavedAt: new Date().toISOString()
 };
 
 localStorage.setItem(
@@ -2069,10 +2073,10 @@ HTML SAFETY
 function escapeLocationHTML(value){
 
 return String(value || "")
-.replaceAll("&", "&")
-.replaceAll("<", "<")
-.replaceAll(">", ">")
-.replaceAll('"', """)
-.replaceAll("'", "'");
+.replaceAll("&", "&amp;")
+.replaceAll("<", "&lt;")
+.replaceAll(">", "&gt;")
+.replaceAll('"', "&quot;")
+.replaceAll("'", "&#039;");
 
 }
