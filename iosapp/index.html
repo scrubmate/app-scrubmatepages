@@ -7193,6 +7193,52 @@ scrubEmailInput.addEventListener(
    APP STARTUP FLOW
 ========================================= */
 
+let scrubMateWasHiddenForAddressRefresh = false;
+
+document.addEventListener("visibilitychange", function(){
+
+  if(document.hidden){
+    scrubMateWasHiddenForAddressRefresh = true;
+    return;
+  }
+
+  if(!scrubMateWasHiddenForAddressRefresh){
+    return;
+  }
+
+  scrubMateWasHiddenForAddressRefresh = false;
+
+  const isLoggedIn =
+    localStorage.getItem("scrubMateLoggedIn") === "true";
+
+  let savedUser = null;
+
+  try{
+    savedUser =
+      JSON.parse(
+        localStorage.getItem("scrubMateUser")
+      );
+  }catch(error){}
+
+  const hasCompletedProfile =
+    Boolean(
+      savedUser &&
+      savedUser.verified === true &&
+      savedUser.profileCompleted === true &&
+      savedUser.firstName
+    );
+
+  if(
+    isLoggedIn &&
+    hasCompletedProfile &&
+    typeof startAutomaticLoginLocation === "function" &&
+    !isAutomaticLoginLocation
+  ){
+    startAutomaticLoginLocation();
+  }
+
+});
+
 window.addEventListener("DOMContentLoaded", function(){
 
   const isLoggedIn =
