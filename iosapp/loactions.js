@@ -20,6 +20,7 @@ const autoLocationAddress =
   document.getElementById("autoLocationAddress");
 
 let isAutomaticLoginLocation = false;
+let scrubMateAutoLocationScreenShownAt = 0;
 const currentLocationButton =
   document.getElementById("currentLocationButton");
 
@@ -663,6 +664,8 @@ function startAutomaticLoginLocation(){
 
   autoLocationPage.classList.add("show");
 
+  scrubMateAutoLocationScreenShownAt = Date.now();
+
   autoLocationLoading.style.display = "flex";
 
   autoLocationResult.classList.remove("show");
@@ -722,6 +725,12 @@ function showAutomaticLocationResult(locationData){
       window.__scrubMateAutoHomeTimer
     );
 
+    const scrubMateAutoElapsed =
+      Date.now() - scrubMateAutoLocationScreenShownAt;
+
+    const scrubMateAutoRemaining =
+      Math.max(1500 - scrubMateAutoElapsed, 0);
+
     window.__scrubMateAutoHomeTimer =
       setTimeout(function(){
 
@@ -732,7 +741,7 @@ function showAutomaticLocationResult(locationData){
         isAutomaticLoginLocation = false;
         openHomeWithSlideUp();
 
-      }, 1000);
+      }, scrubMateAutoRemaining);
 
   }
 }
