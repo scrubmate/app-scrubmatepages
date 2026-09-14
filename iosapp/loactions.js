@@ -413,6 +413,107 @@ locationPage.addEventListener(
 let scrubMateLocationRequestType = null;
 let currentLocationButtonOriginalHTML = "";
 
+/* =========================================
+   CEZOO-STYLE FAST LOCATION STATE
+   UI remains unchanged.
+========================================= */
+
+let scrubMateFastCachedUsed = false;
+let scrubMateFastHomeOpened = false;
+
+function getCachedScrubMateLocation(){
+
+  const latitude =
+    Number(
+      localStorage.getItem(
+        "scurbMateLatitude"
+      )
+    );
+
+  const longitude =
+    Number(
+      localStorage.getItem(
+        "scurbMateLongitude"
+      )
+    );
+
+  if(
+    !Number.isFinite(latitude) ||
+    !Number.isFinite(longitude) ||
+    (latitude === 0 && longitude === 0)
+  ){
+    return null;
+  }
+
+  let saved = null;
+
+  try{
+    saved =
+      JSON.parse(
+        localStorage.getItem(
+          "scurbMateCurrentLocation"
+        ) || "null"
+      );
+  }catch(error){}
+
+  return {
+    ...(saved || {}),
+    latitude,
+    longitude,
+    accuracy:
+      saved?.accuracy ?? null,
+    fullAddress:
+      saved?.fullAddress ||
+      localStorage.getItem(
+        "scurbMateFullAddress"
+      ) ||
+      "",
+    village:
+      saved?.village ||
+      localStorage.getItem(
+        "scurbMateVillage"
+      ) ||
+      "",
+    neighbourhood:
+      saved?.neighbourhood ||
+      localStorage.getItem(
+        "scurbMateNeighbourhood"
+      ) ||
+      "",
+    city:
+      saved?.city ||
+      localStorage.getItem(
+        "scurbMateCity"
+      ) ||
+      "",
+    district:
+      saved?.district ||
+      localStorage.getItem(
+        "scurbMateDistrict"
+      ) ||
+      "",
+    state:
+      saved?.state ||
+      localStorage.getItem(
+        "scurbMateState"
+      ) ||
+      "",
+    postcode:
+      saved?.postcode ||
+      localStorage.getItem(
+        "scurbMatePostcode"
+      ) ||
+      "",
+    locationType:"current",
+    addressFound:Boolean(
+      saved?.fullAddress ||
+      localStorage.getItem(
+        "scurbMateFullAddress"
+      )
+    )
+  };
+}
+
 function showCurrentLocationSpinner() {
   if (!currentLocationButton) return;
 
@@ -613,7 +714,7 @@ function showAutomaticLocationResult(locationData){
 
   openHomeWithSlideUp();
 
-}, 1400);
+}, 220);
 }
 
 
@@ -635,59 +736,173 @@ async function getAndSaveCurrentLocation() {
 
   showCurrentLocationSpinner();
 
+  scrubMateFastCachedUsed = false;
+  scrubMateFastHomeOpened = false;
+
+  /*
+    CEZOO-style:
+    show saved coordinates immediately when available,
+    then ask Swift/browser for a fresh location in background.
+  */
+  const cachedLocation =
+    getCachedScrubMateLocation();
+
+  if(cachedLocation){
+
+    scrubMateFastCachedUsed = true;
+
+    void saveCurrentCoordinates(
+      cachedLocation.latitude,
+      cachedLocation.longitude,
+      cachedLocation.accuracy ?? null,
+      {
+        cached:true,
+        backgroundOnly:false,
+        existingData:cachedLocation
+      }
+    );
+
+  }
+
   // iOS native app
   if (isScrubMateIOSApp()) {
+
     requestScrubMateNativeLocation(
       "saveCurrentLocation"
     );
+
     return;
   }
 
   // Normal browser fallback
   if (!navigator.geolocation) {
-    console.error(
-      "Geolocation is not supported."
-    );
 
-    hideCurrentLocationSpinner();
+    if(!cachedLocation){
+      console.error(
+        "Geolocation is not supported."
+      );
+
+      hideCurrentLocationSpinner();
+    }
+
     return;
   }
 
   navigator.geolocation.getCurrentPosition(
-    async function(position) {
-      await saveCurrentCoordinates(
+    function(position) {
+
+      void saveCurrentCoordinates(
         position.coords.latitude,
         position.coords.longitude,
-        position.coords.accuracy ?? null
+        position.coords.accuracy ?? null,
+        {
+          cached:false,
+          backgroundOnly:
+            scrubMateFastCachedUsed
+        }
       );
+
     },
 
     function(error) {
-      hideCurrentLocationSpinner();
-      handleBrowserLocationError(error);
+
+      if(!scrubMateFastCachedUsed){
+        hideCurrentLocationSpinner();
+        handleBrowserLocationError(error);
+      }else{
+        console.warn(
+          "Fresh browser location failed; cached location kept.",
+          error
+        );
+      }
+
     },
 
     {
       enableHighAccuracy: false,
       timeout: 8000,
-      maximumAge: 0
+      maximumAge: 60000
     }
   );
 }
+
+
 async function saveCurrentCoordinates(
   latitude,
   longitude,
-  accuracy
+  accuracy,
+  options = {}
 ) {
 
-  let finalLocationData = null;
+  const {
+    cached = false,
+    backgroundOnly = false,
+    existingData = null
+  } = options;
 
+  /*
+    First save coordinates immediately.
+    Do NOT wait for reverse geocoding.
+  */
+  let immediateLocationData = {
+    ...(existingData || {}),
+    latitude,
+    longitude,
+    accuracy: accuracy ?? null,
+    locationType: "current",
+    addressFound:
+      Boolean(
+        existingData?.fullAddress
+      )
+  };
+
+  saveLocationToStorage(
+    immediateLocationData
+  );
+
+  if(!backgroundOnly){
+
+    hideCurrentLocationSpinner();
+
+    if(isAutomaticLoginLocation){
+
+      showAutomaticLocationResult(
+        immediateLocationData
+      );
+
+      scrubMateFastHomeOpened = true;
+
+    }else{
+
+      updateScurbHomeLocation();
+      openScurbHomePage();
+
+      scrubMateFastHomeOpened = true;
+    }
+
+  }else{
+
+    /*
+      Fresh GPS arrived after cached location already opened the UI.
+      Update location/service-area silently without reopening pages.
+    */
+    updateScurbHomeLocation();
+
+  }
+
+  /*
+    Address lookup happens in background, CEZOO-style.
+    UI is already usable at this point.
+  */
   try {
 
     const locationData =
-      await reverseGeocode(latitude, longitude);
+      await reverseGeocode(
+        latitude,
+        longitude
+      );
 
-    finalLocationData = {
+    const finalLocationData = {
       ...locationData,
       latitude,
       longitude,
@@ -696,44 +911,52 @@ async function saveCurrentCoordinates(
       addressFound: true
     };
 
-    saveLocationToStorage(finalLocationData);
-
-    console.log("Current location saved.");
-
-  } catch (error) {
-
-    finalLocationData = {
-      latitude,
-      longitude,
-      accuracy: accuracy ?? null,
-      fullAddress: "",
-      locationType: "current",
-      addressFound: false
-    };
-
-    saveLocationToStorage(finalLocationData);
-
-    console.error(
-      "Coordinates saved, but address failed:",
-      error
-    );
-  }
-
-  hideCurrentLocationSpinner();
-
-  /* Login automatic location flow */
-  if(isAutomaticLoginLocation){
-
-    showAutomaticLocationResult(
+    saveLocationToStorage(
       finalLocationData
     );
 
-    return;
-  }
+    updateScurbHomeLocation();
 
-  /* Existing manual button flow */
-  updateScurbHomeLocation();
-  openScurbHomePage();
+    /*
+      If automatic result screen is still visible,
+      refresh its text only. Do not restart its flow.
+    */
+    if(
+      isAutomaticLoginLocation &&
+      !backgroundOnly
+    ){
+      const placeName =
+        finalLocationData.village ||
+        finalLocationData.neighbourhood ||
+        finalLocationData.city ||
+        finalLocationData.district ||
+        "Your location";
+
+      const address =
+        finalLocationData.fullAddress ||
+        "Location detected successfully";
+
+      autoLocationName.textContent =
+        placeName;
+
+      autoLocationAddress.textContent =
+        address;
+    }
+
+    console.log(
+      cached
+        ? "Cached location shown; address refreshed."
+        : "Fresh location saved in background."
+    );
+
+  } catch (error) {
+
+    console.warn(
+      "Coordinates saved immediately; background address lookup failed:",
+      error
+    );
+
+  }
 }
 /* =========================
    MANUAL LOCATION ELEMENTS
@@ -1766,7 +1989,12 @@ window.onScrubMateLocationReceived =
       await saveCurrentCoordinates(
         latitude,
         longitude,
-        accuracy
+        accuracy,
+        {
+          cached:false,
+          backgroundOnly:
+            scrubMateFastCachedUsed
+        }
       );
 
     })();
@@ -1778,7 +2006,9 @@ window.onScrubMateLocationReceived =
  window.onScrubMateLocationError =
   function(errorData){
 
-    hideCurrentLocationSpinner();
+    if(!scrubMateFastCachedUsed){
+      hideCurrentLocationSpinner();
+    }
 
     hideManualCurrentLocationSpinner();
 
