@@ -671,7 +671,7 @@ function startAutomaticLoginLocation(){
     "Your location";
 
   autoLocationAddress.textContent =
-    "Fetching your address...";
+    "Fetching your fresh location...";
 
   getAndSaveCurrentLocation();
 }
@@ -764,25 +764,13 @@ async function getAndSaveCurrentLocation() {
     show saved coordinates immediately when available,
     then ask Swift/browser for a fresh location in background.
   */
-  const cachedLocation =
-    getCachedScrubMateLocation();
-
-  if(cachedLocation){
-
-    scrubMateFastCachedUsed = true;
-
-    void saveCurrentCoordinates(
-      cachedLocation.latitude,
-      cachedLocation.longitude,
-      cachedLocation.accuracy ?? null,
-      {
-        cached:true,
-        backgroundOnly:false,
-        existingData:cachedLocation
-      }
-    );
-
-  }
+  /*
+    Fresh-open rule:
+    Do not use the previously saved location for automatic detection.
+    Every app open/request must wait for a new GPS fix.
+  */
+  const cachedLocation = null;
+  scrubMateFastCachedUsed = false;
 
   // iOS native app
   if (isScrubMateIOSApp()) {
@@ -839,9 +827,9 @@ async function getAndSaveCurrentLocation() {
     },
 
     {
-      enableHighAccuracy: false,
-      timeout: 8000,
-      maximumAge: 60000
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
     }
   );
 }
