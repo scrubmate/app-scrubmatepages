@@ -729,7 +729,7 @@ function showAutomaticLocationResult(locationData){
       Date.now() - scrubMateAutoLocationScreenShownAt;
 
     const scrubMateAutoRemaining =
-      Math.max(1500 - scrubMateAutoElapsed, 0);
+      Math.max(3000 - scrubMateAutoElapsed, 0);
 
     window.__scrubMateAutoHomeTimer =
       setTimeout(function(){
