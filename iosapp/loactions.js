@@ -2218,6 +2218,66 @@ async function reverseGeocode(latitude, longitude){
 
 
 /* =========================
+   HOME HEADER INSTANT LOCATION
+   Prevents the top selected-location text from
+   appearing late / blinking after Home opens.
+========================= */
+
+function updateScurbHomeHeaderInstant(location){
+
+  if(!location){
+    return;
+  }
+
+  const nameElement =
+    document.getElementById(
+      "scurbHomeLocationName"
+    );
+
+  const addressElement =
+    document.getElementById(
+      "scurbHomeAddress"
+    );
+
+  if(!nameElement || !addressElement){
+    return;
+  }
+
+  const placeName =
+    location.village ||
+    location.neighbourhood ||
+    location.city ||
+    location.district ||
+    "Your location";
+
+  const address =
+    location.fullAddress ||
+    [
+      location.streetAddress,
+      location.neighbourhood,
+      location.village,
+      location.city,
+      location.district,
+      location.state,
+      location.postcode
+    ]
+      .filter(Boolean)
+      .join(", ");
+
+  /*
+    Update both text nodes in the same frame.
+    No timeout, no fade, no placeholder reset.
+  */
+  nameElement.textContent = placeName;
+
+  if(address){
+    addressElement.textContent = address;
+  }
+
+}
+
+
+/* =========================
    SAVE LOCAL STORAGE
 ========================= */
 
@@ -2324,6 +2384,15 @@ function saveLocationToStorage(location){
     "granted"
   );
 
+  /*
+    IMPORTANT:
+    Home top location is ready BEFORE Home becomes visible.
+    This removes the ~1 second selected-location blink.
+  */
+  updateScurbHomeHeaderInstant(
+    savedLocation
+  );
+
 }
 
 
@@ -2341,3 +2410,44 @@ function escapeLocationHTML(value){
     .replaceAll("'", "&#039;");
 
 }
+
+/* =========================================
+   HOME HEADER ANTI-BLINK SAFETY
+========================================= */
+
+(function(){
+
+  function restoreVisibleHomeHeader(){
+
+    try{
+
+      const saved =
+        JSON.parse(
+          localStorage.getItem(
+            "scurbMateCurrentLocation"
+          ) || "null"
+        );
+
+      if(saved){
+        updateScurbHomeHeaderInstant(saved);
+      }
+
+    }catch(error){}
+
+  }
+
+  if(document.readyState === "loading"){
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      restoreVisibleHomeHeader,
+      { once:true }
+    );
+
+  }else{
+
+    restoreVisibleHomeHeader();
+
+  }
+
+})();
