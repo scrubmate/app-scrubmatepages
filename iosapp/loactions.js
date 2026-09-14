@@ -577,6 +577,8 @@ skipButton.addEventListener("click", function(){
   localStorage.removeItem("scrubMateLoggedIn");
   localStorage.setItem("scrubMateGuestMode", "true");
 
+  isAutomaticLoginLocation = false;
+
 
   /* Hide every other screen */
 
@@ -599,6 +601,8 @@ skipButton.addEventListener("click", function(){
       "home-slide-up"
     );
 
+  autoLocationPage.classList.remove("show");
+
   document
     .getElementById("manualSearchPage")
     ?.classList.remove("show");
@@ -608,25 +612,46 @@ skipButton.addEventListener("click", function(){
     ?.classList.remove("show");
 
 
-  /*
-    Skip Login user must also see the same
-    "Your Address" automatic location result.
-    Never jump directly to Home.
-  */
+  /* Open normal location page */
 
   locationPage.classList.remove("show");
   locationPage.style.transition = "";
   locationPage.style.transform = "";
   locationPage.style.opacity = "";
+  void locationPage.offsetWidth;
 
-  startAutomaticLoginLocation();
+  locationPage.classList.add("show");
 
 });
 
 
 currentLocationButton.addEventListener(
   "click",
-  getAndSaveCurrentLocation
+  function(){
+
+    const isGuest =
+      localStorage.getItem(
+        "scrubMateGuestMode"
+      ) === "true";
+
+    const isLoggedIn =
+      localStorage.getItem(
+        "scrubMateLoggedIn"
+      ) === "true";
+
+    /*
+      Skip Login keeps the normal location-selection screen.
+      Only after the guest taps Current Location,
+      show the same "Your Address" screen for 3 seconds.
+    */
+    if(isGuest && !isLoggedIn){
+      startAutomaticLoginLocation();
+      return;
+    }
+
+    getAndSaveCurrentLocation();
+
+  }
 );
 
 
