@@ -577,8 +577,6 @@ skipButton.addEventListener("click", function(){
   localStorage.removeItem("scrubMateLoggedIn");
   localStorage.setItem("scrubMateGuestMode", "true");
 
-  isAutomaticLoginLocation = false;
-
 
   /* Hide every other screen */
 
@@ -601,8 +599,6 @@ skipButton.addEventListener("click", function(){
       "home-slide-up"
     );
 
-  autoLocationPage.classList.remove("show");
-
   document
     .getElementById("manualSearchPage")
     ?.classList.remove("show");
@@ -612,15 +608,18 @@ skipButton.addEventListener("click", function(){
     ?.classList.remove("show");
 
 
-  /* Open normal location page */
+  /*
+    Skip Login user must also see the same
+    "Your Address" automatic location result.
+    Never jump directly to Home.
+  */
 
   locationPage.classList.remove("show");
-locationPage.style.transition = "";
-locationPage.style.transform = "";
-locationPage.style.opacity = "";
-  void locationPage.offsetWidth;
+  locationPage.style.transition = "";
+  locationPage.style.transform = "";
+  locationPage.style.opacity = "";
 
-  locationPage.classList.add("show");
+  startAutomaticLoginLocation();
 
 });
 
