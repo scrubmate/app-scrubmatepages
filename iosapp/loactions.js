@@ -671,7 +671,7 @@ function startAutomaticLoginLocation(){
     "Your location";
 
   autoLocationAddress.textContent =
-    "Location detected successfully";
+    "Fetching your address...";
 
   getAndSaveCurrentLocation();
 }
@@ -697,24 +697,44 @@ function showAutomaticLocationResult(locationData){
       locationData.state,
       locationData.postcode
     ]
-    .filter(Boolean)
-    .join(", ") ||
-    "Location detected successfully";
+      .filter(Boolean)
+      .join(", ");
 
   autoLocationLoading.style.display = "none";
 
-  autoLocationName.textContent = placeName;
-  autoLocationAddress.textContent = address;
+  autoLocationName.textContent =
+    placeName;
+
+  autoLocationAddress.textContent =
+    address ||
+    "Fetching your address...";
 
   autoLocationResult.classList.add("show");
 
-  setTimeout(function(){
+  /*
+    Never skip the address result.
+    Only go Home after a real address exists.
+    Keep it visible for 1 second.
+  */
+  if(address){
 
-  isAutomaticLoginLocation = false;
+    clearTimeout(
+      window.__scrubMateAutoHomeTimer
+    );
 
-  openHomeWithSlideUp();
+    window.__scrubMateAutoHomeTimer =
+      setTimeout(function(){
 
-}, 220);
+        if(!isAutomaticLoginLocation){
+          return;
+        }
+
+        isAutomaticLoginLocation = false;
+        openHomeWithSlideUp();
+
+      }, 1000);
+
+  }
 }
 
 
@@ -870,7 +890,12 @@ async function saveCurrentCoordinates(
         immediateLocationData
       );
 
-      scrubMateFastHomeOpened = true;
+      scrubMateFastHomeOpened =
+        Boolean(
+          immediateLocationData.fullAddress ||
+          immediateLocationData.city ||
+          immediateLocationData.district
+        );
 
     }else{
 
@@ -921,26 +946,12 @@ async function saveCurrentCoordinates(
       If automatic result screen is still visible,
       refresh its text only. Do not restart its flow.
     */
-    if(
-      isAutomaticLoginLocation &&
-      !backgroundOnly
-    ){
-      const placeName =
-        finalLocationData.village ||
-        finalLocationData.neighbourhood ||
-        finalLocationData.city ||
-        finalLocationData.district ||
-        "Your location";
+    if(isAutomaticLoginLocation){
 
-      const address =
-        finalLocationData.fullAddress ||
-        "Location detected successfully";
+      showAutomaticLocationResult(
+        finalLocationData
+      );
 
-      autoLocationName.textContent =
-        placeName;
-
-      autoLocationAddress.textContent =
-        address;
     }
 
     console.log(
