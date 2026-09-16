@@ -32,7 +32,7 @@
   z-index:10;
   flex:none;
 
-  min-height:calc(90px + env(safe-area-inset-top, 0px));
+  min-height:calc(120px + env(safe-area-inset-top, 0px));
 
   padding:
     calc(env(safe-area-inset-top, 0px) + 30px)
