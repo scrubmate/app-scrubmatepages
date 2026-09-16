@@ -8029,5 +8029,93 @@ window.addEventListener("pageshow", function(){
 })();
 </script>
 
+
+<script id="scrubmate-smart-image-cache">
+/* Fast image cache: cached image first, fresh image silently revalidated. */
+(function(){
+  const CACHE_NAME = "scrubmate-images-v1";
+  const objectUrls = new WeakMap();
+
+  function absoluteUrl(url){
+    try { return new URL(url, location.href).href; } catch(e) { return url; }
+  }
+
+  function setBlobImage(img, blob){
+    if(!blob || !blob.size) return;
+    const old = objectUrls.get(img);
+    const next = URL.createObjectURL(blob);
+    img.src = next;
+    objectUrls.set(img, next);
+    if(old) setTimeout(() => URL.revokeObjectURL(old), 1500);
+  }
+
+  async function loadSmart(img){
+    if(!img || img.dataset.smartCacheLoading === "1") return;
+    const raw = img.getAttribute("data-src") || img.getAttribute("src");
+    if(!raw || raw.startsWith("blob:") || raw.startsWith("data:")) return;
+
+    img.dataset.smartCacheLoading = "1";
+    const url = absoluteUrl(raw);
+
+    try{
+      if(!("caches" in window)){
+        img.src = raw;
+        return;
+      }
+
+      const cache = await caches.open(CACHE_NAME);
+      const cached = await cache.match(url);
+
+      // Reopen: show previously downloaded image immediately.
+      if(cached){
+        const cachedBlob = await cached.clone().blob();
+        setBlobImage(img, cachedBlob);
+      }
+
+      // Always check server in background. If same URL file was changed,
+      // the fresh response replaces Cache Storage and the visible image.
+      try{
+        const fresh = await fetch(url, { cache:"no-cache", credentials:"same-origin" });
+        if(fresh.ok){
+          await cache.put(url, fresh.clone());
+          const freshBlob = await fresh.blob();
+          setBlobImage(img, freshBlob);
+        }else if(!cached){
+          img.src = raw;
+        }
+      }catch(networkError){
+        if(!cached) img.src = raw;
+      }
+    }catch(error){
+      img.src = raw;
+    }finally{
+      img.dataset.smartCacheLoading = "0";
+    }
+  }
+
+  function scan(root){
+    if(root && root.matches && root.matches("img[data-src]")) loadSmart(root);
+    (root || document).querySelectorAll?.("img[data-src]").forEach(loadSmart);
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", () => scan(document), {once:true});
+  }else{
+    scan(document);
+  }
+
+  // Popup/service images created later are covered too.
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(m => m.addedNodes.forEach(node => {
+      if(node.nodeType === 1) scan(node);
+    }));
+  });
+  observer.observe(document.documentElement, {childList:true, subtree:true});
+
+  // When app returns from background, cached images stay instant and
+  // server versions are rechecked.
+  window.addEventListener("pageshow", () => scan(document));
+})();
+</script>
 </body>
 </html>
