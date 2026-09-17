@@ -1,72 +1,535 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+<title>Scrub Mate</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Merienda:wght@700;800&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:"Manrope",sans-serif;
+    background:#fff;
+}
+
+
+/* =========================
+   HERO - LAPTOP
+========================= */
+
+.scrubHero{
+    width:100%;
+    height:500px;
+    background:#14b9bb;
+
+    display:flex;
+    align-items:center;
+
+    overflow:visible;
+
+    position:relative;
+    z-index:1;
+}
+
+.scrubHeroInner{
+    width:min(1120px, calc(100% - 50px));
+    height:100%;
+    margin:auto;
+
+    display:grid;
+    grid-template-columns:.9fr 1.1fr;
+    align-items:center;
+    gap:45px;
+}
+
+
+/* =========================
+   LEFT
+========================= */
+
+.scrubHeroLeft{
+    position:relative;
+    z-index:5;
+    transform:translateY(-10px);
+}
+
+.scrubLogo{
+    display:inline-block;
+    margin-bottom:30px;
+
+    font-family:"Merienda",cursive;
+    font-size:48px;
+    font-weight:800;
+    line-height:1;
+
+    color:#fff;
+
+    transform:rotate(-6deg);
+    transform-origin:center;
+}
+
+.scrubTitle{
+    max-width:520px;
+
+    color:#fff;
+
+    font-size:57px;
+    font-weight:800;
+    line-height:1.08;
+    letter-spacing:-2.5px;
+}
+
+.scrubTitle span{
+    display:block;
+}
+
+
+/* =========================
+   STORE IMAGES
+========================= */
+
+.scrubStores{
+    margin-top:32px;
+
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.scrubStores a{
+    display:block;
+}
+
+.scrubStores img{
+    display:block;
+    width:auto;
+    height:52px;
+
+    object-fit:contain;
+
+    transition:transform .18s ease;
+}
+
+.scrubStores a:hover img{
+    transform:translateY(-2px);
+}
+
+.scrubStores a:active img{
+    transform:scale(.97);
+}
+
+
+/* =========================
+   RIGHT IMAGE - LAPTOP
+========================= */
+
+.scrubHeroRight{
+    position:relative;
+
+    width:100%;
+    height:100%;
+
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+
+    overflow:visible;
+}
+
+.scrubHeroImage{
+    display:block;
+    width:auto;
+
+    max-width:680px;
+    max-height:485px;
+
+    object-fit:contain;
+
+    /* LAPTOP LOCKED */
+    transform:translate(35px, 45px);
+
+    position:relative;
+    z-index:3;
+}
+
+
+/* =========================
+   CLEANING MADE BETTER
+========================= */
+
+.cleaningBetterSection{
+    width:100%;
+    padding:70px 15px 35px;
+
+    background:#fff;
+    text-align:center;
+}
+
+.cleaningBetterSection h2{
+    margin:0;
+
+    color:#111;
+
+    font-family:"Manrope",sans-serif;
+    font-size:38px;
+    font-weight:800;
+    line-height:1.2;
+    letter-spacing:-1.2px;
+
+    white-space:nowrap;
+}
+
+
+/* =========================
+   TABLET
+========================= */
+
+@media(max-width:900px){
+
+    .scrubLogo{
+        font-size:42px;
     }
 
-    body {
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea, #764ba2);
+    .scrubTitle{
+        font-size:48px;
     }
 
-    .welcome-box {
-      text-align: center;
-      color: white;
+    .scrubHeroImage{
+        max-width:540px;
+        max-height:450px;
+
+        transform:translate(20px, 28px);
+    }
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:700px){
+
+    .scrubHero{
+        width:100%;
+
+        height:650px;
+        min-height:0;
+
+        background:#14b9bb;
+
+        display:block;
+        position:relative;
+
+        overflow:visible;
+
+        /* HEADING KONCHAM KINDA */
+        margin-bottom:82px;
     }
 
-    h1 {
-      font-size: 60px;
-      margin-bottom: 15px;
+
+    .scrubHeroInner{
+        width:100%;
+
+        height:650px;
+        min-height:0;
+
+        margin:0;
+
+        padding:
+            calc(env(safe-area-inset-top, 0px) + 22px)
+            14px
+            0;
+
+        display:flex;
+        flex-direction:column;
+
+        gap:0;
+
+        text-align:center;
     }
 
-    p {
-      font-size: 22px;
-      margin-bottom: 25px;
+
+    .scrubHeroLeft{
+        width:100%;
+
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+
+        transform:none;
+
+        position:relative;
+        z-index:5;
     }
 
-    button {
-      padding: 12px 25px;
-      border: none;
-      border-radius: 8px;
-      background: white;
-      color: #667eea;
-      font-size: 18px;
-      cursor: pointer;
+
+    .scrubLogo{
+        display:inline-block;
+
+        margin:0 0 38px;
+
+        font-size:39px;
+        line-height:1;
+
+        transform:rotate(-6deg);
     }
 
-    button:hover {
-      background: #eee;
+
+    .scrubTitle{
+        width:100%;
+        max-width:390px;
+
+        margin:0 auto;
+
+        font-size:42px;
+        line-height:1.08;
+        letter-spacing:-1.8px;
+
+        text-align:center;
     }
-  </style>
+
+
+    .scrubStores{
+        width:100%;
+
+        margin-top:38px;
+
+        display:flex;
+        align-items:center;
+        justify-content:center;
+
+        gap:12px;
+    }
+
+
+    .scrubStores img{
+        width:auto;
+        height:45px;
+    }
+
+
+    /* =========================
+       MAIN IMAGE
+    ========================= */
+
+    .scrubHeroRight{
+        width:100%;
+        height:auto;
+        min-height:0;
+
+        margin-top:48px;
+
+        display:flex;
+        align-items:flex-start;
+        justify-content:center;
+
+        overflow:visible;
+
+        position:relative;
+        z-index:3;
+    }
+
+
+    .scrubHeroImage{
+        display:block;
+
+        width:100%;
+        max-width:470px;
+
+        height:auto;
+        max-height:none;
+
+        object-fit:contain;
+
+        transform:none;
+
+        position:relative;
+        z-index:3;
+    }
+
+
+    /* =========================
+       MOBILE NEXT SECTION
+    ========================= */
+
+    .cleaningBetterSection{
+        padding:10px 10px 25px;
+    }
+
+    .cleaningBetterSection h2{
+        /* FONT SIZE REDUCED */
+        font-size:24px;
+        line-height:1.2;
+        letter-spacing:-0.5px;
+
+        white-space:nowrap;
+    }
+}
+
+
+/* =========================
+   SMALL MOBILE
+========================= */
+
+@media(max-width:390px){
+
+    .scrubHero{
+        height:620px;
+
+        /* KONCHAM KINDA */
+        margin-bottom:72px;
+    }
+
+
+    .scrubHeroInner{
+        height:620px;
+
+        padding-top:
+            calc(env(safe-area-inset-top, 0px) + 18px);
+
+        padding-left:10px;
+        padding-right:10px;
+    }
+
+
+    .scrubLogo{
+        font-size:35px;
+        margin-bottom:32px;
+    }
+
+
+    .scrubTitle{
+        max-width:355px;
+
+        font-size:37px;
+        line-height:1.08;
+    }
+
+
+    .scrubStores{
+        margin-top:32px;
+        gap:9px;
+    }
+
+
+    .scrubStores img{
+        height:40px;
+    }
+
+
+    .scrubHeroRight{
+        margin-top:42px;
+    }
+
+
+    .scrubHeroImage{
+        width:100%;
+        max-width:430px;
+
+        height:auto;
+        max-height:none;
+
+        transform:none;
+    }
+
+
+    .cleaningBetterSection{
+        padding:8px 8px 25px;
+    }
+
+
+    .cleaningBetterSection h2{
+        /* SMALL MOBILE TEXT */
+        font-size:22px;
+        letter-spacing:-0.4px;
+
+        white-space:nowrap;
+    }
+}
+
+</style>
 </head>
 
 <body>
 
-  <div class="welcome-box">
-    <h1>Welcome! 👋</h1>
-    <p id="message">Welcome to my website</p>
-    <button onclick="showMessage()">Click Me</button>
-  </div>
 
-  <script>
-    function showMessage() {
-      document.getElementById("message").textContent =
-        "Thanks for visiting! 🎉";
-    }
-  </script>
+<!-- =========================
+     HERO
+========================= -->
+
+<section class="scrubHero">
+
+    <div class="scrubHeroInner">
+
+
+        <!-- LEFT -->
+        <div class="scrubHeroLeft">
+
+            <div class="scrubLogo">
+                Scrub Mate
+            </div>
+
+
+            <h1 class="scrubTitle">
+                Cleaning Flying.
+                <span>Stress Going!</span>
+            </h1>
+
+
+            <div class="scrubStores">
+
+                <a href="#">
+                    <img
+                        src="google.avif"
+                        alt="Get it on Google Play">
+                </a>
+
+                <a href="#">
+                    <img
+                        src="app.avif"
+                        alt="Download on the App Store">
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT -->
+        <div class="scrubHeroRight">
+
+            <img
+                src="main.webp"
+                class="scrubHeroImage"
+                alt="Scrub Mate">
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     CLEANING MADE BETTER
+========================= -->
+
+<section class="cleaningBetterSection">
+    <h2>Cleaning made better</h2>
+</section>
+
 
 </body>
 </html>
-
