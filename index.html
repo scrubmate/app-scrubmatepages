@@ -457,10 +457,1049 @@ body{
         white-space:nowrap;
     }
 }
+/* =========================
+   ALL CLEANING NEEDS GRID
+========================= */
 
+.scrubNeedsGrid{
+    width:min(1080px, calc(100% - 40px));
+
+    margin:5px auto 80px;
+
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+
+    column-gap:55px;
+    row-gap:75px;
+}
+
+
+/* =========================
+   EACH SERVICE
+========================= */
+
+.scrubNeedItem{
+    width:100%;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+
+    position:relative;
+}
+
+
+/* =========================
+   IMAGE
+========================= */
+
+.scrubNeedImage{
+    width:100%;
+    height:190px;
+
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+
+    position:relative;
+}
+
+
+.scrubNeedImage img{
+    display:block;
+
+    width:auto;
+    max-width:100%;
+    height:185px;
+
+    object-fit:contain;
+
+    position:relative;
+    z-index:1;
+}
+
+
+/* =========================
+   PRICE BADGE
+========================= */
+
+.scrubNeedPrice{
+    position:relative;
+    z-index:5;
+
+    /* IMAGE KI CLOSE */
+    margin-top:-6px;
+
+    /* COMPACT PRICE BOX */
+    min-width:72px;
+    height:34px;
+
+    padding:0 11px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:#ffdf21;
+
+    border:2px solid #e2c600;
+
+    border-radius:18px;
+
+    color:#111;
+
+    font-family:"Manrope", sans-serif;
+
+    font-size:23px;
+    font-weight:900;
+
+    line-height:1;
+
+    letter-spacing:-1px;
+
+    box-sizing:border-box;
+}
+
+
+/* =========================
+   TABLET
+========================= */
+
+@media(max-width:900px){
+
+    .scrubNeedsGrid{
+        width:calc(100% - 30px);
+
+        column-gap:28px;
+        row-gap:60px;
+    }
+
+
+    .scrubNeedImage{
+        height:165px;
+    }
+
+
+    .scrubNeedImage img{
+        height:160px;
+        max-width:100%;
+    }
+
+
+    .scrubNeedPrice{
+        margin-top:-5px;
+
+        min-width:65px;
+        height:31px;
+
+        padding:0 10px;
+
+        font-size:20px;
+
+        border-width:2px;
+        border-radius:16px;
+    }
+}
+
+
+/* =========================
+   MOBILE
+   MINIMUM 2 EACH ROW
+========================= */
+
+@media(max-width:700px){
+
+    .scrubNeedsGrid{
+        width:calc(100% - 24px);
+
+        margin:5px auto 55px;
+
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+
+        column-gap:18px;
+        row-gap:48px;
+    }
+
+
+    .scrubNeedImage{
+        width:100%;
+        height:145px;
+    }
+
+
+    .scrubNeedImage img{
+        width:auto;
+        max-width:100%;
+        height:140px;
+
+        object-fit:contain;
+    }
+
+
+    .scrubNeedPrice{
+        margin-top:-5px;
+
+        min-width:60px;
+        height:29px;
+
+        padding:0 9px;
+
+        border-width:1.5px;
+        border-radius:15px;
+
+        font-size:18px;
+
+        line-height:1;
+
+        letter-spacing:-0.7px;
+    }
+}
+
+
+/* =========================
+   SMALL MOBILE
+   STILL 2 EACH ROW
+========================= */
+
+@media(max-width:390px){
+
+    .scrubNeedsGrid{
+        width:calc(100% - 18px);
+
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+
+        column-gap:10px;
+        row-gap:42px;
+    }
+
+
+    .scrubNeedImage{
+        height:130px;
+    }
+
+
+    .scrubNeedImage img{
+        max-width:100%;
+        height:126px;
+    }
+
+
+    .scrubNeedPrice{
+        margin-top:-4px;
+
+        min-width:56px;
+        height:27px;
+
+        padding:0 8px;
+
+        border-width:1.5px;
+        border-radius:14px;
+
+        font-size:17px;
+
+        line-height:1;
+
+        letter-spacing:-0.5px;
+    }
+}
+/* =========================
+   SCRUB MATE BENEFITS
+========================= */
+
+.scrubBenefits{
+    width:min(1080px, calc(100% - 40px));
+    margin:25px auto 70px;
+
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:20px;
+}
+
+
+/* =========================
+   CARD
+========================= */
+
+.scrubBenefitCard{
+    width:100%;
+    min-width:0;
+    min-height:315px;
+
+    background:#e4f8f8;
+
+    border-radius:30px;
+
+    display:flex;
+    flex-direction:column;
+
+    position:relative;
+    overflow:visible;
+}
+
+
+/* =========================
+   IMAGE
+========================= */
+
+.scrubBenefitImage{
+    width:100%;
+    height:190px;
+
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+
+    position:relative;
+}
+
+
+.scrubBenefitImage img{
+    display:block;
+
+    width:auto;
+    max-width:94%;
+    height:230px;
+
+    object-fit:contain;
+
+    transform:translateY(-22px);
+
+    position:relative;
+
+    /* IMAGE BELOW LINE */
+    z-index:2;
+}
+
+
+/* =========================
+   BLACK LINE
+   CARD 1 + CARD 2 ONLY
+========================= */
+
+.scrubImageLine{
+    position:absolute;
+
+    left:50%;
+    bottom:22px;
+
+    transform:translateX(-50%);
+
+    width:145px;
+    height:1.5px;
+
+    background:#111;
+
+    border-radius:20px;
+
+    /* ABOVE IMAGE / WHITE GAP */
+    z-index:5;
+
+    pointer-events:none;
+}
+
+
+/* =========================
+   FIRST CARD LINE ONLY
+   LITTLE MORE UP
+========================= */
+
+.scrubBenefitCard:first-child .scrubImageLine{
+    bottom:30px;
+}
+
+
+/* =========================
+   THIRD IMAGE ONLY
+========================= */
+
+.scrubDoorstepCard .scrubBenefitImage img{
+    height:250px;
+    max-width:98%;
+
+    /* BIGGER + LOWER */
+    transform:translateY(-8px);
+
+    position:relative;
+    z-index:2;
+}
+
+
+/* =========================
+   CONTENT
+========================= */
+
+.scrubBenefitContent{
+    width:100%;
+
+    padding:5px 22px 16px;
+
+    text-align:center;
+}
+
+
+.scrubBenefitContent h3{
+    margin:0 auto 8px;
+
+    color:#111;
+
+    font-size:22px;
+    font-weight:800;
+    line-height:1.15;
+
+    letter-spacing:-0.6px;
+}
+
+
+.scrubBenefitContent p{
+    max-width:285px;
+
+    margin:0 auto;
+
+    color:#475556;
+
+    font-size:15px;
+    font-weight:600;
+    line-height:1.4;
+}
+
+
+/* =========================
+   TABLET
+========================= */
+
+@media(max-width:900px){
+
+    .scrubBenefits{
+        width:calc(100% - 30px);
+        gap:16px;
+    }
+
+
+    .scrubBenefitCard{
+        min-height:305px;
+
+        border-radius:25px;
+    }
+
+
+    .scrubBenefitImage{
+        height:180px;
+    }
+
+
+    .scrubBenefitImage img{
+        max-width:94%;
+
+        height:215px;
+
+        transform:translateY(-20px);
+
+        position:relative;
+        z-index:2;
+    }
+
+
+    .scrubImageLine{
+        width:130px;
+
+        bottom:20px;
+
+        z-index:5;
+    }
+
+
+    /* FIRST CARD LINE ONLY */
+
+    .scrubBenefitCard:first-child .scrubImageLine{
+        bottom:28px;
+    }
+
+
+    /* THIRD IMAGE */
+
+    .scrubDoorstepCard .scrubBenefitImage img{
+        height:235px;
+        max-width:98%;
+
+        transform:translateY(-7px);
+    }
+
+
+    .scrubBenefitContent{
+        padding:4px 18px 15px;
+    }
+
+
+    .scrubBenefitContent h3{
+        font-size:19px;
+
+        margin-bottom:7px;
+    }
+
+
+    .scrubBenefitContent p{
+        font-size:14px;
+
+        line-height:1.4;
+    }
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:700px){
+
+    .scrubBenefits{
+        width:calc(100% - 32px);
+
+        margin:30px auto 50px;
+
+        display:grid;
+        grid-template-columns:1fr;
+
+        /* CARDS / IMAGES DON'T MIX */
+        gap:65px;
+    }
+
+
+    .scrubBenefitCard{
+        width:100%;
+        max-width:390px;
+
+        min-height:310px;
+
+        margin:0 auto;
+
+        border-radius:26px;
+
+        background:#e4f8f8;
+
+        overflow:visible;
+    }
+
+
+    .scrubBenefitImage{
+        height:185px;
+
+        position:relative;
+    }
+
+
+    .scrubBenefitImage img{
+        width:auto;
+
+        max-width:95%;
+        height:225px;
+
+        object-fit:contain;
+
+        transform:translateY(-20px);
+
+        position:relative;
+        z-index:2;
+    }
+
+
+    /* =========================
+       BLACK LINE
+    ========================= */
+
+    .scrubImageLine{
+        width:140px;
+        height:1.5px;
+
+        bottom:21px;
+
+        background:#111;
+
+        z-index:5;
+    }
+
+
+    /* 1ST CARD LINE ONLY - MORE UP */
+
+    .scrubBenefitCard:first-child .scrubImageLine{
+        bottom:29px;
+    }
+
+
+    /* =========================
+       THIRD IMAGE
+       BIGGER + LOWER
+    ========================= */
+
+    .scrubDoorstepCard .scrubBenefitImage img{
+        height:250px;
+        max-width:100%;
+
+        transform:translateY(-5px);
+
+        position:relative;
+        z-index:2;
+    }
+
+
+    .scrubBenefitContent{
+        padding:4px 18px 15px;
+    }
+
+
+    .scrubBenefitContent h3{
+        margin:0 0 7px;
+
+        font-size:20px;
+        font-weight:800;
+        line-height:1.15;
+    }
+
+
+    .scrubBenefitContent p{
+        max-width:310px;
+
+        margin:0 auto;
+
+        font-size:14px;
+        font-weight:600;
+        line-height:1.4;
+    }
+}
+
+
+/* =========================
+   SMALL MOBILE
+========================= */
+
+@media(max-width:390px){
+
+    .scrubBenefits{
+        width:calc(100% - 26px);
+
+        gap:60px;
+    }
+
+
+    .scrubBenefitCard{
+        min-height:300px;
+
+        border-radius:24px;
+    }
+
+
+    .scrubBenefitImage{
+        height:180px;
+    }
+
+
+    .scrubBenefitImage img{
+        max-width:96%;
+
+        height:218px;
+
+        transform:translateY(-19px);
+
+        position:relative;
+        z-index:2;
+    }
+
+
+    .scrubImageLine{
+        width:125px;
+
+        bottom:20px;
+
+        z-index:5;
+    }
+
+
+    /* 1ST CARD LINE ONLY - MORE UP */
+
+    .scrubBenefitCard:first-child .scrubImageLine{
+        bottom:28px;
+    }
+
+
+    /* =========================
+       THIRD IMAGE
+    ========================= */
+
+    .scrubDoorstepCard .scrubBenefitImage img{
+        height:242px;
+        max-width:100%;
+
+        transform:translateY(-4px);
+
+        position:relative;
+        z-index:2;
+    }
+
+
+    .scrubBenefitContent{
+        padding:3px 15px 14px;
+    }
+
+
+    .scrubBenefitContent h3{
+        font-size:19px;
+
+        margin-bottom:6px;
+    }
+
+
+    .scrubBenefitContent p{
+        font-size:13.5px;
+
+        line-height:1.4;
+    }
+}
+.scrubNeedsSection{
+    width:100%;
+    padding:8px 15px 25px;
+    background:#fff;
+    text-align:center;
+}
+
+.scrubNeedsSection h2{
+    margin:0;
+    color:#111;
+    font-family:"Manrope", sans-serif;
+    font-size:38px;
+    font-weight:800;
+    line-height:1.2;
+    letter-spacing:-1.2px;
+    white-space:nowrap;
+}
+
+@media(max-width:700px){
+
+    .scrubNeedsSection{
+        padding:6px 10px 22px;
+    }
+
+    .scrubNeedsSection h2{
+        font-size:25px;
+        letter-spacing:-0.6px;
+    }
+}
+
+@media(max-width:390px){
+
+    .scrubNeedsSection{
+        padding:5px 8px 20px;
+    }
+
+    .scrubNeedsSection h2{
+        font-size:23px;
+        letter-spacing:-0.5px;
+    }
+}
+
+/* =========================
+   SCRUB MATE FOOTER
+========================= */
+
+.scrubFooter{
+    width:100%;
+
+    /* SCRUB MATE LIGHT COLOR */
+    background:#e4f8f8;
+
+    margin:0;
+    padding:0;
+}
+
+
+.scrubFooterInner{
+    width:min(1080px, calc(100% - 40px));
+
+    min-height:310px;
+
+    margin:0 auto;
+
+    padding:60px 0;
+
+    display:flex;
+    align-items:center;
+
+    gap:120px;
+}
+
+
+/* =========================
+   LEFT SIDE
+========================= */
+
+.scrubFooterLeft{
+    display:flex;
+    flex-direction:column;
+
+    align-items:flex-start;
+}
+
+
+/* =========================
+   LOGO
+========================= */
+
+.scrubFooterLogo{
+    display:inline-block;
+
+    margin-bottom:28px;
+
+    font-family:"Merienda", cursive;
+
+    font-size:40px;
+    font-weight:800;
+
+    line-height:1;
+
+    color:#14b9bb;
+
+    transform:rotate(-6deg);
+    transform-origin:center;
+}
+
+
+/* =========================
+   LINKS
+========================= */
+
+.scrubFooterLinks{
+    display:flex;
+    flex-direction:column;
+
+    align-items:flex-start;
+
+    gap:16px;
+}
+
+
+.scrubFooterLinks a{
+    color:#111;
+
+    text-decoration:none;
+
+    font-family:"Manrope", sans-serif;
+
+    font-size:15px;
+    font-weight:700;
+
+    line-height:1.2;
+}
+
+
+.scrubFooterLinks a:hover{
+    color:#079fa2;
+}
+
+
+/* =========================
+   STORE BUTTONS
+========================= */
+
+.scrubFooterStores{
+    display:flex;
+    flex-direction:column;
+
+    align-items:flex-start;
+
+    gap:10px;
+}
+
+
+.scrubFooterStores a{
+    display:block;
+
+    text-decoration:none;
+}
+
+
+.scrubFooterStores img{
+    display:block;
+
+    width:auto;
+    height:42px;
+
+    object-fit:contain;
+}
+
+
+/* =========================
+   TABLET
+========================= */
+
+@media(max-width:900px){
+
+    .scrubFooterInner{
+        width:calc(100% - 40px);
+
+        gap:80px;
+
+        min-height:280px;
+
+        padding:50px 0;
+    }
+
+
+    .scrubFooterLogo{
+        font-size:36px;
+
+        margin-bottom:25px;
+    }
+
+
+    .scrubFooterLinks{
+        gap:14px;
+    }
+
+
+    .scrubFooterLinks a{
+        font-size:14px;
+    }
+
+
+    .scrubFooterStores img{
+        height:40px;
+    }
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:700px){
+
+    .scrubFooter{
+        background:#e4f8f8;
+    }
+
+
+    .scrubFooterInner{
+        width:100%;
+
+        min-height:240px;
+
+        margin:0;
+
+        padding:35px 18px 38px;
+
+        display:flex;
+        flex-direction:row;
+
+        align-items:flex-end;
+        justify-content:space-between;
+
+        gap:15px;
+    }
+
+
+    /* LEFT */
+
+    .scrubFooterLeft{
+        flex:1;
+
+        min-width:0;
+
+        align-items:flex-start;
+    }
+
+
+    /* LOGO */
+
+    .scrubFooterLogo{
+        margin:0 0 25px;
+
+        font-size:29px;
+
+        transform:rotate(-6deg);
+    }
+
+
+    /* LINKS */
+
+    .scrubFooterLinks{
+        gap:13px;
+    }
+
+
+    .scrubFooterLinks a{
+        font-size:12px;
+
+        font-weight:700;
+
+        white-space:nowrap;
+    }
+
+
+    /* STORE BADGES RIGHT */
+
+    .scrubFooterStores{
+        flex-shrink:0;
+
+        align-items:flex-end;
+
+        gap:8px;
+
+        padding-bottom:0;
+    }
+
+
+    .scrubFooterStores img{
+        width:auto;
+
+        height:37px;
+
+        object-fit:contain;
+    }
+}
+
+
+/* =========================
+   SMALL MOBILE
+========================= */
+
+@media(max-width:390px){
+
+    .scrubFooterInner{
+        min-height:225px;
+
+        padding:32px 15px 35px;
+
+        gap:10px;
+    }
+
+
+    .scrubFooterLogo{
+        font-size:27px;
+
+        margin-bottom:23px;
+    }
+
+
+    .scrubFooterLinks{
+        gap:12px;
+    }
+
+
+    .scrubFooterLinks a{
+        font-size:11px;
+    }
+
+
+    .scrubFooterStores{
+        gap:7px;
+    }
+
+
+    .scrubFooterStores img{
+        height:34px;
+    }
+}
 </style>
- <link rel="stylesheet" href="rights.css">
-  <link rel="stylesheet" href="norights.css">
+ 
 </head>
 
 <body>
