@@ -5586,6 +5586,16 @@ const SUPABASE_URL = "https://tigomzzcyxzwfvemmbqp.supabase.co";
             String(popupBookBtn.textContent || "Book").trim() || "Book";
         }
 
+        /*
+          IMPORTANT:
+          Do not keep writing popupBookBtn.textContent while the service is
+          available. The booking/cart script replaces "Book" with the live
+          "-  qty  +" controls. Rewriting textContent here destroys those
+          controls, which is why + / - was disappearing.
+        */
+        const wasBusy =
+          popupBookBtn.classList.contains("scrubPopupBusy25");
+
         popupBookBtn.classList.toggle(
           "scrubPopupBusy25",
           !isAvailable
@@ -5601,10 +5611,13 @@ const SUPABASE_URL = "https://tigomzzcyxzwfvemmbqp.supabase.co";
 
         popupBookBtn.disabled = !isAvailable;
 
-        popupBookBtn.textContent =
-          isAvailable
-            ? (popupBookBtn.dataset.scrubOriginalBookText || "Book")
-            : "Busy";
+        if(!isAvailable){
+          popupBookBtn.textContent = "Busy";
+        }
+        else if(wasBusy){
+          popupBookBtn.textContent =
+            popupBookBtn.dataset.scrubOriginalBookText || "Book";
+        }
       }
     });
   }
