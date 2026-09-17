@@ -902,19 +902,14 @@ OUR SERVICES
     display:none;
     animation:none;
 }
-
 .scurbServiceImg{
     width:100%;
     height:100%;
     display:block;
     object-fit:cover;
-    opacity:0;
-    transition:opacity .25s ease;
-}
-
-.scurbServiceImageBox.loaded .scurbServiceImg{
     opacity:1;
 }
+
 
 @keyframes serviceImageShimmer{
     from{
