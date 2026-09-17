@@ -1279,6 +1279,35 @@ body{
         padding:6px 12px;
     }
 }
+
+/* LAST HOME CLEANING - EXTRA SERVICES TEXT */
+.scrubMoreServices{
+    width:100%;
+    margin-top:8px;
+    padding-right:4px;
+    text-align:right;
+    color:#079fa2;
+    font-family:"Manrope", sans-serif;
+    font-size:13px;
+    font-weight:800;
+    line-height:1.2;
+}
+
+@media(max-width:700px){
+    .scrubMoreServices{
+        margin-top:7px;
+        padding-right:2px;
+        font-size:11px;
+    }
+}
+
+@media(max-width:390px){
+    .scrubMoreServices{
+        margin-top:6px;
+        font-size:10px;
+    }
+}
+
 /* =========================
    HOW IT WORKS
 ========================= */
@@ -2098,6 +2127,48 @@ body{
         font-size:13px;
     }
 }
+.moreServicesText{
+    width:100%;
+    margin:-25px auto 55px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+
+    font-family:"Manrope", sans-serif;
+    color:#667273;
+    font-size:13px;
+    font-weight:700;
+}
+
+.moreServicesText strong{
+    color:#14b9bb;
+    font-size:18px;
+    font-weight:800;
+}
+
+.moreLine{
+    width:35px;
+    height:1px;
+    background:rgba(20,185,187,.45);
+}
+
+@media(max-width:700px){
+    .moreServicesText{
+        margin:-10px auto 42px;
+        gap:8px;
+        font-size:12px;
+    }
+
+    .moreServicesText strong{
+        font-size:16px;
+    }
+
+    .moreLine{
+        width:26px;
+    }
+}
 </style>
 
 </head>
@@ -2397,9 +2468,16 @@ body{
         <div class="scrubNeedArrow">
             <i class="fa-solid fa-arrow-right"></i>
         </div>
+
     </div>
 
 </section>
+<div class="moreServicesText">
+    <span class="moreLine"></span>
+    <strong>10+</strong>
+    <span>more services</span>
+    <span class="moreLine"></span>
+</div>
 <section class="scrubHowWorks">
 
     <div class="scrubHowInner">
