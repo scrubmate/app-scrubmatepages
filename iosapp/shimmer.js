@@ -103,9 +103,11 @@ document.addEventListener("DOMContentLoaded", () => {
      First-screen location images:
      load immediately.
 
-     Login .service-img images are NOT handled here.
-     They load directly from Xcode using:
+     Login images load directly from Xcode:
      scrubmate-local://loginimages/...
+
+     Service images load directly from Xcode:
+     scrubmate-local://services/...
     */
 
     document
@@ -115,55 +117,53 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
 
-   /*
- Main UI images:
- load all only when the home page opens.
-*/
-window.loadScurbHomeImages = function () {
+    /*
+       Main UI images:
+       Banner + Feature + Verified Badge only.
 
-    document
-        .querySelectorAll(
-            "#scurbHomePage .scurbBannerImg[data-src]"
-        )
-        .forEach(img => {
-            loadCachedImage(
-                img,
-                ".scurbBannerItem"
-            );
-        });
+       Service images are NOT handled here anymore.
+    */
 
-    document
-        .querySelectorAll(
-            "#scurbHomePage .scurbServiceImg[data-src]"
-        )
-        .forEach(img => {
-            loadCachedImage(
-                img,
-                ".scurbServiceImageBox"
-            );
-        });
+    window.loadScurbHomeImages = function () {
 
-    document
-        .querySelectorAll(
-            "#scurbHomePage .scurbFeatureImg[data-src]"
-        )
-        .forEach(img => {
-            loadCachedImage(
-                img,
-                ".scurbFeatureItem"
-            );
-        });
+        /* BANNER IMAGES */
+        document
+            .querySelectorAll(
+                "#scurbHomePage .scurbBannerImg[data-src]"
+            )
+            .forEach(img => {
+                loadCachedImage(
+                    img,
+                    ".scurbBannerItem"
+                );
+            });
 
-    document
-        .querySelectorAll(
-            "#scurbHomePage .verifiedBadgeImg[data-src]"
-        )
-        .forEach(img => {
-            loadCachedImage(
-                img,
-                ".verifiedBadge"
-            );
-        });
-};
+
+        /* FEATURE IMAGES */
+        document
+            .querySelectorAll(
+                "#scurbHomePage .scurbFeatureImg[data-src]"
+            )
+            .forEach(img => {
+                loadCachedImage(
+                    img,
+                    ".scurbFeatureItem"
+                );
+            });
+
+
+        /* VERIFIED BADGE IMAGES */
+        document
+            .querySelectorAll(
+                "#scurbHomePage .verifiedBadgeImg[data-src]"
+            )
+            .forEach(img => {
+                loadCachedImage(
+                    img,
+                    ".verifiedBadge"
+                );
+            });
+
+    };
 
 });
