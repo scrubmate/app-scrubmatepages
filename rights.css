@@ -1,35 +1,33 @@
 /* =========================
-   SCRUB MATE BENEFITS
+   ALL CLEANING NEEDS GRID
 ========================= */
 
-.scrubBenefits{
+.scrubNeedsGrid{
     width:min(1080px, calc(100% - 40px));
-    margin:25px auto 70px;
+
+    margin:5px auto 80px;
 
     display:grid;
-    grid-template-columns:repeat(3, 1fr);
-    gap:20px;
+    grid-template-columns:repeat(4, 1fr);
+
+    column-gap:55px;
+    row-gap:75px;
 }
 
 
 /* =========================
-   CARD
+   EACH SERVICE
 ========================= */
 
-.scrubBenefitCard{
+.scrubNeedItem{
     width:100%;
-    min-width:0;
-    min-height:315px;
-
-    background:#e4f8f8;
-
-    border-radius:30px;
 
     display:flex;
     flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
 
     position:relative;
-    overflow:visible;
 }
 
 
@@ -37,7 +35,7 @@
    IMAGE
 ========================= */
 
-.scrubBenefitImage{
+.scrubNeedImage{
     width:100%;
     height:190px;
 
@@ -49,113 +47,59 @@
 }
 
 
-.scrubBenefitImage img{
+.scrubNeedImage img{
     display:block;
 
     width:auto;
-    max-width:94%;
-    height:230px;
+    max-width:100%;
+    height:185px;
 
     object-fit:contain;
 
-    transform:translateY(-22px);
-
     position:relative;
-
-    /* IMAGE BELOW LINE */
-    z-index:2;
+    z-index:1;
 }
 
 
 /* =========================
-   BLACK LINE
-   CARD 1 + CARD 2 ONLY
+   PRICE BADGE
 ========================= */
 
-.scrubImageLine{
-    position:absolute;
-
-    left:50%;
-    bottom:22px;
-
-    transform:translateX(-50%);
-
-    width:145px;
-    height:1.5px;
-
-    background:#111;
-
-    border-radius:20px;
-
-    /* ABOVE IMAGE / WHITE GAP */
+.scrubNeedPrice{
+    position:relative;
     z-index:5;
 
-    pointer-events:none;
-}
+    /* IMAGE KI CLOSE */
+    margin-top:-6px;
 
+    /* COMPACT PRICE BOX */
+    min-width:72px;
+    height:34px;
 
-/* =========================
-   FIRST CARD LINE ONLY
-   LITTLE MORE UP
-========================= */
+    padding:0 11px;
 
-.scrubBenefitCard:first-child .scrubImageLine{
-    bottom:30px;
-}
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
+    background:#ffdf21;
 
-/* =========================
-   THIRD IMAGE ONLY
-========================= */
+    border:2px solid #e2c600;
 
-.scrubDoorstepCard .scrubBenefitImage img{
-    height:250px;
-    max-width:98%;
-
-    /* BIGGER + LOWER */
-    transform:translateY(-8px);
-
-    position:relative;
-    z-index:2;
-}
-
-
-/* =========================
-   CONTENT
-========================= */
-
-.scrubBenefitContent{
-    width:100%;
-
-    padding:5px 22px 16px;
-
-    text-align:center;
-}
-
-
-.scrubBenefitContent h3{
-    margin:0 auto 8px;
+    border-radius:18px;
 
     color:#111;
 
-    font-size:22px;
-    font-weight:800;
-    line-height:1.15;
+    font-family:"Manrope", sans-serif;
 
-    letter-spacing:-0.6px;
-}
+    font-size:23px;
+    font-weight:900;
 
+    line-height:1;
 
-.scrubBenefitContent p{
-    max-width:285px;
+    letter-spacing:-1px;
 
-    margin:0 auto;
-
-    color:#475556;
-
-    font-size:15px;
-    font-weight:600;
-    line-height:1.4;
+    box-sizing:border-box;
 }
 
 
@@ -165,287 +109,138 @@
 
 @media(max-width:900px){
 
-    .scrubBenefits{
+    .scrubNeedsGrid{
         width:calc(100% - 30px);
-        gap:16px;
+
+        column-gap:28px;
+        row-gap:60px;
     }
 
 
-    .scrubBenefitCard{
-        min-height:305px;
-
-        border-radius:25px;
+    .scrubNeedImage{
+        height:165px;
     }
 
 
-    .scrubBenefitImage{
-        height:180px;
+    .scrubNeedImage img{
+        height:160px;
+        max-width:100%;
     }
 
 
-    .scrubBenefitImage img{
-        max-width:94%;
+    .scrubNeedPrice{
+        margin-top:-5px;
 
-        height:215px;
+        min-width:65px;
+        height:31px;
 
-        transform:translateY(-20px);
+        padding:0 10px;
 
-        position:relative;
-        z-index:2;
-    }
+        font-size:20px;
 
-
-    .scrubImageLine{
-        width:130px;
-
-        bottom:20px;
-
-        z-index:5;
-    }
-
-
-    /* FIRST CARD LINE ONLY */
-
-    .scrubBenefitCard:first-child .scrubImageLine{
-        bottom:28px;
-    }
-
-
-    /* THIRD IMAGE */
-
-    .scrubDoorstepCard .scrubBenefitImage img{
-        height:235px;
-        max-width:98%;
-
-        transform:translateY(-7px);
-    }
-
-
-    .scrubBenefitContent{
-        padding:4px 18px 15px;
-    }
-
-
-    .scrubBenefitContent h3{
-        font-size:19px;
-
-        margin-bottom:7px;
-    }
-
-
-    .scrubBenefitContent p{
-        font-size:14px;
-
-        line-height:1.4;
+        border-width:2px;
+        border-radius:16px;
     }
 }
 
 
 /* =========================
    MOBILE
+   MINIMUM 2 EACH ROW
 ========================= */
 
 @media(max-width:700px){
 
-    .scrubBenefits{
-        width:calc(100% - 32px);
+    .scrubNeedsGrid{
+        width:calc(100% - 24px);
 
-        margin:30px auto 50px;
+        margin:5px auto 55px;
 
-        display:grid;
-        grid-template-columns:1fr;
+        grid-template-columns:repeat(2, minmax(0, 1fr));
 
-        /* CARDS / IMAGES DON'T MIX */
-        gap:65px;
+        column-gap:18px;
+        row-gap:48px;
     }
 
 
-    .scrubBenefitCard{
+    .scrubNeedImage{
         width:100%;
-        max-width:390px;
-
-        min-height:310px;
-
-        margin:0 auto;
-
-        border-radius:26px;
-
-        background:#e4f8f8;
-
-        overflow:visible;
+        height:145px;
     }
 
 
-    .scrubBenefitImage{
-        height:185px;
-
-        position:relative;
-    }
-
-
-    .scrubBenefitImage img{
+    .scrubNeedImage img{
         width:auto;
-
-        max-width:95%;
-        height:225px;
+        max-width:100%;
+        height:140px;
 
         object-fit:contain;
-
-        transform:translateY(-20px);
-
-        position:relative;
-        z-index:2;
     }
 
 
-    /* =========================
-       BLACK LINE
-    ========================= */
+    .scrubNeedPrice{
+        margin-top:-5px;
 
-    .scrubImageLine{
-        width:140px;
-        height:1.5px;
+        min-width:60px;
+        height:29px;
 
-        bottom:21px;
+        padding:0 9px;
 
-        background:#111;
+        border-width:1.5px;
+        border-radius:15px;
 
-        z-index:5;
-    }
+        font-size:18px;
 
+        line-height:1;
 
-    /* 1ST CARD LINE ONLY - MORE UP */
-
-    .scrubBenefitCard:first-child .scrubImageLine{
-        bottom:29px;
-    }
-
-
-    /* =========================
-       THIRD IMAGE
-       BIGGER + LOWER
-    ========================= */
-
-    .scrubDoorstepCard .scrubBenefitImage img{
-        height:250px;
-        max-width:100%;
-
-        transform:translateY(-5px);
-
-        position:relative;
-        z-index:2;
-    }
-
-
-    .scrubBenefitContent{
-        padding:4px 18px 15px;
-    }
-
-
-    .scrubBenefitContent h3{
-        margin:0 0 7px;
-
-        font-size:20px;
-        font-weight:800;
-        line-height:1.15;
-    }
-
-
-    .scrubBenefitContent p{
-        max-width:310px;
-
-        margin:0 auto;
-
-        font-size:14px;
-        font-weight:600;
-        line-height:1.4;
+        letter-spacing:-0.7px;
     }
 }
 
 
 /* =========================
    SMALL MOBILE
+   STILL 2 EACH ROW
 ========================= */
 
 @media(max-width:390px){
 
-    .scrubBenefits{
-        width:calc(100% - 26px);
+    .scrubNeedsGrid{
+        width:calc(100% - 18px);
 
-        gap:60px;
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+
+        column-gap:10px;
+        row-gap:42px;
     }
 
 
-    .scrubBenefitCard{
-        min-height:300px;
-
-        border-radius:24px;
+    .scrubNeedImage{
+        height:130px;
     }
 
 
-    .scrubBenefitImage{
-        height:180px;
-    }
-
-
-    .scrubBenefitImage img{
-        max-width:96%;
-
-        height:218px;
-
-        transform:translateY(-19px);
-
-        position:relative;
-        z-index:2;
-    }
-
-
-    .scrubImageLine{
-        width:125px;
-
-        bottom:20px;
-
-        z-index:5;
-    }
-
-
-    /* 1ST CARD LINE ONLY - MORE UP */
-
-    .scrubBenefitCard:first-child .scrubImageLine{
-        bottom:28px;
-    }
-
-
-    /* =========================
-       THIRD IMAGE
-    ========================= */
-
-    .scrubDoorstepCard .scrubBenefitImage img{
-        height:242px;
+    .scrubNeedImage img{
         max-width:100%;
-
-        transform:translateY(-4px);
-
-        position:relative;
-        z-index:2;
+        height:126px;
     }
 
 
-    .scrubBenefitContent{
-        padding:3px 15px 14px;
-    }
+    .scrubNeedPrice{
+        margin-top:-4px;
 
+        min-width:56px;
+        height:27px;
 
-    .scrubBenefitContent h3{
-        font-size:19px;
+        padding:0 8px;
 
-        margin-bottom:6px;
-    }
+        border-width:1.5px;
+        border-radius:14px;
 
+        font-size:17px;
 
-    .scrubBenefitContent p{
-        font-size:13.5px;
+        line-height:1;
 
-        line-height:1.4;
+        letter-spacing:-0.5px;
     }
 }
