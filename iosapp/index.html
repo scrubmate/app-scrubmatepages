@@ -1305,6 +1305,78 @@ html.scrubOutsideServiceArea
 
 </style>
 
+
+<style id="scrubmate-login-image-debug">
+.service-card{ position:relative; }
+.scrub-img-debug{
+  position:absolute;
+  left:4px;
+  right:4px;
+  bottom:4px;
+  z-index:999;
+  padding:4px 5px;
+  border-radius:6px;
+  background:rgba(190,0,0,.88);
+  color:#fff;
+  font:700 9px/1.2 Arial,sans-serif;
+  text-align:center;
+  pointer-events:none;
+  display:none;
+}
+.service-card.scrub-img-has-error .scrub-img-debug{ display:block; }
+</style>
+
+
+<script id="scrubmate-login-image-debug-js">
+function scrubLoginImageLoaded(img, file){
+  const card = img.closest(".service-card");
+  if(!card) return;
+
+  // If website fallback loaded after local bundle failed, keep a visible status.
+  if(img.dataset.localFailed === "1"){
+    card.classList.add("scrub-img-has-error");
+    let badge = card.querySelector(".scrub-img-debug");
+    if(!badge){
+      badge = document.createElement("div");
+      badge.className = "scrub-img-debug";
+      card.appendChild(badge);
+    }
+    badge.textContent = "LOCAL FAIL • WEB OK • " + file;
+    console.log("⚠️ LOCAL FAIL, WEBSITE OK:", file, img.src);
+  }else{
+    card.classList.remove("scrub-img-has-error");
+    console.log("✅ LOCAL IMAGE OK:", file, img.src);
+  }
+}
+
+function scrubLoginImageError(img, file){
+  const card = img.closest(".service-card");
+  if(!card) return;
+
+  let badge = card.querySelector(".scrub-img-debug");
+  if(!badge){
+    badge = document.createElement("div");
+    badge.className = "scrub-img-debug";
+    card.appendChild(badge);
+  }
+  card.classList.add("scrub-img-has-error");
+
+  // First failure = scrubmate-local bundle image failed. Try website image.
+  if(img.dataset.localFailed !== "1"){
+    img.dataset.localFailed = "1";
+    badge.textContent = "LOCAL FAIL • " + file;
+    console.error("❌ LOCAL IMAGE FAIL:", file, img.src);
+    img.src = "loginimages/" + file;
+    return;
+  }
+
+  // Second failure = website fallback also failed.
+  badge.textContent = "LOCAL + WEB FAIL • " + file;
+  console.error("❌ LOCAL + WEBSITE IMAGE FAIL:", file, img.src);
+  img.onerror = null;
+}
+</script>
+
 </head>
 
 <body>
@@ -1351,49 +1423,49 @@ html.scrubOutsideServiceArea
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/1.png" onload="console.log('✅ IMAGE CAME: 1.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 1.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 1.png');};this.src='loginimages/1.png';"
+               src="scrubmate-local://loginimages/1.png" onload="scrubLoginImageLoaded(this, '1.png')" onerror="scrubLoginImageError(this, '1.png')"
                alt="Cleaning service">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/2.png" onload="console.log('✅ IMAGE CAME: 2.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 2.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 2.png');};this.src='loginimages/2.png';"
+               src="scrubmate-local://loginimages/2.png" onload="scrubLoginImageLoaded(this, '2.png')" onerror="scrubLoginImageError(this, '2.png')"
                alt="Window cleaning">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/3.png" onload="console.log('✅ IMAGE CAME: 3.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 3.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 3.png');};this.src='loginimages/3.png';"
+               src="scrubmate-local://loginimages/3.png" onload="scrubLoginImageLoaded(this, '3.png')" onerror="scrubLoginImageError(this, '3.png')"
                alt="Kitchen cleaning">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png" onload="console.log('✅ IMAGE CAME: 4.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 4.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 4.png');};this.src='loginimages/4.png';"
+               src="scrubmate-local://loginimages/4.png" onload="scrubLoginImageLoaded(this, '4.png')" onerror="scrubLoginImageError(this, '4.png')"
                alt="Home cleaning">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/5.png" onload="console.log('✅ IMAGE CAME: 5.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 5.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 5.png');};this.src='loginimages/5.png';"
+               src="scrubmate-local://loginimages/5.png" onload="scrubLoginImageLoaded(this, '5.png')" onerror="scrubLoginImageError(this, '5.png')"
                alt="Bathroom cleaning">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png" onload="console.log('✅ IMAGE CAME: 4.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 4.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 4.png');};this.src='loginimages/4.png';"
+               src="scrubmate-local://loginimages/4.png" onload="scrubLoginImageLoaded(this, '4.png')" onerror="scrubLoginImageError(this, '4.png')"
                alt="Cooking service">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/1.png" onload="console.log('✅ IMAGE CAME: 1.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 1.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 1.png');};this.src='loginimages/1.png';"
+               src="scrubmate-local://loginimages/1.png" onload="scrubLoginImageLoaded(this, '1.png')" onerror="scrubLoginImageError(this, '1.png')"
                alt="Ironing service">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/2.png" onload="console.log('✅ IMAGE CAME: 2.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 2.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 2.png');};this.src='loginimages/2.png';"
+               src="scrubmate-local://loginimages/2.png" onload="scrubLoginImageLoaded(this, '2.png')" onerror="scrubLoginImageError(this, '2.png')"
                alt="Deep cleaning">
         </div>
 
@@ -1401,49 +1473,49 @@ html.scrubOutsideServiceArea
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png" onload="console.log('✅ IMAGE CAME: 4.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 4.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 4.png');};this.src='loginimages/4.png';"
+               src="scrubmate-local://loginimages/4.png" onload="scrubLoginImageLoaded(this, '4.png')" onerror="scrubLoginImageError(this, '4.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/5.png" onload="console.log('✅ IMAGE CAME: 5.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 5.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 5.png');};this.src='loginimages/5.png';"
+               src="scrubmate-local://loginimages/5.png" onload="scrubLoginImageLoaded(this, '5.png')" onerror="scrubLoginImageError(this, '5.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png" onload="console.log('✅ IMAGE CAME: 4.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 4.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 4.png');};this.src='loginimages/4.png';"
+               src="scrubmate-local://loginimages/4.png" onload="scrubLoginImageLoaded(this, '4.png')" onerror="scrubLoginImageError(this, '4.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/3.png" onload="console.log('✅ IMAGE CAME: 3.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 3.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 3.png');};this.src='loginimages/3.png';"
+               src="scrubmate-local://loginimages/3.png" onload="scrubLoginImageLoaded(this, '3.png')" onerror="scrubLoginImageError(this, '3.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/2.png" onload="console.log('✅ IMAGE CAME: 2.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 2.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 2.png');};this.src='loginimages/2.png';"
+               src="scrubmate-local://loginimages/2.png" onload="scrubLoginImageLoaded(this, '2.png')" onerror="scrubLoginImageError(this, '2.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/1.png" onload="console.log('✅ IMAGE CAME: 1.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 1.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 1.png');};this.src='loginimages/1.png';"
+               src="scrubmate-local://loginimages/1.png" onload="scrubLoginImageLoaded(this, '1.png')" onerror="scrubLoginImageError(this, '1.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/5.png" onload="console.log('✅ IMAGE CAME: 5.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 5.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 5.png');};this.src='loginimages/5.png';"
+               src="scrubmate-local://loginimages/5.png" onload="scrubLoginImageLoaded(this, '5.png')" onerror="scrubLoginImageError(this, '5.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png" onload="console.log('✅ IMAGE CAME: 4.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 4.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 4.png');};this.src='loginimages/4.png';"
+               src="scrubmate-local://loginimages/4.png" onload="scrubLoginImageLoaded(this, '4.png')" onerror="scrubLoginImageError(this, '4.png')"
                alt="">
         </div>
 
@@ -1457,49 +1529,49 @@ html.scrubOutsideServiceArea
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/3.png" onload="console.log('✅ IMAGE CAME: 3.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 3.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 3.png');};this.src='loginimages/3.png';"
+               src="scrubmate-local://loginimages/3.png" onload="scrubLoginImageLoaded(this, '3.png')" onerror="scrubLoginImageError(this, '3.png')"
                alt="Bathroom cleaning">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png" onload="console.log('✅ IMAGE CAME: 4.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 4.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 4.png');};this.src='loginimages/4.png';"
+               src="scrubmate-local://loginimages/4.png" onload="scrubLoginImageLoaded(this, '4.png')" onerror="scrubLoginImageError(this, '4.png')"
                alt="Home cleaning">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/5.png" onload="console.log('✅ IMAGE CAME: 5.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 5.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 5.png');};this.src='loginimages/5.png';"
+               src="scrubmate-local://loginimages/5.png" onload="scrubLoginImageLoaded(this, '5.png')" onerror="scrubLoginImageError(this, '5.png')"
                alt="Deep cleaning">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/2.png" onload="console.log('✅ IMAGE CAME: 2.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 2.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 2.png');};this.src='loginimages/2.png';"
+               src="scrubmate-local://loginimages/2.png" onload="scrubLoginImageLoaded(this, '2.png')" onerror="scrubLoginImageError(this, '2.png')"
                alt="Cooking service">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/1.png" onload="console.log('✅ IMAGE CAME: 1.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 1.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 1.png');};this.src='loginimages/1.png';"
+               src="scrubmate-local://loginimages/1.png" onload="scrubLoginImageLoaded(this, '1.png')" onerror="scrubLoginImageError(this, '1.png')"
                alt="Kitchen cleaning">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png" onload="console.log('✅ IMAGE CAME: 4.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 4.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 4.png');};this.src='loginimages/4.png';"
+               src="scrubmate-local://loginimages/4.png" onload="scrubLoginImageLoaded(this, '4.png')" onerror="scrubLoginImageError(this, '4.png')"
                alt="Cleaning service">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/1.png" onload="console.log('✅ IMAGE CAME: 1.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 1.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 1.png');};this.src='loginimages/1.png';"
+               src="scrubmate-local://loginimages/1.png" onload="scrubLoginImageLoaded(this, '1.png')" onerror="scrubLoginImageError(this, '1.png')"
                alt="Ironing service">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/5.png" onload="console.log('✅ IMAGE CAME: 5.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 5.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 5.png');};this.src='loginimages/5.png';"
+               src="scrubmate-local://loginimages/5.png" onload="scrubLoginImageLoaded(this, '5.png')" onerror="scrubLoginImageError(this, '5.png')"
                alt="Window cleaning">
         </div>
 
@@ -1507,49 +1579,49 @@ html.scrubOutsideServiceArea
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png" onload="console.log('✅ IMAGE CAME: 4.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 4.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 4.png');};this.src='loginimages/4.png';"
+               src="scrubmate-local://loginimages/4.png" onload="scrubLoginImageLoaded(this, '4.png')" onerror="scrubLoginImageError(this, '4.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/2.png" onload="console.log('✅ IMAGE CAME: 2.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 2.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 2.png');};this.src='loginimages/2.png';"
+               src="scrubmate-local://loginimages/2.png" onload="scrubLoginImageLoaded(this, '2.png')" onerror="scrubLoginImageError(this, '2.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png" onload="console.log('✅ IMAGE CAME: 4.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 4.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 4.png');};this.src='loginimages/4.png';"
+               src="scrubmate-local://loginimages/4.png" onload="scrubLoginImageLoaded(this, '4.png')" onerror="scrubLoginImageError(this, '4.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/5.png" onload="console.log('✅ IMAGE CAME: 5.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 5.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 5.png');};this.src='loginimages/5.png';"
+               src="scrubmate-local://loginimages/5.png" onload="scrubLoginImageLoaded(this, '5.png')" onerror="scrubLoginImageError(this, '5.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png" onload="console.log('✅ IMAGE CAME: 4.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 4.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 4.png');};this.src='loginimages/4.png';"
+               src="scrubmate-local://loginimages/4.png" onload="scrubLoginImageLoaded(this, '4.png')" onerror="scrubLoginImageError(this, '4.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/3.png" onload="console.log('✅ IMAGE CAME: 3.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 3.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 3.png');};this.src='loginimages/3.png';"
+               src="scrubmate-local://loginimages/3.png" onload="scrubLoginImageLoaded(this, '3.png')" onerror="scrubLoginImageError(this, '3.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/2.png" onload="console.log('✅ IMAGE CAME: 2.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 2.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 2.png');};this.src='loginimages/2.png';"
+               src="scrubmate-local://loginimages/2.png" onload="scrubLoginImageLoaded(this, '2.png')" onerror="scrubLoginImageError(this, '2.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/1.png" onload="console.log('✅ IMAGE CAME: 1.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 1.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 1.png');};this.src='loginimages/1.png';"
+               src="scrubmate-local://loginimages/1.png" onload="scrubLoginImageLoaded(this, '1.png')" onerror="scrubLoginImageError(this, '1.png')"
                alt="">
         </div>
 
@@ -1563,49 +1635,49 @@ html.scrubOutsideServiceArea
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png" onload="console.log('✅ IMAGE CAME: 4.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 4.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 4.png');};this.src='loginimages/4.png';"
+               src="scrubmate-local://loginimages/4.png" onload="scrubLoginImageLoaded(this, '4.png')" onerror="scrubLoginImageError(this, '4.png')"
                alt="Cooking service">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/3.png" onload="console.log('✅ IMAGE CAME: 3.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 3.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 3.png');};this.src='loginimages/3.png';"
+               src="scrubmate-local://loginimages/3.png" onload="scrubLoginImageLoaded(this, '3.png')" onerror="scrubLoginImageError(this, '3.png')"
                alt="Window cleaning">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/2.png" onload="console.log('✅ IMAGE CAME: 2.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 2.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 2.png');};this.src='loginimages/2.png';"
+               src="scrubmate-local://loginimages/2.png" onload="scrubLoginImageLoaded(this, '2.png')" onerror="scrubLoginImageError(this, '2.png')"
                alt="Ironing service">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/1.png" onload="console.log('✅ IMAGE CAME: 1.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 1.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 1.png');};this.src='loginimages/1.png';"
+               src="scrubmate-local://loginimages/1.png" onload="scrubLoginImageLoaded(this, '1.png')" onerror="scrubLoginImageError(this, '1.png')"
                alt="Cooking service">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/5.png" onload="console.log('✅ IMAGE CAME: 5.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 5.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 5.png');};this.src='loginimages/5.png';"
+               src="scrubmate-local://loginimages/5.png" onload="scrubLoginImageLoaded(this, '5.png')" onerror="scrubLoginImageError(this, '5.png')"
                alt="Cleaning service">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/2.png" onload="console.log('✅ IMAGE CAME: 2.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 2.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 2.png');};this.src='loginimages/2.png';"
+               src="scrubmate-local://loginimages/2.png" onload="scrubLoginImageLoaded(this, '2.png')" onerror="scrubLoginImageError(this, '2.png')"
                alt="Deep cleaning">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png" onload="console.log('✅ IMAGE CAME: 4.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 4.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 4.png');};this.src='loginimages/4.png';"
+               src="scrubmate-local://loginimages/4.png" onload="scrubLoginImageLoaded(this, '4.png')" onerror="scrubLoginImageError(this, '4.png')"
                alt="Kitchen cleaning">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/1.png" onload="console.log('✅ IMAGE CAME: 1.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 1.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 1.png');};this.src='loginimages/1.png';"
+               src="scrubmate-local://loginimages/1.png" onload="scrubLoginImageLoaded(this, '1.png')" onerror="scrubLoginImageError(this, '1.png')"
                alt="Bathroom cleaning">
         </div>
 
@@ -1613,49 +1685,49 @@ html.scrubOutsideServiceArea
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png" onload="console.log('✅ IMAGE CAME: 4.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 4.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 4.png');};this.src='loginimages/4.png';"
+               src="scrubmate-local://loginimages/4.png" onload="scrubLoginImageLoaded(this, '4.png')" onerror="scrubLoginImageError(this, '4.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/5.png" onload="console.log('✅ IMAGE CAME: 5.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 5.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 5.png');};this.src='loginimages/5.png';"
+               src="scrubmate-local://loginimages/5.png" onload="scrubLoginImageLoaded(this, '5.png')" onerror="scrubLoginImageError(this, '5.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/2.png" onload="console.log('✅ IMAGE CAME: 2.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 2.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 2.png');};this.src='loginimages/2.png';"
+               src="scrubmate-local://loginimages/2.png" onload="scrubLoginImageLoaded(this, '2.png')" onerror="scrubLoginImageError(this, '2.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png" onload="console.log('✅ IMAGE CAME: 4.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 4.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 4.png');};this.src='loginimages/4.png';"
+               src="scrubmate-local://loginimages/4.png" onload="scrubLoginImageLoaded(this, '4.png')" onerror="scrubLoginImageError(this, '4.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/2.png" onload="console.log('✅ IMAGE CAME: 2.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 2.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 2.png');};this.src='loginimages/2.png';"
+               src="scrubmate-local://loginimages/2.png" onload="scrubLoginImageLoaded(this, '2.png')" onerror="scrubLoginImageError(this, '2.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/1.png" onload="console.log('✅ IMAGE CAME: 1.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 1.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 1.png');};this.src='loginimages/1.png';"
+               src="scrubmate-local://loginimages/1.png" onload="scrubLoginImageLoaded(this, '1.png')" onerror="scrubLoginImageError(this, '1.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/5.png" onload="console.log('✅ IMAGE CAME: 5.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 5.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 5.png');};this.src='loginimages/5.png';"
+               src="scrubmate-local://loginimages/5.png" onload="scrubLoginImageLoaded(this, '5.png')" onerror="scrubLoginImageError(this, '5.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/3.png" onload="console.log('✅ IMAGE CAME: 3.png → ' + this.src);" onerror="console.log('❌ LOCAL IMAGE NOT COMING: 3.png → trying website fallback');this.onerror=function(){console.log('❌ WEBSITE IMAGE ALSO NOT COMING: 3.png');};this.src='loginimages/3.png';"
+               src="scrubmate-local://loginimages/3.png" onload="scrubLoginImageLoaded(this, '3.png')" onerror="scrubLoginImageError(this, '3.png')"
                alt="">
         </div>
 
