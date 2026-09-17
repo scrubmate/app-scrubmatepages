@@ -768,11 +768,6 @@ OUR SERVICES
   height:100%;
   display:block;
   object-fit:cover;
-  opacity:0;
-  transition:opacity .35s ease;
-}
-
-.service-img.loaded{
   opacity:1;
 }
 
