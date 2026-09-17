@@ -17,7 +17,19 @@
   background:#ffffff;
   overflow:hidden;
 }
+.location-image{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  object-position:center;
+  user-select:none;
+  pointer-events:none;
+  -webkit-user-drag:none;
 
+  opacity:1 !important;
+  visibility:visible !important;
+}
 /* Later JavaScript will add this class */
 
 .location-page.show{
