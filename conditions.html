@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Terms & Conditions - Scrub Mate</title>
+
+<link rel="icon" type="image/png" href="logo.png">
+
+<!-- GOOGLE FONTS -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Merienda:wght@700;800&display=swap"
+      rel="stylesheet">
+
+<style>
+
+/* =========================
+   RESET
+========================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    width:100%;
+    min-height:100vh;
+
+    font-family:"Manrope", sans-serif;
+
+    background:#e4f8f8;
+    color:#111;
+}
+
+
+/* =========================
+   STICKY NAVBAR
+========================= */
+
+.termsNav{
+    width:100%;
+    height:78px;
+
+    background:#fff;
+    border-bottom:1px solid #eeeeee;
+
+    display:flex;
+    align-items:center;
+
+    position:sticky;
+    top:0;
+
+    z-index:1000;
+}
+
+.termsNavInner{
+    width:min(1120px, calc(100% - 50px));
+    height:100%;
+
+    margin:0 auto;
+
+    display:flex;
+    align-items:center;
+}
+
+
+/* =========================
+   LOGO
+========================= */
+
+.termsNavLogo{
+    display:inline-block;
+
+    font-family:"Merienda", cursive;
+
+    font-size:30px;
+    font-weight:800;
+    line-height:1;
+
+    color:#14b9bb;
+
+    text-decoration:none;
+
+    transform:rotate(-6deg);
+    transform-origin:center;
+
+    transition:transform .18s ease;
+}
+
+.termsNavLogo:hover{
+    transform:rotate(-6deg) scale(1.03);
+}
+
+.termsNavLogo:active{
+    transform:rotate(-6deg) scale(.97);
+}
+
+
+/* =========================
+   MAIN PAGE
+========================= */
+
+.termsPage{
+    width:100%;
+
+    min-height:calc(100vh - 78px);
+
+    padding-bottom:80px;
+
+    background:#e4f8f8;
+
+    position:relative;
+
+    overflow:hidden;
+}
+
+
+/* =========================
+   HEADING
+========================= */
+
+.termsHero{
+    width:100%;
+
+    padding:65px 20px 40px;
+
+    text-align:center;
+
+    position:relative;
+    z-index:5;
+}
+
+.termsHero h1{
+    margin:0;
+
+    color:#111;
+
+    font-size:42px;
+    font-weight:800;
+
+    line-height:1.15;
+
+    letter-spacing:-1.4px;
+}
+
+
+/* =========================
+   LIGHT BACKGROUND IMAGES
+========================= */
+
+.termsDecor{
+    position:absolute;
+
+    display:block;
+
+    width:auto;
+
+    object-fit:contain;
+
+    opacity:0.05;
+
+    pointer-events:none;
+    user-select:none;
+
+    z-index:1;
+}
+
+.termsDecorOne{
+    width:330px;
+
+    top:160px;
+    right:-50px;
+
+    transform:rotate(-8deg);
+}
+
+.termsDecorTwo{
+    width:300px;
+
+    top:850px;
+    left:-60px;
+
+    transform:rotate(7deg);
+}
+
+.termsDecorThree{
+    width:330px;
+
+    top:1550px;
+    right:-70px;
+
+    transform:rotate(-5deg);
+}
+
+
+/* =========================
+   CONTENT
+========================= */
+
+.termsContent{
+    width:min(900px, calc(100% - 40px));
+
+    margin:0 auto;
+
+    position:relative;
+    z-index:5;
+}
+
+
+/* =========================
+   INTRO
+========================= */
+
+.termsIntro{
+    margin:0 0 45px;
+
+    color:#334344;
+
+    font-size:16px;
+    font-weight:500;
+
+    line-height:1.8;
+}
+
+.termsHighlight{
+    color:#079fa2;
+    font-weight:800;
+}
+
+
+/* =========================
+   EACH POINT
+========================= */
+
+.termsPoint{
+    margin-bottom:38px;
+}
+
+.termsPoint h2{
+    margin:0 0 12px;
+
+    color:#111;
+
+    font-size:21px;
+    font-weight:800;
+
+    line-height:1.3;
+
+    letter-spacing:-0.4px;
+}
+
+.termsPoint p{
+    margin:0;
+
+    color:#455657;
+
+    font-size:15px;
+    font-weight:500;
+
+    line-height:1.8;
+}
+
+
+/* =========================
+   LIST
+========================= */
+
+.termsList{
+    margin:14px 0 0;
+
+    padding-left:21px;
+}
+
+.termsList li{
+    margin-bottom:10px;
+
+    color:#455657;
+
+    font-size:15px;
+    font-weight:500;
+
+    line-height:1.7;
+}
+
+.termsList li:last-child{
+    margin-bottom:0;
+}
+
+
+/* =========================
+   EMAIL
+========================= */
+
+.termsEmail{
+    color:#079fa2;
+
+    font-weight:700;
+
+    text-decoration:none;
+}
+
+.termsEmail:hover{
+    text-decoration:underline;
+}
+
+
+/* =========================
+   COMPANY DETAILS
+========================= */
+
+.termsCompany{
+    margin-top:55px;
+
+    padding-top:28px;
+
+    border-top:1px solid rgba(7,159,162,.18);
+}
+
+.termsCompanyTitle{
+    margin-bottom:9px;
+
+    color:#079fa2;
+
+    font-size:18px;
+    font-weight:800;
+}
+
+.termsCompany p{
+    margin:0 0 5px;
+
+    color:#455657;
+
+    font-size:14px;
+    font-weight:600;
+
+    line-height:1.6;
+}
+
+
+/* =========================
+   BOTTOM IMAGES
+========================= */
+
+.termsCompanyImages{
+    width:100%;
+
+    margin-top:35px;
+
+    display:grid;
+
+    grid-template-columns:repeat(4, 1fr);
+
+    align-items:end;
+
+    gap:25px;
+}
+
+.termsCompanyImage{
+    width:100%;
+    height:145px;
+
+    display:flex;
+
+    align-items:flex-end;
+    justify-content:center;
+}
+
+.termsCompanyImage img{
+    display:block;
+
+    width:auto;
+    max-width:100%;
+
+    height:140px;
+
+    object-fit:contain;
+}
+
+
+/* =========================
+   TABLET
+========================= */
+
+@media(max-width:900px){
+
+    .termsDecorOne{
+        width:280px;
+        right:-80px;
+    }
+
+    .termsDecorTwo{
+        width:260px;
+        left:-80px;
+    }
+
+    .termsDecorThree{
+        width:290px;
+        right:-90px;
+    }
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:700px){
+
+    .termsNav{
+        height:68px;
+    }
+
+    .termsNavInner{
+        width:100%;
+
+        margin:0;
+
+        padding:0 18px;
+    }
+
+    .termsNavLogo{
+        font-size:27px;
+    }
+
+
+    .termsPage{
+        min-height:calc(100vh - 68px);
+
+        padding-bottom:60px;
+    }
+
+
+    .termsHero{
+        padding:48px 15px 36px;
+    }
+
+    .termsHero h1{
+        font-size:31px;
+
+        letter-spacing:-0.8px;
+    }
+
+
+    .termsContent{
+        width:calc(100% - 36px);
+    }
+
+
+    .termsIntro{
+        margin-bottom:36px;
+
+        font-size:14px;
+
+        line-height:1.75;
+    }
+
+
+    .termsPoint{
+        margin-bottom:32px;
+    }
+
+    .termsPoint h2{
+        margin-bottom:10px;
+
+        font-size:18px;
+    }
+
+    .termsPoint p{
+        font-size:14px;
+
+        line-height:1.75;
+    }
+
+
+    .termsList{
+        margin-top:12px;
+
+        padding-left:19px;
+    }
+
+    .termsList li{
+        margin-bottom:9px;
+
+        font-size:14px;
+
+        line-height:1.7;
+    }
+
+
+    /* LIGHT IMAGES */
+
+    .termsDecor{
+        opacity:0.045;
+    }
+
+    .termsDecorOne{
+        width:220px;
+
+        top:170px;
+        right:-75px;
+    }
+
+    .termsDecorTwo{
+        width:210px;
+
+        top:950px;
+        left:-80px;
+    }
+
+    .termsDecorThree{
+        width:230px;
+
+        top:1700px;
+        right:-90px;
+    }
+
+
+    /* COMPANY */
+
+    .termsCompany{
+        margin-top:45px;
+
+        padding-top:24px;
+    }
+
+    .termsCompanyTitle{
+        font-size:16px;
+    }
+
+    .termsCompany p{
+        font-size:13px;
+    }
+
+
+    /* BOTTOM IMAGES */
+
+    .termsCompanyImages{
+        margin-top:28px;
+
+        grid-template-columns:repeat(4, minmax(0,1fr));
+
+        gap:8px;
+    }
+
+    .termsCompanyImage{
+        height:90px;
+    }
+
+    .termsCompanyImage img{
+        width:100%;
+
+        max-width:100%;
+
+        height:88px;
+
+        object-fit:contain;
+    }
+}
+
+
+/* =========================
+   SMALL MOBILE
+========================= */
+
+@media(max-width:390px){
+
+    .termsNav{
+        height:64px;
+    }
+
+    .termsNavInner{
+        padding:0 15px;
+    }
+
+    .termsNavLogo{
+        font-size:25px;
+    }
+
+
+    .termsHero{
+        padding:42px 12px 32px;
+    }
+
+    .termsHero h1{
+        font-size:27px;
+    }
+
+
+    .termsContent{
+        width:calc(100% - 30px);
+    }
+
+
+    .termsIntro{
+        font-size:13.5px;
+    }
+
+    .termsPoint h2{
+        font-size:17px;
+    }
+
+    .termsPoint p,
+    .termsList li{
+        font-size:13.5px;
+    }
+
+
+    .termsCompanyImages{
+        gap:5px;
+
+        margin-top:25px;
+    }
+
+    .termsCompanyImage{
+        height:78px;
+    }
+
+    .termsCompanyImage img{
+        height:76px;
+    }
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     STICKY NAVBAR
+========================= -->
+
+<header class="termsNav">
+
+    <div class="termsNavInner">
+
+        <a href="index.html"
+           class="termsNavLogo">
+
+            Scrub Mate
+
+        </a>
+
+    </div>
+
+</header>
+
+
+
+<!-- =========================
+     TERMS PAGE
+========================= -->
+
+<main class="termsPage">
+
+
+    <!-- LIGHT BACKGROUND IMAGES -->
+
+    <img
+        src="service/3.webp"
+        class="termsDecor termsDecorOne"
+        alt="">
+
+    <img
+        src="service/6.webp"
+        class="termsDecor termsDecorTwo"
+        alt="">
+
+    <img
+        src="service/8.webp"
+        class="termsDecor termsDecorThree"
+        alt="">
+
+
+
+    <!-- =========================
+         HEADING
+    ========================= -->
+
+    <section class="termsHero">
+
+        <h1>Terms &amp; Conditions</h1>
+
+    </section>
+
+
+
+    <!-- =========================
+         CONTENT
+    ========================= -->
+
+    <div class="termsContent">
+
+
+        <!-- INTRO -->
+
+        <p class="termsIntro">
+
+            Welcome to
+            <span class="termsHighlight">Scrub Mate</span>.
+            These Terms &amp; Conditions govern your use of our
+            website, application and cleaning services. By using
+            Scrub Mate or booking a service, you agree to these
+            Terms &amp; Conditions.
+
+        </p>
+
+
+
+        <!-- 1 -->
+
+        <div class="termsPoint">
+
+            <h2>1. Our Services</h2>
+
+            <p>
+                Scrub Mate provides access to cleaning and related
+                household services. Service availability may vary
+                depending on your location, selected service,
+                available professionals and booking time.
+            </p>
+
+        </div>
+
+
+
+        <!-- 2 -->
+
+        <div class="termsPoint">
+
+            <h2>2. Service Bookings</h2>
+
+            <p>
+                Users are responsible for providing accurate
+                information while creating a booking.
+            </p>
+
+            <ul class="termsList">
+
+                <li>
+                    Select the correct service required.
+                </li>
+
+                <li>
+                    Provide an accurate service address.
+                </li>
+
+                <li>
+                    Provide a valid mobile number and contact details.
+                </li>
+
+                <li>
+                    Provide relevant instructions when required.
+                </li>
+
+            </ul>
+
+        </div>
+
+
+
+        <!-- 3 -->
+
+        <div class="termsPoint">
+
+            <h2>3. Service Prices</h2>
+
+            <p>
+                Prices displayed on Scrub Mate may depend on the
+                selected service, quantity, service requirements,
+                location or other applicable factors. The applicable
+                price will be shown during the booking process.
+            </p>
+
+        </div>
+
+
+
+        <!-- 4 -->
+
+        <div class="termsPoint">
+
+            <h2>4. Payments</h2>
+
+            <p>
+                Users must pay the applicable amount for confirmed
+                services using the payment options made available
+                through Scrub Mate. Online payments may be processed
+                through third-party payment providers.
+            </p>
+
+        </div>
+
+
+
+        <!-- 5 -->
+
+        <div class="termsPoint">
+
+            <h2>5. Images &amp; Service Information</h2>
+
+            <p>
+                Certain services may allow users to upload up to
+                3 images to help explain the cleaning requirement.
+                Users should upload only images that are relevant
+                to the requested service.
+            </p>
+
+        </div>
+
+
+
+        <!-- 6 -->
+
+        <div class="termsPoint">
+
+            <h2>6. Service Location</h2>
+
+            <p>
+                Users must provide a correct and accessible service
+                location. Service availability may depend on whether
+                the selected address is within an area currently
+                supported by Scrub Mate.
+            </p>
+
+        </div>
+
+
+
+        <!-- 7 -->
+
+        <div class="termsPoint">
+
+            <h2>7. Cancellations &amp; Rescheduling</h2>
+
+            <p>
+                Cancellation or rescheduling options may depend on
+                the status of the booking and the applicable service.
+                Any applicable cancellation terms or charges may be
+                shown during the booking process.
+            </p>
+
+        </div>
+
+
+
+        <!-- 8 -->
+
+        <div class="termsPoint">
+
+            <h2>8. User Responsibilities</h2>
+
+            <p>
+                Users are expected to provide a safe and reasonable
+                environment for the service professional and should
+                not misuse Scrub Mate services.
+            </p>
+
+            <ul class="termsList">
+
+                <li>
+                    Do not provide false booking information.
+                </li>
+
+                <li>
+                    Do not misuse the platform or service professionals.
+                </li>
+
+                <li>
+                    Do not upload unlawful or unrelated content.
+                </li>
+
+                <li>
+                    Follow reasonable safety requirements during service.
+                </li>
+
+            </ul>
+
+        </div>
+
+
+
+        <!-- 9 -->
+
+        <div class="termsPoint">
+
+            <h2>9. Service Professionals</h2>
+
+            <p>
+                Service professionals may require reasonable access
+                to the service location and relevant areas necessary
+                to complete the booked cleaning service.
+            </p>
+
+        </div>
+
+
+
+        <!-- 10 -->
+
+        <div class="termsPoint">
+
+            <h2>10. Service Availability</h2>
+
+            <p>
+                We may modify, temporarily pause or discontinue
+                particular services or service areas based on
+                operational requirements, availability or other
+                circumstances.
+            </p>
+
+        </div>
+
+
+
+        <!-- 11 -->
+
+        <div class="termsPoint">
+
+            <h2>11. Website &amp; Application Use</h2>
+
+            <p>
+                Users must not attempt to interfere with the normal
+                operation, security or functionality of the Scrub Mate
+                website or application.
+            </p>
+
+        </div>
+
+
+
+        <!-- 12 -->
+
+        <div class="termsPoint">
+
+            <h2>12. Changes to These Terms</h2>
+
+            <p>
+                These Terms &amp; Conditions may be updated from time
+                to time to reflect changes to our services, operations
+                or applicable requirements. Updated terms may be
+                published on this page.
+            </p>
+
+        </div>
+
+
+
+        <!-- 13 -->
+
+        <div class="termsPoint">
+
+            <h2>13. Contact Us</h2>
+
+            <p>
+                If you have questions regarding these Terms &amp;
+                Conditions or Scrub Mate services, please contact
+                our support team at
+
+                <a
+                    href="mailto:support@cezonalsolutions.com"
+                    class="termsEmail">
+
+                    support@cezonalsolutions.com
+
+                </a>.
+            </p>
+
+        </div>
+
+
+
+        <!-- =========================
+             COMPANY DETAILS
+        ========================= -->
+
+        <div class="termsCompany">
+
+            <div class="termsCompanyTitle">
+                Cezonal Solutions Pvt. Ltd.
+            </div>
+
+            <p>Scrub Mate</p>
+
+            <p>V Max Opposite, 2nd Floor</p>
+
+            <p>Tanuku, Andhra Pradesh, India</p>
+
+
+            <!-- =========================
+                 4 BOTTOM IMAGES
+            ========================= -->
+
+            <div class="termsCompanyImages">
+
+                <div class="termsCompanyImage">
+                    <img src="service/1.webp" alt="">
+                </div>
+
+                <div class="termsCompanyImage">
+                    <img src="service/2.webp" alt="">
+                </div>
+
+                <div class="termsCompanyImage">
+                    <img src="service/3.webp" alt="">
+                </div>
+
+                <div class="termsCompanyImage">
+                    <img src="service/4.webp" alt="">
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</main>
+
+
+</body>
+
+</html>
