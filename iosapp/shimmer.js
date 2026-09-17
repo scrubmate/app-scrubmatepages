@@ -100,15 +100,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /*
-     First-screen images:
+     First-screen location images:
      load immediately.
-    */
 
-    document
-        .querySelectorAll(".service-img[data-src]")
-        .forEach(img => {
-            loadCachedImage(img);
-        });
+     Login .service-img images are NOT handled here.
+     They load directly from Xcode using:
+     scrubmate-local://loginimages/...
+    */
 
     document
         .querySelectorAll(".location-image[data-src]")
