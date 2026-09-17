@@ -688,26 +688,21 @@ function startAutomaticLoginLocation(){
 
   autoLocationPage.classList.add("show");
 
-  scrubMateAutoLocationScreenShownAt = Date.now();
+  /*
+    IMPORTANT:
+    Stay on the EXISTING fetching-location state until BOTH:
+    1) fresh coordinates arrive
+    2) reverse geocoding returns the address
 
+    The result ("Your location") is not shown while address is still loading.
+  */
   autoLocationLoading.style.display = "flex";
-
   autoLocationResult.classList.remove("show");
 
-  autoLocationName.textContent =
-    "Your location";
+  scrubMateAutoLocationScreenShownAt = 0;
 
-  autoLocationAddress.textContent =
-    "Fetching your address...";
-
-  /*
-    Paint the existing Your Address / Fetching your address screen first.
-    No new screen and no jump; location request starts on the next frame.
-  */
   requestAnimationFrame(function(){
-    requestAnimationFrame(function(){
-      getAndSaveCurrentLocation();
-    });
+    getAndSaveCurrentLocation();
   });
 }
 
@@ -735,49 +730,49 @@ function showAutomaticLocationResult(locationData){
       .filter(Boolean)
       .join(", ");
 
+  /*
+    Never switch from the fetching screen to the result screen
+    until the detected address is actually available.
+  */
+  if(!address){
+    return;
+  }
+
   autoLocationLoading.style.display = "none";
 
   autoLocationName.textContent =
     placeName;
 
   autoLocationAddress.textContent =
-    address ||
-    "Fetching your address...";
+    address;
 
   autoLocationResult.classList.add("show");
 
   /*
-    Never skip the address result.
-    Only go Home after a real address exists.
-    Keep it visible for 1 second.
+    Start result-display timing ONLY now.
+    This guarantees the user sees the detected address,
+    not "Fetching your address..." on the result screen.
   */
-  if(address){
-
-    clearTimeout(
-      window.__scrubMateAutoHomeTimer
-    );
-
-    const scrubMateAutoElapsed =
-      Date.now() - scrubMateAutoLocationScreenShownAt;
-
-    const scrubMateAutoRemaining =
-      Math.max(3000 - scrubMateAutoElapsed, 0);
-
-    window.__scrubMateAutoHomeTimer =
-      setTimeout(function(){
-
-        if(!isAutomaticLoginLocation){
-          return;
-        }
-
-        isAutomaticLoginLocation = false;
-        openHomeWithSlideUp();
-
-      }, scrubMateAutoRemaining);
-
+  if(!scrubMateAutoLocationScreenShownAt){
+    scrubMateAutoLocationScreenShownAt = Date.now();
   }
-}
 
+  clearTimeout(
+    window.__scrubMateAutoHomeTimer
+  );
+
+  window.__scrubMateAutoHomeTimer =
+    setTimeout(function(){
+
+      if(!isAutomaticLoginLocation){
+        return;
+      }
+
+      isAutomaticLoginLocation = false;
+      openHomeWithSlideUp();
+
+    }, 3000);
+}
 
 function handleAutomaticLocationFailure(){
 
@@ -907,25 +902,12 @@ async function saveCurrentCoordinates(
 
     if(isAutomaticLoginLocation){
 
-      showAutomaticLocationResult(
-        immediateLocationData
-      );
-
-      if(
-        !immediateLocationData.fullAddress &&
-        !immediateLocationData.city &&
-        !immediateLocationData.district
-      ){
-        autoLocationAddress.textContent =
-          "Fetching your address...";
-      }
-
-      scrubMateFastHomeOpened =
-        Boolean(
-          immediateLocationData.fullAddress ||
-          immediateLocationData.city ||
-          immediateLocationData.district
-        );
+      /*
+        Fresh coordinates are ready, but keep showing the existing
+        fetching-location UI. reverseGeocode() below will reveal the
+        result only after the address is ready.
+      */
+      scrubMateFastHomeOpened = false;
 
     }else{
 
@@ -937,10 +919,6 @@ async function saveCurrentCoordinates(
 
   }else{
 
-    /*
-      Fresh GPS arrived after cached location already opened the UI.
-      Update location/service-area silently without reopening pages.
-    */
     updateScurbHomeLocation();
 
   }
@@ -973,8 +951,8 @@ async function saveCurrentCoordinates(
     updateScurbHomeLocation();
 
     /*
-      If automatic result screen is still visible,
-      refresh its text only. Do not restart its flow.
+      Address is now ready. For automatic login this is the ONLY point
+      where the result screen is revealed.
     */
     if(isAutomaticLoginLocation){
 
