@@ -877,21 +877,72 @@ async function saveCurrentCoordinates(
   } = options;
 
   /*
-    First save coordinates immediately.
-    Do NOT wait for reverse geocoding.
+    CEZOO-STYLE FAST FLOW:
+    - Fresh native coordinates ALWAYS arrive first.
+    - Never use old coordinates as the current position.
+    - If the previous saved address belongs to practically the same fresh
+      position, reuse ONLY that address immediately while a fresh reverse
+      geocode refresh continues in the background.
   */
+  const previousLocation =
+    getCachedScrubMateLocation();
+
+  let nearbyPreviousAddress = null;
+
+  if(
+    previousLocation &&
+    previousLocation.fullAddress
+  ){
+
+    const toRad = value =>
+      value * Math.PI / 180;
+
+    const earthRadius = 6371000;
+    const dLat = toRad(
+      latitude - previousLocation.latitude
+    );
+    const dLon = toRad(
+      longitude - previousLocation.longitude
+    );
+
+    const lat1 = toRad(
+      previousLocation.latitude
+    );
+    const lat2 = toRad(latitude);
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1) * Math.cos(lat2) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+    const distance =
+      earthRadius * 2 * Math.atan2(
+        Math.sqrt(a),
+        Math.sqrt(1 - a)
+      );
+
+    /*
+      Fresh GPS is the source of truth. 150 m is only used to decide
+      whether the already-known ADDRESS can safely be displayed instantly.
+    */
+    if(distance <= 150){
+      nearbyPreviousAddress = previousLocation;
+    }
+  }
+
   let immediateLocationData = {
-    ...(existingData || {}),
+    ...(nearbyPreviousAddress || existingData || {}),
     latitude,
     longitude,
     accuracy: accuracy ?? null,
     locationType: "current",
-    addressFound:
-      Boolean(
-        existingData?.fullAddress
-      )
+    addressFound:Boolean(
+      nearbyPreviousAddress?.fullAddress ||
+      existingData?.fullAddress
+    )
   };
 
+  /* Fresh coordinates are saved immediately. */
   saveLocationToStorage(
     immediateLocationData
   );
@@ -903,11 +954,23 @@ async function saveCurrentCoordinates(
     if(isAutomaticLoginLocation){
 
       /*
-        Fresh coordinates are ready, but keep showing the existing
-        fetching-location UI. reverseGeocode() below will reveal the
-        result only after the address is ready.
+        Same existing Scrub Mate flow:
+        Fetching Location -> Your Location -> 3 sec -> Home.
+
+        When fresh GPS is still within the same saved address area,
+        show that address immediately. Otherwise stay on Fetching Location
+        until the new reverse-geocoded address is ready.
       */
-      scrubMateFastHomeOpened = false;
+      if(immediateLocationData.fullAddress){
+        showAutomaticLocationResult(
+          immediateLocationData
+        );
+      }
+
+      scrubMateFastHomeOpened =
+        Boolean(
+          immediateLocationData.fullAddress
+        );
 
     }else{
 
@@ -924,8 +987,8 @@ async function saveCurrentCoordinates(
   }
 
   /*
-    Address lookup happens in background, CEZOO-style.
-    UI is already usable at this point.
+    Fresh address refresh continues asynchronously, CEZOO-style.
+    It never delays accepting the native GPS coordinates.
   */
   try {
 
@@ -950,12 +1013,13 @@ async function saveCurrentCoordinates(
 
     updateScurbHomeLocation();
 
-    /*
-      Address is now ready. For automatic login this is the ONLY point
-      where the result screen is revealed.
-    */
     if(isAutomaticLoginLocation){
 
+      /*
+        If result was not shown yet, this reveals it now.
+        If it is already visible from the nearby saved address,
+        only refresh its displayed text; do NOT restart the 3-second timer.
+      */
       showAutomaticLocationResult(
         finalLocationData
       );
@@ -964,19 +1028,30 @@ async function saveCurrentCoordinates(
 
     console.log(
       cached
-        ? "Cached location shown; address refreshed."
-        : "Fresh location saved in background."
+        ? "Cached address refreshed from fresh coordinates."
+        : "Fresh location/address saved."
     );
 
   } catch (error) {
 
     console.warn(
-      "Coordinates saved immediately; background address lookup failed:",
+      "Fresh coordinates saved; address refresh failed:",
       error
     );
 
+    /*
+      If there was no safe nearby address to show, keep the existing
+      failure behavior instead of opening a blank result screen.
+    */
+    if(
+      isAutomaticLoginLocation &&
+      !immediateLocationData.fullAddress
+    ){
+      handleAutomaticLocationFailure();
+    }
   }
 }
+
 /* =========================
    MANUAL LOCATION ELEMENTS
 ========================= */
