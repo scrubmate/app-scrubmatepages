@@ -786,19 +786,23 @@ input{
 
 .scrub-xcode-image-status{
   position:absolute;
-  z-index:2;
+  z-index:5;
   top:calc(env(safe-area-inset-top, 0px) + 92px);
   right:18px;
-  padding:4px 9px;
-  border-radius:999px;
-  background:rgba(0,115,118,.22);
-  color:rgba(255,255,255,.92);
+  max-width:220px;
+  padding:5px 9px;
+  border-radius:8px;
+  color:#fff;
   font-size:9px;
   font-weight:700;
-  line-height:1.2;
-  white-space:nowrap;
+  line-height:1.25;
+  text-align:right;
+  white-space:normal;
   pointer-events:none;
 }
+.scrub-xcode-image-status.checking{ background:rgba(0,0,0,.24); }
+.scrub-xcode-image-status.success{ background:rgba(15,130,70,.82); }
+.scrub-xcode-image-status.error{ background:rgba(190,35,35,.88); }
 
 </style>
 <link rel="stylesheet" href="new.css">
@@ -1321,6 +1325,68 @@ html.scrubOutsideServiceArea
 }
 
 </style>
+
+<script id="scrubmate-xcode-image-live-status">
+(function(){
+  const state = {
+    loaded: new Set(),
+    failed: new Map(),
+    totalUnique: 5
+  };
+
+  function statusEl(){
+    return document.getElementById("scrubXcodeImageStatus");
+  }
+
+  function showStatus(){
+    const el = statusEl();
+    if(!el) return;
+
+    if(state.failed.size > 0){
+      const errors = Array.from(state.failed.entries())
+        .map(([file, reason]) => file + ": " + reason)
+        .join(" | ");
+      el.className = "scrub-xcode-image-status error";
+      el.textContent = "❌ NOT RECEIVED • " + errors;
+      return;
+    }
+
+    if(state.loaded.size >= state.totalUnique){
+      el.className = "scrub-xcode-image-status success";
+      el.textContent = "✅ Xcode images received • 1–5 PNG";
+      return;
+    }
+
+    el.className = "scrub-xcode-image-status checking";
+    el.textContent = "Checking Xcode images... " +
+      state.loaded.size + "/" + state.totalUnique;
+  }
+
+  window.scrubXcodeImageLoaded = function(img, file){
+    state.loaded.add(file);
+    state.failed.delete(file);
+    console.log("✅ XCODE IMAGE RECEIVED:", file, img.currentSrc || img.src);
+    showStatus();
+  };
+
+  window.scrubXcodeImageFailed = function(img, file){
+    let reason = "WKWebView image load/decode failed";
+
+    if(!img.src || !img.src.startsWith("scrubmate-local://")){
+      reason = "invalid local image URL";
+    } else if(!img.naturalWidth && !img.naturalHeight){
+      reason = "no drawable image data";
+    }
+
+    state.failed.set(file, reason);
+    console.error("❌ XCODE IMAGE NOT RECEIVED:", file, reason, img.src);
+    showStatus();
+  };
+
+  document.addEventListener("DOMContentLoaded", showStatus);
+})();
+</script>
+
 </head>
 
 <body>
@@ -1340,8 +1406,8 @@ html.scrubOutsideServiceArea
       Skip login
     </button>
 
-    <div class="scrub-xcode-image-status" id="scrubXcodeImageStatus">
-      Swift/Xcode images received
+    <div class="scrub-xcode-image-status checking" id="scrubXcodeImageStatus">
+      Checking Xcode images...
     </div>
 
     <div class="brand-block">
@@ -1371,49 +1437,65 @@ html.scrubOutsideServiceArea
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/1.png"
+                src="scrubmate-local://loginimages/1.png"
+                onload="scrubXcodeImageLoaded(this, '1.png')"
+                onerror="scrubXcodeImageFailed(this, '1.png')"
                alt="Cleaning service">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/2.png"
+                src="scrubmate-local://loginimages/2.png"
+                onload="scrubXcodeImageLoaded(this, '2.png')"
+                onerror="scrubXcodeImageFailed(this, '2.png')"
                alt="Window cleaning">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/3.png"
+                src="scrubmate-local://loginimages/3.png"
+                onload="scrubXcodeImageLoaded(this, '3.png')"
+                onerror="scrubXcodeImageFailed(this, '3.png')"
                alt="Kitchen cleaning">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png"
+                src="scrubmate-local://loginimages/4.png"
+                onload="scrubXcodeImageLoaded(this, '4.png')"
+                onerror="scrubXcodeImageFailed(this, '4.png')"
                alt="Home cleaning">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/5.png"
+                src="scrubmate-local://loginimages/5.png"
+                onload="scrubXcodeImageLoaded(this, '5.png')"
+                onerror="scrubXcodeImageFailed(this, '5.png')"
                alt="Bathroom cleaning">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png"
+                src="scrubmate-local://loginimages/4.png"
+                onload="scrubXcodeImageLoaded(this, '4.png')"
+                onerror="scrubXcodeImageFailed(this, '4.png')"
                alt="Cooking service">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/1.png"
+                src="scrubmate-local://loginimages/1.png"
+                onload="scrubXcodeImageLoaded(this, '1.png')"
+                onerror="scrubXcodeImageFailed(this, '1.png')"
                alt="Ironing service">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/2.png"
+                src="scrubmate-local://loginimages/2.png"
+                onload="scrubXcodeImageLoaded(this, '2.png')"
+                onerror="scrubXcodeImageFailed(this, '2.png')"
                alt="Deep cleaning">
         </div>
 
@@ -1421,49 +1503,65 @@ html.scrubOutsideServiceArea
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png"
+                src="scrubmate-local://loginimages/4.png"
+                onload="scrubXcodeImageLoaded(this, '4.png')"
+                onerror="scrubXcodeImageFailed(this, '4.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/5.png"
+                src="scrubmate-local://loginimages/5.png"
+                onload="scrubXcodeImageLoaded(this, '5.png')"
+                onerror="scrubXcodeImageFailed(this, '5.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png"
+                src="scrubmate-local://loginimages/4.png"
+                onload="scrubXcodeImageLoaded(this, '4.png')"
+                onerror="scrubXcodeImageFailed(this, '4.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/3.png"
+                src="scrubmate-local://loginimages/3.png"
+                onload="scrubXcodeImageLoaded(this, '3.png')"
+                onerror="scrubXcodeImageFailed(this, '3.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/2.png"
+                src="scrubmate-local://loginimages/2.png"
+                onload="scrubXcodeImageLoaded(this, '2.png')"
+                onerror="scrubXcodeImageFailed(this, '2.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/1.png"
+                src="scrubmate-local://loginimages/1.png"
+                onload="scrubXcodeImageLoaded(this, '1.png')"
+                onerror="scrubXcodeImageFailed(this, '1.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/5.png"
+                src="scrubmate-local://loginimages/5.png"
+                onload="scrubXcodeImageLoaded(this, '5.png')"
+                onerror="scrubXcodeImageFailed(this, '5.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png"
+                src="scrubmate-local://loginimages/4.png"
+                onload="scrubXcodeImageLoaded(this, '4.png')"
+                onerror="scrubXcodeImageFailed(this, '4.png')"
                alt="">
         </div>
 
@@ -1477,49 +1575,65 @@ html.scrubOutsideServiceArea
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/3.png"
+                src="scrubmate-local://loginimages/3.png"
+                onload="scrubXcodeImageLoaded(this, '3.png')"
+                onerror="scrubXcodeImageFailed(this, '3.png')"
                alt="Bathroom cleaning">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png"
+                src="scrubmate-local://loginimages/4.png"
+                onload="scrubXcodeImageLoaded(this, '4.png')"
+                onerror="scrubXcodeImageFailed(this, '4.png')"
                alt="Home cleaning">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/5.png"
+                src="scrubmate-local://loginimages/5.png"
+                onload="scrubXcodeImageLoaded(this, '5.png')"
+                onerror="scrubXcodeImageFailed(this, '5.png')"
                alt="Deep cleaning">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/2.png"
+                src="scrubmate-local://loginimages/2.png"
+                onload="scrubXcodeImageLoaded(this, '2.png')"
+                onerror="scrubXcodeImageFailed(this, '2.png')"
                alt="Cooking service">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/1.png"
+                src="scrubmate-local://loginimages/1.png"
+                onload="scrubXcodeImageLoaded(this, '1.png')"
+                onerror="scrubXcodeImageFailed(this, '1.png')"
                alt="Kitchen cleaning">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png"
+                src="scrubmate-local://loginimages/4.png"
+                onload="scrubXcodeImageLoaded(this, '4.png')"
+                onerror="scrubXcodeImageFailed(this, '4.png')"
                alt="Cleaning service">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/1.png"
+                src="scrubmate-local://loginimages/1.png"
+                onload="scrubXcodeImageLoaded(this, '1.png')"
+                onerror="scrubXcodeImageFailed(this, '1.png')"
                alt="Ironing service">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/5.png"
+                src="scrubmate-local://loginimages/5.png"
+                onload="scrubXcodeImageLoaded(this, '5.png')"
+                onerror="scrubXcodeImageFailed(this, '5.png')"
                alt="Window cleaning">
         </div>
 
@@ -1527,49 +1641,65 @@ html.scrubOutsideServiceArea
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png"
+                src="scrubmate-local://loginimages/4.png"
+                onload="scrubXcodeImageLoaded(this, '4.png')"
+                onerror="scrubXcodeImageFailed(this, '4.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/2.png"
+                src="scrubmate-local://loginimages/2.png"
+                onload="scrubXcodeImageLoaded(this, '2.png')"
+                onerror="scrubXcodeImageFailed(this, '2.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png"
+                src="scrubmate-local://loginimages/4.png"
+                onload="scrubXcodeImageLoaded(this, '4.png')"
+                onerror="scrubXcodeImageFailed(this, '4.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/5.png"
+                src="scrubmate-local://loginimages/5.png"
+                onload="scrubXcodeImageLoaded(this, '5.png')"
+                onerror="scrubXcodeImageFailed(this, '5.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png"
+                src="scrubmate-local://loginimages/4.png"
+                onload="scrubXcodeImageLoaded(this, '4.png')"
+                onerror="scrubXcodeImageFailed(this, '4.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/3.png"
+                src="scrubmate-local://loginimages/3.png"
+                onload="scrubXcodeImageLoaded(this, '3.png')"
+                onerror="scrubXcodeImageFailed(this, '3.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/2.png"
+                src="scrubmate-local://loginimages/2.png"
+                onload="scrubXcodeImageLoaded(this, '2.png')"
+                onerror="scrubXcodeImageFailed(this, '2.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/1.png"
+                src="scrubmate-local://loginimages/1.png"
+                onload="scrubXcodeImageLoaded(this, '1.png')"
+                onerror="scrubXcodeImageFailed(this, '1.png')"
                alt="">
         </div>
 
@@ -1583,49 +1713,65 @@ html.scrubOutsideServiceArea
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png"
+                src="scrubmate-local://loginimages/4.png"
+                onload="scrubXcodeImageLoaded(this, '4.png')"
+                onerror="scrubXcodeImageFailed(this, '4.png')"
                alt="Cooking service">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/3.png"
+                src="scrubmate-local://loginimages/3.png"
+                onload="scrubXcodeImageLoaded(this, '3.png')"
+                onerror="scrubXcodeImageFailed(this, '3.png')"
                alt="Window cleaning">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/2.png"
+                src="scrubmate-local://loginimages/2.png"
+                onload="scrubXcodeImageLoaded(this, '2.png')"
+                onerror="scrubXcodeImageFailed(this, '2.png')"
                alt="Ironing service">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/1.png"
+                src="scrubmate-local://loginimages/1.png"
+                onload="scrubXcodeImageLoaded(this, '1.png')"
+                onerror="scrubXcodeImageFailed(this, '1.png')"
                alt="Cooking service">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/5.png"
+                src="scrubmate-local://loginimages/5.png"
+                onload="scrubXcodeImageLoaded(this, '5.png')"
+                onerror="scrubXcodeImageFailed(this, '5.png')"
                alt="Cleaning service">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/2.png"
+                src="scrubmate-local://loginimages/2.png"
+                onload="scrubXcodeImageLoaded(this, '2.png')"
+                onerror="scrubXcodeImageFailed(this, '2.png')"
                alt="Deep cleaning">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png"
+                src="scrubmate-local://loginimages/4.png"
+                onload="scrubXcodeImageLoaded(this, '4.png')"
+                onerror="scrubXcodeImageFailed(this, '4.png')"
                alt="Kitchen cleaning">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/1.png"
+                src="scrubmate-local://loginimages/1.png"
+                onload="scrubXcodeImageLoaded(this, '1.png')"
+                onerror="scrubXcodeImageFailed(this, '1.png')"
                alt="Bathroom cleaning">
         </div>
 
@@ -1633,49 +1779,65 @@ html.scrubOutsideServiceArea
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png"
+                src="scrubmate-local://loginimages/4.png"
+                onload="scrubXcodeImageLoaded(this, '4.png')"
+                onerror="scrubXcodeImageFailed(this, '4.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/5.png"
+                src="scrubmate-local://loginimages/5.png"
+                onload="scrubXcodeImageLoaded(this, '5.png')"
+                onerror="scrubXcodeImageFailed(this, '5.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/2.png"
+                src="scrubmate-local://loginimages/2.png"
+                onload="scrubXcodeImageLoaded(this, '2.png')"
+                onerror="scrubXcodeImageFailed(this, '2.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/4.png"
+                src="scrubmate-local://loginimages/4.png"
+                onload="scrubXcodeImageLoaded(this, '4.png')"
+                onerror="scrubXcodeImageFailed(this, '4.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/2.png"
+                src="scrubmate-local://loginimages/2.png"
+                onload="scrubXcodeImageLoaded(this, '2.png')"
+                onerror="scrubXcodeImageFailed(this, '2.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/1.png"
+                src="scrubmate-local://loginimages/1.png"
+                onload="scrubXcodeImageLoaded(this, '1.png')"
+                onerror="scrubXcodeImageFailed(this, '1.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/5.png"
+                src="scrubmate-local://loginimages/5.png"
+                onload="scrubXcodeImageLoaded(this, '5.png')"
+                onerror="scrubXcodeImageFailed(this, '5.png')"
                alt="">
         </div>
 
         <div class="service-card">
           <img class="service-img"
-               src="scrubmate-local://loginimages/3.png"
+                src="scrubmate-local://loginimages/3.png"
+                onload="scrubXcodeImageLoaded(this, '3.png')"
+                onerror="scrubXcodeImageFailed(this, '3.png')"
                alt="">
         </div>
 
