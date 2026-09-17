@@ -783,6 +783,23 @@ input{
   animation-play-state:paused;
 }
 
+
+.scrub-xcode-image-status{
+  position:absolute;
+  z-index:2;
+  top:calc(env(safe-area-inset-top, 0px) + 92px);
+  right:18px;
+  padding:4px 9px;
+  border-radius:999px;
+  background:rgba(0,115,118,.22);
+  color:rgba(255,255,255,.92);
+  font-size:9px;
+  font-weight:700;
+  line-height:1.2;
+  white-space:nowrap;
+  pointer-events:none;
+}
+
 </style>
 <link rel="stylesheet" href="new.css">
 <link rel="stylesheet" href="copoun.css">
@@ -1322,6 +1339,10 @@ html.scrubOutsideServiceArea
     >
       Skip login
     </button>
+
+    <div class="scrub-xcode-image-status" id="scrubXcodeImageStatus">
+      Swift/Xcode images received
+    </div>
 
     <div class="brand-block">
 
