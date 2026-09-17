@@ -700,7 +700,15 @@ function startAutomaticLoginLocation(){
   autoLocationAddress.textContent =
     "Fetching your address...";
 
-  getAndSaveCurrentLocation();
+  /*
+    Paint the existing Your Address / Fetching your address screen first.
+    No new screen and no jump; location request starts on the next frame.
+  */
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      getAndSaveCurrentLocation();
+    });
+  });
 }
 
 function showAutomaticLocationResult(locationData){
@@ -850,8 +858,11 @@ async function getAndSaveCurrentLocation() {
     },
 
     {
-      enableHighAccuracy: true,
-      timeout: 8000,
+      /* Fast fresh fix:
+         false usually returns a fresh network/GPS-assisted fix much faster.
+         maximumAge:0 still prevents an old browser-cached position. */
+      enableHighAccuracy: false,
+      timeout: 5000,
       maximumAge: 0
     }
   );
@@ -899,6 +910,15 @@ async function saveCurrentCoordinates(
       showAutomaticLocationResult(
         immediateLocationData
       );
+
+      if(
+        !immediateLocationData.fullAddress &&
+        !immediateLocationData.city &&
+        !immediateLocationData.district
+      ){
+        autoLocationAddress.textContent =
+          "Fetching your address...";
+      }
 
       scrubMateFastHomeOpened =
         Boolean(
