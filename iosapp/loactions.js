@@ -789,35 +789,18 @@ async function getAndSaveCurrentLocation() {
 
   showCurrentLocationSpinner();
 
+  /*
+    FRESH LOCATION ON EVERY APP/WEBVIEW LAUNCH:
+    - Never use saved latitude/longitude as the current GPS position.
+    - Ask iOS native bridge first when running inside the app.
+    - Browser fallback also requires a fresh reading (maximumAge: 0).
+    - Existing screens/flow stay unchanged.
+  */
+
   scrubMateFastCachedUsed = false;
   scrubMateFastHomeOpened = false;
 
-  /*
-    CEZOO-style:
-    show saved coordinates immediately when available,
-    then ask Swift/browser for a fresh location in background.
-  */
-  const cachedLocation =
-    getCachedScrubMateLocation();
-
-  if(cachedLocation){
-
-    scrubMateFastCachedUsed = true;
-
-    void saveCurrentCoordinates(
-      cachedLocation.latitude,
-      cachedLocation.longitude,
-      cachedLocation.accuracy ?? null,
-      {
-        cached:true,
-        backgroundOnly:false,
-        existingData:cachedLocation
-      }
-    );
-
-  }
-
-  // iOS native app
+  // iOS native app: request a fresh native location.
   if (isScrubMateIOSApp()) {
 
     requestScrubMateNativeLocation(
@@ -827,16 +810,15 @@ async function getAndSaveCurrentLocation() {
     return;
   }
 
-  // Normal browser fallback
+  // Normal browser fallback.
   if (!navigator.geolocation) {
 
-    if(!cachedLocation){
-      console.error(
-        "Geolocation is not supported."
-      );
+    console.error(
+      "Geolocation is not supported."
+    );
 
-      hideCurrentLocationSpinner();
-    }
+    hideCurrentLocationSpinner();
+    handleAutomaticLocationFailure();
 
     return;
   }
@@ -850,8 +832,7 @@ async function getAndSaveCurrentLocation() {
         position.coords.accuracy ?? null,
         {
           cached:false,
-          backgroundOnly:
-            scrubMateFastCachedUsed
+          backgroundOnly:false
         }
       );
 
@@ -859,26 +840,22 @@ async function getAndSaveCurrentLocation() {
 
     function(error) {
 
-      if(!scrubMateFastCachedUsed){
-        hideCurrentLocationSpinner();
-        handleBrowserLocationError(error);
-      }else{
-        console.warn(
-          "Fresh browser location failed; cached location kept.",
-          error
-        );
+      hideCurrentLocationSpinner();
+      handleBrowserLocationError(error);
+
+      if(isAutomaticLoginLocation){
+        handleAutomaticLocationFailure();
       }
 
     },
 
     {
-      enableHighAccuracy: false,
+      enableHighAccuracy: true,
       timeout: 8000,
-      maximumAge: 60000
+      maximumAge: 0
     }
   );
 }
-
 
 async function saveCurrentCoordinates(
   latitude,
