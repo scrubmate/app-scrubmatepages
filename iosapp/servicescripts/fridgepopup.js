@@ -531,6 +531,32 @@ fridgePopupLazyImages.forEach(function(image){
     image.dataset.src;
 
 });
+  const scurbFridgeFaqQuestions =
+    fridgeCleaningPopup.querySelectorAll(".scurbFaqQuestion");
+
+  scurbFridgeFaqQuestions.forEach(function(question){
+    question.addEventListener("click", function(event){
+      event.preventDefault();
+      event.stopPropagation();
+
+      const currentItem = this.closest(".scurbFaqItem");
+      if(!currentItem) return;
+
+      const wasOpen =
+        currentItem.classList.contains("scurbFaqOpen");
+
+      fridgeCleaningPopup
+        .querySelectorAll(".scurbFaqItem")
+        .forEach(function(item){
+          item.classList.remove("scurbFaqOpen");
+        });
+
+      if(!wasOpen){
+        currentItem.classList.add("scurbFaqOpen");
+      }
+    });
+  });
+
   document
     .getElementById("closeFridgeCleaningPopup")
     .addEventListener(
@@ -896,33 +922,6 @@ document.addEventListener("DOMContentLoaded", function(){
 
 
 
-document.addEventListener("click", function(event){
-
-  const question =
-    event.target.closest(".scurbFaqQuestion");
-
-  if(!question) return;
-
-  const currentItem =
-    question.closest(".scurbFaqItem");
-
-  const faqList =
-    currentItem.closest(".scurbFaqList");
-
-  const wasOpen =
-    currentItem.classList.contains("scurbFaqOpen");
-
-  faqList
-    .querySelectorAll(".scurbFaqItem")
-    .forEach(function(item){
-      item.classList.remove("scurbFaqOpen");
-    });
-
-  if(!wasOpen){
-    currentItem.classList.add("scurbFaqOpen");
-  }
-
-});
 let fridgePopupTouchStartX = 0;
 let fridgePopupTouchStartY = 0;
 let fridgePopupTouchCurrentX = 0;
