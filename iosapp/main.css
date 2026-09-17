@@ -880,23 +880,6 @@ OUR SERVICES
 
 
 
-.scurbServiceImageBox::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    z-index:2;
-    pointer-events:none;
-
-    background:linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(255,255,255,.8) 50%,
-        transparent 100%
-    );
-
-    transform:translateX(-100%);
-    animation:serviceImageShimmer 1.2s linear infinite;
-}
 
 .scurbServiceImageBox.loaded::before{
     display:none;
@@ -911,15 +894,6 @@ OUR SERVICES
 }
 
 
-@keyframes serviceImageShimmer{
-    from{
-        transform:translateX(-100%);
-    }
-
-    to{
-        transform:translateX(100%);
-    }
-}
 
 /* =========================================
    FEATURE IMAGE SHIMMER — IMAGE ONLY
